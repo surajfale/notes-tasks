@@ -1,0 +1,21 @@
+[build]
+  base = "frontend"
+  command = "flutter build web --release --dart-define=API_BASE_URL=$API_BASE_URL --dart-define=DEVELOPMENT=false"
+  publish = "frontend/build/web"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
