@@ -2,3 +2,6 @@
   base = "frontend"
   publish = "frontend/build/web"
   command = "git clone https://github.com/flutter/flutter.git -b stable --depth 1 ../flutter && export PATH=$PATH:$PWD/../flutter/bin && flutter config --enable-web && flutter pub get && flutter build web --release --dart-define=API_BASE_URL=$API_BASE_URL --dart-define=DEVELOPMENT=false"
+
+[build.environment]
+  NODE_VERSION = "20"
