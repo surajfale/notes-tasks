@@ -1,0 +1,16 @@
+[build]
+  publish = "build/web"
+  command = """
+    # Install Flutter
+    git clone https://github.com/flutter/flutter.git -b stable --depth 1 /opt/flutter
+    export PATH="$PATH:/opt/flutter/bin"
+    
+    # Run Flutter commands
+    flutter config --enable-web
+    flutter pub get
+    flutter build web --release
+  """
+
+[build.environment]
+  # Use a recent Ubuntu image
+  NODE_VERSION = "18"
