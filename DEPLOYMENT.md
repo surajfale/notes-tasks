@@ -22,7 +22,7 @@ This guide covers deploying the Notes & Tasks application to production.
    - Click "New Project"
    - Select "Deploy from GitHub repo"
    - Choose your repository
-   - Select the `backend` directory as the root
+   - Railway will use `railway.json` configuration automatically
 
 3. **Set environment variables in Railway**
    ```
@@ -48,8 +48,22 @@ This guide covers deploying the Notes & Tasks application to production.
 
 ### Railway Configuration Files
 
-- `railway.json` - Railway-specific config (already created)
-- Backend automatically uses PORT from environment
+`railway.json` is configured with:
+```json
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "cd backend && npm install"
+  },
+  "deploy": {
+    "startCommand": "cd backend && npm start",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+Backend automatically uses PORT from Railway environment.
 
 ## Frontend Deployment (Netlify)
 
@@ -59,41 +73,19 @@ This guide covers deploying the Notes & Tasks application to production.
 
 ### Steps
 
-1. **Update API URL for production**
-   - Edit `frontend/lib/core/config/app_config.dart`
-   - Add environment-based URL selection (see below)
-
-2. **Build Flutter web**
-   ```bash
-   cd frontend
-   flutter build web --release
-   ```
-
-3. **Deploy to Netlify**
-
-   **Option A: Netlify CLI**
-   ```bash
-   npm install -g netlify-cli
-   netlify deploy --prod --dir=frontend/build/web
-   ```
-
-   **Option B: Netlify Dashboard**
-   - Go to https://app.netlify.com
-   - Click "Add new site" → "Deploy manually"
-   - Drag and drop `frontend/build/web` folder
-
-   **Option C: Connect to GitHub (Recommended)**
+1. **Connect GitHub to Netlify**
    - Go to https://app.netlify.com
    - Click "Add new site" → "Import from Git"
    - Choose your repository
-   - Configure build settings:
-     - Base directory: `frontend`
-     - Build command: `flutter build web --release`
-     - Publish directory: `frontend/build/web`
+   - **Important**: Clear any build command in UI (leave empty)
+   - **Important**: Clear publish directory in UI (leave empty)
+   - Netlify will automatically use `netlify.toml` configuration
 
-4. **Set environment variable in Netlify**
+2. **Set environment variable in Netlify**
    - Go to Site settings → Environment variables
    - Add: `API_BASE_URL=https://your-app.up.railway.app/api`
+   
+   Note: The Flutter SDK will be automatically installed during each build
 
 5. **Update CORS in Railway**
    - Go back to Railway dashboard
@@ -102,10 +94,19 @@ This guide covers deploying the Notes & Tasks application to production.
 
 ### Netlify Configuration
 
-The `netlify.toml` file (already created) handles:
-- SPA routing (redirects all routes to index.html)
-- Build settings
-- Cache headers
+The `netlify.toml` file is configured with:
+```toml
+[build]
+  base = "frontend"
+  publish = "build/web"
+  command = "git clone https://github.com/flutter/flutter.git -b stable --depth 1 ../flutter && export PATH=$PATH:$PWD/../flutter/bin && flutter config --enable-web && flutter pub get && flutter build web --release"
+```
+
+This configuration:
+- Installs Flutter SDK during build (in ../flutter directory)
+- Enables Flutter web support
+- Builds the Flutter web app
+- Publishes the build/web directory
 
 ## Post-Deployment
 

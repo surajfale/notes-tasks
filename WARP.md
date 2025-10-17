@@ -178,14 +178,25 @@ Follow `MONGODB_SETUP.md` for complete setup instructions:
 
 ## Deployment
 
-### Backend Deployment Options
+### Current Production Setup
 
-- **Railway**: `railway up` (easiest)
-- **Render**: Connect GitHub, set build/start commands
-- **Fly.io**: `flyctl launch` and `flyctl deploy`
-- **Vercel/Netlify**: For serverless functions (requires adaptation)
+**Backend (Railway)**:
+- Deploy from GitHub automatically
+- Configuration in `railway.json`
+- Environment variables set in Railway dashboard
+- See `DEPLOYMENT.md` for setup
 
-See `backend/README.md` for detailed deployment steps.
+**Frontend (Netlify)**:
+- Automated deployment from GitHub
+- Flutter SDK installed automatically during build
+- Configuration in `netlify.toml` (root directory)
+- Build process: Clone Flutter → Build web → Deploy
+- See `DEPLOYMENT.md` for setup
+
+**Database (MongoDB Atlas)**:
+- Cloud-hosted MongoDB cluster
+- IP whitelist configured for Railway
+- See `MONGODB_SETUP.md` for setup
 
 ## Additional Documentation
 

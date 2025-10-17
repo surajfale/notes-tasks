@@ -47,12 +47,19 @@ flutter pub get
 flutter run -d chrome
 ```
 
-(Frontend in development)
+## Deployment
+
+- **Backend**: Deployed on Railway (see `DEPLOYMENT.md`)
+- **Frontend**: Deployed on Netlify with automated Flutter installation
+- **Database**: MongoDB Atlas (cloud)
+
+See `DEPLOYMENT.md` for complete deployment instructions.
 
 ## Documentation
 
 - **[WARP.md](WARP.md)** - Development guide for WARP
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deployment guide (Railway + Netlify)
 - **[MONGODB_SETUP.md](MONGODB_SETUP.md)** - MongoDB Atlas setup guide
 - **[backend/README.md](backend/README.md)** - Backend API documentation
 

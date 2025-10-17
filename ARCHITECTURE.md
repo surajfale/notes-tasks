@@ -314,10 +314,19 @@ Database: MongoDB Atlas (cloud)
 
 ### Production
 ```
-Frontend: Static hosting (Vercel, Netlify, Firebase Hosting)
-Backend: Node.js hosting (Railway, Render, Fly.io)
+Frontend: Netlify
+  - Automated Flutter installation during build
+  - Static hosting with SPA routing
+  - Build command: Flutter SDK installed + flutter build web
+  
+Backend: Railway
+  - Automatic deployment from GitHub
+  - Environment variables managed in Railway dashboard
+  - Health check endpoint: /health
+  
 Database: MongoDB Atlas (production cluster)
-CDN: Cloudflare (optional)
+  - M0 free tier or higher
+  - IP whitelist configured for Railway
 ```
 
 ## Monitoring & Observability
