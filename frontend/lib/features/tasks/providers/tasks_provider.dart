@@ -13,12 +13,13 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
     loadTasks();
   }
 
-  Future<void> loadTasks({bool? isCompleted, TaskPriority? priority}) async {
+  Future<void> loadTasks({bool? isCompleted, TaskPriority? priority, String? listId}) async {
     state = const AsyncValue.loading();
     try {
       final tasks = await _repository.getTasks(
         isCompleted: isCompleted,
         priority: priority,
+        listId: listId,
       );
       state = AsyncValue.data(tasks);
     } catch (e, stack) {
@@ -31,6 +32,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
     String? description,
     TaskPriority? priority,
     DateTime? dueDate,
+    String? listId,
   }) async {
     try {
       await _repository.createTask(
@@ -38,6 +40,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
         description: description,
         priority: priority,
         dueDate: dueDate,
+        listId: listId,
       );
       await loadTasks();
     } catch (e) {
@@ -73,6 +76,15 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
       id: task.id,
       isCompleted: !task.isCompleted,
     );
+  }
+
+  Future<void> toggleComplete(String id) async {
+    try {
+      await _repository.toggleComplete(id);
+      await loadTasks();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> deleteTask(String id) async {

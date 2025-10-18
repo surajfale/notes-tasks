@@ -27,6 +27,7 @@ mixin _$Task {
   String? get description => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
   TaskPriority get priority => throw _privateConstructorUsedError;
+  @JsonKey(name: 'dueAt')
   DateTime? get dueDate => throw _privateConstructorUsedError;
   String? get listId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -53,7 +54,7 @@ abstract class $TaskCopyWith<$Res> {
       String? description,
       bool isCompleted,
       TaskPriority priority,
-      DateTime? dueDate,
+      @JsonKey(name: 'dueAt') DateTime? dueDate,
       String? listId,
       DateTime createdAt,
       DateTime updatedAt});
@@ -144,7 +145,7 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       String? description,
       bool isCompleted,
       TaskPriority priority,
-      DateTime? dueDate,
+      @JsonKey(name: 'dueAt') DateTime? dueDate,
       String? listId,
       DateTime createdAt,
       DateTime updatedAt});
@@ -228,7 +229,7 @@ class _$TaskImpl implements _Task {
       this.description,
       this.isCompleted = false,
       this.priority = TaskPriority.medium,
-      this.dueDate,
+      @JsonKey(name: 'dueAt') this.dueDate,
       this.listId,
       required this.createdAt,
       required this.updatedAt});
@@ -252,6 +253,7 @@ class _$TaskImpl implements _Task {
   @JsonKey()
   final TaskPriority priority;
   @override
+  @JsonKey(name: 'dueAt')
   final DateTime? dueDate;
   @override
   final String? listId;
@@ -316,7 +318,7 @@ abstract class _Task implements Task {
       final String? description,
       final bool isCompleted,
       final TaskPriority priority,
-      final DateTime? dueDate,
+      @JsonKey(name: 'dueAt') final DateTime? dueDate,
       final String? listId,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$TaskImpl;
@@ -337,6 +339,7 @@ abstract class _Task implements Task {
   @override
   TaskPriority get priority;
   @override
+  @JsonKey(name: 'dueAt')
   DateTime? get dueDate;
   @override
   String? get listId;

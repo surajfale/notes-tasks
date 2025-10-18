@@ -20,7 +20,7 @@ class TasksRepository {
     try {
       final queryParams = <String, dynamic>{};
       if (isCompleted != null) queryParams['isCompleted'] = isCompleted;
-      if (priority != null) queryParams['priority'] = priority.name;
+      if (priority != null) queryParams['priority'] = _priorityToInt(priority);
       if (listId != null) queryParams['listId'] = listId;
 
       final response = await _dio.get('/tasks', queryParameters: queryParams);
@@ -39,13 +39,16 @@ class TasksRepository {
     String? listId,
   }) async {
     try {
-      final response = await _dio.post('/tasks', data: {
+      final requestData = <String, dynamic>{
         'title': title,
         if (description != null) 'description': description,
-        if (priority != null) 'priority': priority.name,
-        if (dueDate != null) 'dueDate': dueDate.toIso8601String(),
+        if (priority != null) 'priority': _priorityToInt(priority),
+        if (dueDate != null) 'dueAt': dueDate.toIso8601String(),
         if (listId != null) 'listId': listId,
-      });
+        'isCompleted': false, // Explicitly set default value
+      };
+      
+      final response = await _dio.post('/tasks', data: requestData);
       return Task.fromJson(response.data['task'] ?? response.data);
     } on DioException catch (e) {
       throw _handleError(e);
@@ -65,8 +68,8 @@ class TasksRepository {
         if (title != null) 'title': title,
         if (description != null) 'description': description,
         if (isCompleted != null) 'isCompleted': isCompleted,
-        if (priority != null) 'priority': priority.name,
-        if (dueDate != null) 'dueDate': dueDate.toIso8601String(),
+        if (priority != null) 'priority': _priorityToInt(priority),
+        if (dueDate != null) 'dueAt': dueDate.toIso8601String(),
       });
       return Task.fromJson(response.data['task'] ?? response.data);
     } on DioException catch (e) {
@@ -82,12 +85,40 @@ class TasksRepository {
     }
   }
 
+  Future<Task> toggleComplete(String id) async {
+    try {
+      final response = await _dio.put('/tasks/$id/complete');
+      return Task.fromJson(response.data['task'] ?? response.data);
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+
+  int _priorityToInt(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return 1;
+      case TaskPriority.medium:
+        return 2;
+      case TaskPriority.high:
+        return 3;
+    }
+  }
+
   String _handleError(DioException e) {
     if (e.response != null) {
       final data = e.response!.data;
       if (data is Map && data.containsKey('error')) {
         return data['error']['message'] ?? 'An error occurred';
       }
+      return 'Server error: ${e.response!.statusCode}';
+    }
+    if (e.type == DioExceptionType.connectionTimeout) {
+      return 'Connection timeout. Please check your internet.';
+    }
+    if (e.type == DioExceptionType.receiveTimeout) {
+      return 'Request timeout. Please try again.';
     }
     return 'Network error. Please try again.';
   }

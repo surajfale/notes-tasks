@@ -4,11 +4,11 @@ part 'task.freezed.dart';
 part 'task.g.dart';
 
 enum TaskPriority {
-  @JsonValue('low')
+  @JsonValue(1)
   low,
-  @JsonValue('medium')
+  @JsonValue(2) 
   medium,
-  @JsonValue('high')
+  @JsonValue(3)
   high,
 }
 
@@ -21,7 +21,7 @@ class Task with _$Task {
     String? description,
     @Default(false) bool isCompleted,
     @Default(TaskPriority.medium) TaskPriority priority,
-    DateTime? dueDate,
+    @JsonKey(name: 'dueAt') DateTime? dueDate,
     String? listId,
     required DateTime createdAt,
     required DateTime updatedAt,
