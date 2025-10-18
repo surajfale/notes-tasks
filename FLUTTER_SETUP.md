@@ -2,6 +2,8 @@
 
 This guide covers installing Flutter and setting up the frontend web application.
 
+**Note**: If you already have Flutter installed and the frontend project exists, skip to the "Run Development Server" section.
+
 ## Install Flutter
 
 ### Windows Installation
@@ -80,8 +82,19 @@ frontend/
 
 ## Run Development Server
 
+For PowerShell (Windows):
+```powershell
+cd frontend
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
+flutter run -d chrome
+```
+
+For Bash (Linux/Mac):
 ```bash
 cd frontend
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
 flutter run -d chrome
 ```
 
@@ -104,12 +117,18 @@ Output will be in `frontend/build/web/`
 
 ## Common Commands
 
-```bash
+```powershell
 # Check Flutter setup
 flutter doctor
 
 # Get dependencies
 flutter pub get
+
+# Code generation (after model changes)
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Code generation (watch mode)
+flutter pub run build_runner watch
 
 # Run on Chrome
 flutter run -d chrome
@@ -146,7 +165,8 @@ flutter analyze
 
 ### CORS errors when calling API
 - Ensure backend CORS_ORIGINS includes `http://localhost:8080`
-- Check backend is running on port 3000
+- Check backend is running: `curl http://localhost:3000/health`
+- Always use localhost for testing, not Railway URLs
 
 ## VS Code Setup (Optional but Recommended)
 

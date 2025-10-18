@@ -16,26 +16,47 @@ class TaskEditorScreen extends ConsumerStatefulWidget {
 class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  late TextEditingController _tagController;
   TaskPriority _priority = TaskPriority.medium;
   DateTime? _dueDate;
   bool _isCompleted = false;
   bool _isLoading = false;
+  late List<String> _tags;
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task?.title ?? '');
     _descriptionController = TextEditingController(text: widget.task?.description ?? '');
+    _tagController = TextEditingController();
     _priority = widget.task?.priority ?? TaskPriority.medium;
     _dueDate = widget.task?.dueDate;
     _isCompleted = widget.task?.isCompleted ?? false;
+    _tags = List<String>.from(widget.task?.tags ?? []);
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _tagController.dispose();
     super.dispose();
+  }
+
+  void _addTag() {
+    final tag = _tagController.text.trim().toLowerCase();
+    if (tag.isNotEmpty && !_tags.contains(tag)) {
+      setState(() {
+        _tags.add(tag);
+        _tagController.clear();
+      });
+    }
+  }
+
+  void _removeTag(String tag) {
+    setState(() {
+      _tags.remove(tag);
+    });
   }
 
   Future<void> _saveTask() async {
@@ -58,6 +79,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                   : null,
               dueDate: _dueDate,
               priority: _priority,
+              tags: _tags.isEmpty ? null : _tags,
             );
       } else {
         // Update existing task
@@ -70,6 +92,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
               dueDate: _dueDate,
               priority: _priority,
               isCompleted: _isCompleted,
+              tags: _tags,
             );
       }
 
@@ -181,9 +204,13 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Responsive padding based on screen width
+          final padding = constraints.maxWidth < 600 ? 12.0 : 16.0;
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(padding),
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title field
@@ -220,6 +247,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
+              runSpacing: 8,
               children: TaskPriority.values.map((priority) {
                 final isSelected = _priority == priority;
                 return ChoiceChip(
@@ -259,6 +287,53 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                   ),
                 );
               }).toList(),
+            ),
+            const SizedBox(height: 24),
+
+            // Tags section
+            Text(
+              'Tags',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ..._tags.map((tag) => Chip(
+                      label: Text(tag),
+                      onDeleted: () => _removeTag(tag),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      deleteIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                    )),
+                ActionChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.add,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Add Tag',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () => _showAddTagDialog(),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
 
@@ -322,8 +397,44 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                       ),
               ),
             ),
-          ],
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showAddTagDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Tag'),
+        content: TextField(
+          controller: _tagController,
+          decoration: const InputDecoration(
+            hintText: 'Enter tag name',
+            border: OutlineInputBorder(),
+          ),
+          textCapitalization: TextCapitalization.none,
+          onSubmitted: (_) {
+            _addTag();
+            Navigator.pop(context);
+          },
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              _addTag();
+              Navigator.pop(context);
+            },
+            child: const Text('Add'),
+          ),
+        ],
       ),
     );
   }

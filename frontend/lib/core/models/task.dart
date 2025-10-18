@@ -23,6 +23,7 @@ class Task with _$Task {
     @Default(TaskPriority.medium) TaskPriority priority,
     @JsonKey(name: 'dueAt') DateTime? dueDate,
     String? listId,
+    @Default([]) List<String> tags,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Task;

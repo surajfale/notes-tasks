@@ -43,6 +43,24 @@ const taskSchema = new mongoose.Schema(
       max: [3, 'Priority must be between 1 and 3'],
       enum: [1, 2, 3], // 1=low, 2=normal, 3=high
     },
+    tags: {
+      type: [String],
+      default: [],
+      validate: [
+        {
+          validator: function (tags) {
+            return tags.length <= 20;
+          },
+          message: 'Cannot have more than 20 tags',
+        },
+        {
+          validator: function (tags) {
+            return tags.every((tag) => tag.length <= 30);
+          },
+          message: 'Each tag cannot exceed 30 characters',
+        },
+      ],
+    },
   },
   {
     timestamps: true,
@@ -53,6 +71,7 @@ const taskSchema = new mongoose.Schema(
 taskSchema.index({ userId: 1, listId: 1, dueAt: 1 });
 taskSchema.index({ userId: 1, isCompleted: 1 });
 taskSchema.index({ userId: 1, priority: -1, dueAt: 1 });
+taskSchema.index({ userId: 1, tags: 1 });
 
 // Transform output
 taskSchema.methods.toJSON = function () {

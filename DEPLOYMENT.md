@@ -108,6 +108,21 @@ This configuration:
 - Builds the Flutter web app
 - Publishes the build/web directory
 
+## Local Development Testing
+
+**Important**: Always test locally first using localhost URLs (not Railway).
+
+1. **Test backend locally**
+   ```bash
+   curl http://localhost:3000/health
+   ```
+
+2. **Test frontend locally**
+   - Open http://localhost:8080
+   - Register a new account
+   - Create notes and tasks
+   - Verify all features work
+
 ## Post-Deployment
 
 ### Test the deployment

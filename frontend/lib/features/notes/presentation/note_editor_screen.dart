@@ -15,6 +15,8 @@ class NoteEditorScreen extends ConsumerStatefulWidget {
 class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
+  late final TextEditingController _tagController;
+  late List<String> _tags;
   bool _isSaving = false;
 
   @override
@@ -22,13 +24,32 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
     super.initState();
     _titleController = TextEditingController(text: widget.note?.title ?? '');
     _contentController = TextEditingController(text: widget.note?.content ?? '');
+    _tagController = TextEditingController();
+    _tags = List<String>.from(widget.note?.tags ?? []);
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
+    _tagController.dispose();
     super.dispose();
+  }
+
+  void _addTag() {
+    final tag = _tagController.text.trim().toLowerCase();
+    if (tag.isNotEmpty && !_tags.contains(tag)) {
+      setState(() {
+        _tags.add(tag);
+        _tagController.clear();
+      });
+    }
+  }
+
+  void _removeTag(String tag) {
+    setState(() {
+      _tags.remove(tag);
+    });
   }
 
   Future<void> _saveNote() async {
@@ -46,12 +67,14 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
         await ref.read(notesProvider.notifier).createNote(
               title: _titleController.text.trim(),
               content: _contentController.text.trim(),
+              tags: _tags.isEmpty ? null : _tags,
             );
       } else {
         await ref.read(notesProvider.notifier).updateNote(
               id: widget.note!.id,
               title: _titleController.text.trim(),
               content: _contentController.text.trim(),
+              tags: _tags,
             );
       }
 
@@ -150,10 +173,14 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
             ],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Responsive padding
+            final padding = constraints.maxWidth < 600 ? 16.0 : 24.0;
+            return Padding(
+              padding: EdgeInsets.all(padding),
+              child: Column(
+                children: [
               TextField(
                 controller: _titleController,
                 autofocus: widget.note == null,
@@ -177,6 +204,46 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
               ),
               const SizedBox(height: 16),
+              // Tags section
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ..._tags.map((tag) => Chip(
+                        label: Text(tag),
+                        onDeleted: () => _removeTag(tag),
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        deleteIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                      )),
+                  ActionChip(
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Add Tag',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    onPressed: () => _showAddTagDialog(),
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               Expanded(
                 child: TextField(
                   controller: _contentController,
@@ -197,10 +264,46 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                 ),
+                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
+      ),
+    );
+  }
+
+  void _showAddTagDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Tag'),
+        content: TextField(
+          controller: _tagController,
+          decoration: const InputDecoration(
+            hintText: 'Enter tag name',
+            border: OutlineInputBorder(),
+          ),
+          textCapitalization: TextCapitalization.none,
+          onSubmitted: (_) {
+            _addTag();
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              _addTag();
+              Navigator.pop(context);
+            },
+            child: const Text('Add'),
+          ),
+        ],
       ),
     );
   }

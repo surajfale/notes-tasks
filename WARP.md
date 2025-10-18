@@ -6,7 +6,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 A production-ready web application for managing notes and tasks, built with:
 - **Backend**: Node.js + Express + MongoDB Atlas
-- **Frontend**: Flutter Web (in development)
+- **Frontend**: Flutter Web (Implemented)
 - **Architecture**: REST API with JWT authentication
 
 ## Project Structure
@@ -24,9 +24,19 @@ A production-ready web application for managing notes and tasks, built with:
 │   │   └── server.js     # Express app entry point
 │   ├── package.json
 │   └── README.md         # Backend documentation
-├── frontend/             # Flutter Web (TBD)
+├── frontend/             # Flutter Web Application
+│   ├── lib/
+│   │   ├── core/           # Config, API, storage, models
+│   │   ├── features/       # Auth, home, notes, tasks
+│   │   └── main.dart
+│   ├── web/              # Web-specific files
+│   └── pubspec.yaml
 ├── ARCHITECTURE.md       # System architecture documentation
+├── DEPLOYMENT.md         # Deployment guide (Railway + Netlify)
+├── FLUTTER_SETUP.md      # Flutter installation guide
+├── FRONTEND_IMPLEMENTATION.md  # Frontend architecture guide
 ├── MONGODB_SETUP.md      # MongoDB Atlas setup guide
+├── PROJECT_SUMMARY.md    # Project status and roadmap
 └── README.md
 ```
 
@@ -55,6 +65,29 @@ npm run lint:fix      # Auto-fix issues
 
 # Generate JWT Secret
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+### Frontend Development
+
+```bash
+# Setup
+cd frontend
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Development
+flutter run -d chrome          # Run in Chrome
+flutter run -d chrome --web-port=8080  # Specific port
+
+# Build
+flutter build web --release    # Production build
+
+# Code Generation (after model changes)
+flutter pub run build_runner watch  # Watch mode
+
+# Testing
+flutter test                   # Run tests
+flutter analyze                # Code analysis
 ```
 
 ### Database
@@ -198,8 +231,31 @@ Follow `MONGODB_SETUP.md` for complete setup instructions:
 - IP whitelist configured for Railway
 - See `MONGODB_SETUP.md` for setup
 
+## Frontend Structure
+
+### Core Layer
+- **config/**: API base URL and app configuration
+- **api/**: Dio HTTP client with JWT interceptors
+- **storage/**: Token storage with SharedPreferences
+- **models/**: User, Note, Task models with Freezed
+
+### Features
+- **auth/**: Login, register, JWT authentication
+- **home/**: Main navigation and dashboard
+- **notes/**: Notes CRUD with tags and archive
+- **tasks/**: Tasks CRUD with due dates and completion
+
+### State Management
+- Using Riverpod for state management
+- Repository pattern for data layer
+- Provider pattern for business logic
+
 ## Additional Documentation
 
 - `ARCHITECTURE.md` - Full system architecture and data flow
+- `DEPLOYMENT.md` - Railway + Netlify deployment guide
+- `FLUTTER_SETUP.md` - Flutter installation for Windows
+- `FRONTEND_IMPLEMENTATION.md` - Frontend architecture and patterns
 - `MONGODB_SETUP.md` - Step-by-step MongoDB Atlas setup
+- `PROJECT_SUMMARY.md` - Project status and next steps
 - `backend/README.md` - Backend API documentation and usage examples

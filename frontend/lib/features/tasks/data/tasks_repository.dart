@@ -37,6 +37,7 @@ class TasksRepository {
     TaskPriority? priority,
     DateTime? dueDate,
     String? listId,
+    List<String>? tags,
   }) async {
     try {
       final requestData = <String, dynamic>{
@@ -45,6 +46,7 @@ class TasksRepository {
         if (priority != null) 'priority': _priorityToInt(priority),
         if (dueDate != null) 'dueAt': dueDate.toIso8601String(),
         if (listId != null) 'listId': listId,
+        if (tags != null) 'tags': tags,
         'isCompleted': false, // Explicitly set default value
       };
       
@@ -62,6 +64,7 @@ class TasksRepository {
     bool? isCompleted,
     TaskPriority? priority,
     DateTime? dueDate,
+    List<String>? tags,
   }) async {
     try {
       final response = await _dio.put('/tasks/$id', data: {
@@ -70,6 +73,7 @@ class TasksRepository {
         if (isCompleted != null) 'isCompleted': isCompleted,
         if (priority != null) 'priority': _priorityToInt(priority),
         if (dueDate != null) 'dueAt': dueDate.toIso8601String(),
+        if (tags != null) 'tags': tags,
       });
       return Task.fromJson(response.data['task'] ?? response.data);
     } on DioException catch (e) {

@@ -30,6 +30,7 @@ mixin _$Task {
   @JsonKey(name: 'dueAt')
   DateTime? get dueDate => throw _privateConstructorUsedError;
   String? get listId => throw _privateConstructorUsedError;
+  List<String> get tags => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -56,6 +57,7 @@ abstract class $TaskCopyWith<$Res> {
       TaskPriority priority,
       @JsonKey(name: 'dueAt') DateTime? dueDate,
       String? listId,
+      List<String> tags,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -83,6 +85,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? priority = null,
     Object? dueDate = freezed,
     Object? listId = freezed,
+    Object? tags = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -119,6 +122,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.listId
           : listId // ignore: cast_nullable_to_non_nullable
               as String?,
+      tags: null == tags
+          ? _value.tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -147,6 +154,7 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       TaskPriority priority,
       @JsonKey(name: 'dueAt') DateTime? dueDate,
       String? listId,
+      List<String> tags,
       DateTime createdAt,
       DateTime updatedAt});
 }
@@ -171,6 +179,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? priority = null,
     Object? dueDate = freezed,
     Object? listId = freezed,
+    Object? tags = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -207,6 +216,10 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.listId
           : listId // ignore: cast_nullable_to_non_nullable
               as String?,
+      tags: null == tags
+          ? _value._tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -231,8 +244,10 @@ class _$TaskImpl implements _Task {
       this.priority = TaskPriority.medium,
       @JsonKey(name: 'dueAt') this.dueDate,
       this.listId,
+      final List<String> tags = const [],
       required this.createdAt,
-      required this.updatedAt});
+      required this.updatedAt})
+      : _tags = tags;
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskImplFromJson(json);
@@ -257,6 +272,15 @@ class _$TaskImpl implements _Task {
   final DateTime? dueDate;
   @override
   final String? listId;
+  final List<String> _tags;
+  @override
+  @JsonKey()
+  List<String> get tags {
+    if (_tags is EqualUnmodifiableListView) return _tags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_tags);
+  }
+
   @override
   final DateTime createdAt;
   @override
@@ -264,7 +288,7 @@ class _$TaskImpl implements _Task {
 
   @override
   String toString() {
-    return 'Task(id: $id, userId: $userId, title: $title, description: $description, isCompleted: $isCompleted, priority: $priority, dueDate: $dueDate, listId: $listId, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Task(id: $id, userId: $userId, title: $title, description: $description, isCompleted: $isCompleted, priority: $priority, dueDate: $dueDate, listId: $listId, tags: $tags, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -283,6 +307,7 @@ class _$TaskImpl implements _Task {
                 other.priority == priority) &&
             (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
             (identical(other.listId, listId) || other.listId == listId) &&
+            const DeepCollectionEquality().equals(other._tags, _tags) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -291,8 +316,19 @@ class _$TaskImpl implements _Task {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, userId, title, description,
-      isCompleted, priority, dueDate, listId, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      userId,
+      title,
+      description,
+      isCompleted,
+      priority,
+      dueDate,
+      listId,
+      const DeepCollectionEquality().hash(_tags),
+      createdAt,
+      updatedAt);
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -320,6 +356,7 @@ abstract class _Task implements Task {
       final TaskPriority priority,
       @JsonKey(name: 'dueAt') final DateTime? dueDate,
       final String? listId,
+      final List<String> tags,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$TaskImpl;
 
@@ -343,6 +380,8 @@ abstract class _Task implements Task {
   DateTime? get dueDate;
   @override
   String? get listId;
+  @override
+  List<String> get tags;
   @override
   DateTime get createdAt;
   @override

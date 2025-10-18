@@ -53,7 +53,7 @@ const getTask = async (req, res, next) => {
 // @access  Private
 const createTask = async (req, res, next) => {
   try {
-    const { listId, title, description, dueAt, reminderAt, isCompleted, priority } = req.body;
+    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags } = req.body;
 
     const task = await Task.create({
       userId: req.user._id,
@@ -64,6 +64,7 @@ const createTask = async (req, res, next) => {
       reminderAt,
       isCompleted,
       priority,
+      tags,
     });
 
     res.status(201).json({ task });
@@ -91,7 +92,7 @@ const updateTask = async (req, res, next) => {
       });
     }
 
-    const { listId, title, description, dueAt, reminderAt, isCompleted, priority } = req.body;
+    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags } = req.body;
 
     if (listId !== undefined) task.listId = listId;
     if (title !== undefined) task.title = title;
@@ -100,6 +101,7 @@ const updateTask = async (req, res, next) => {
     if (reminderAt !== undefined) task.reminderAt = reminderAt;
     if (isCompleted !== undefined) task.isCompleted = isCompleted;
     if (priority !== undefined) task.priority = priority;
+    if (tags !== undefined) task.tags = tags;
 
     await task.save();
 

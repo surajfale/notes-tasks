@@ -21,10 +21,11 @@ A production-ready web application for managing notes and tasks with offline cap
 - Winston Logging
 
 ### Frontend
-- Flutter Web
+- Flutter Web (Implemented)
 - Riverpod (State Management)
 - dio (HTTP Client)
-- IndexedDB (Offline Storage)
+- go_router (Navigation)
+- Freezed (Code Generation)
 
 ## Quick Start
 
@@ -44,6 +45,7 @@ See `backend/README.md` for detailed instructions.
 ```bash
 cd frontend
 flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
 flutter run -d chrome
 ```
 
@@ -68,9 +70,13 @@ See `DEPLOYMENT.md` for complete deployment instructions.
 ```
 .
 ├── backend/          # Node.js REST API
-├── frontend/         # Flutter Web (in development)
+├── frontend/         # Flutter Web Application
 ├── ARCHITECTURE.md
+├── DEPLOYMENT.md
+├── FLUTTER_SETUP.md
+├── FRONTEND_IMPLEMENTATION.md
 ├── MONGODB_SETUP.md
+├── PROJECT_SUMMARY.md
 └── WARP.md
 ```
 

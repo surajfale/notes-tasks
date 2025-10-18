@@ -33,6 +33,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
     TaskPriority? priority,
     DateTime? dueDate,
     String? listId,
+    List<String>? tags,
   }) async {
     try {
       await _repository.createTask(
@@ -41,6 +42,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
         priority: priority,
         dueDate: dueDate,
         listId: listId,
+        tags: tags,
       );
       await loadTasks();
     } catch (e) {
@@ -55,6 +57,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
     bool? isCompleted,
     TaskPriority? priority,
     DateTime? dueDate,
+    List<String>? tags,
   }) async {
     try {
       await _repository.updateTask(
@@ -64,6 +67,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
         isCompleted: isCompleted,
         priority: priority,
         dueDate: dueDate,
+        tags: tags,
       );
       await loadTasks();
     } catch (e) {

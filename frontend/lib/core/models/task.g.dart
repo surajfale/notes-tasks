@@ -18,6 +18,9 @@ _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
           ? null
           : DateTime.parse(json['dueAt'] as String),
       listId: json['listId'] as String?,
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+              const [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -32,6 +35,7 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'priority': _$TaskPriorityEnumMap[instance.priority]!,
       'dueAt': instance.dueDate?.toIso8601String(),
       'listId': instance.listId,
+      'tags': instance.tags,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

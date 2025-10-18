@@ -2,7 +2,7 @@
 
 ## Overview
 
-A production-ready web application for managing notes and tasks with offline capabilities, built using Flutter Web frontend and Node.js backend with MongoDB Atlas.
+A production-ready web application for managing notes and tasks, built using Flutter Web frontend and Node.js backend with MongoDB Atlas. The application features JWT authentication, complete CRUD operations for lists, notes, and tasks, with a responsive Material Design UI.
 
 ## System Architecture
 
@@ -86,12 +86,13 @@ A production-ready web application for managing notes and tasks with offline cap
 ## Technology Stack
 
 ### Frontend (Flutter Web)
-- **Framework**: Flutter 3.16+ (Web target)
+- **Framework**: Flutter 3.0+ (Web target)
 - **State Management**: Riverpod 2.5+
-- **HTTP Client**: dio 5.4+ (with interceptors for JWT)
-- **Local Storage**: idb_shim (IndexedDB wrapper) for offline caching
-- **Routing**: go_router 13.0+
-- **UI**: Material Design 3
+- **HTTP Client**: dio 5.4+ (with JWT interceptors)
+- **Local Storage**: shared_preferences, idb_shim
+- **Routing**: go_router 13.2+
+- **Code Generation**: freezed, json_serializable
+- **UI**: Material Design 3, Google Fonts
 
 ### Backend (Node.js)
 - **Runtime**: Node.js 20+ LTS
@@ -307,8 +308,8 @@ A production-ready web application for managing notes and tasks with offline cap
 
 ### Development
 ```
-Frontend: localhost:8080 (flutter run -d chrome)
-Backend: localhost:3000 (node server.js)
+Frontend: http://localhost:8080 (flutter run -d chrome)
+Backend: http://localhost:3000 (npm run dev)
 Database: MongoDB Atlas (cloud)
 ```
 
@@ -317,16 +318,19 @@ Database: MongoDB Atlas (cloud)
 Frontend: Netlify
   - Automated Flutter installation during build
   - Static hosting with SPA routing
-  - Build command: Flutter SDK installed + flutter build web
+  - Build command in netlify.toml
+  - Environment: API_BASE_URL injected at build time
   
 Backend: Railway
   - Automatic deployment from GitHub
-  - Environment variables managed in Railway dashboard
+  - Configuration in railway.json
+  - Environment variables in Railway dashboard
   - Health check endpoint: /health
   
-Database: MongoDB Atlas (production cluster)
+Database: MongoDB Atlas (cloud cluster)
   - M0 free tier or higher
-  - IP whitelist configured for Railway
+  - IP whitelist configured for Railway and development
+  - Connection pooling enabled
 ```
 
 ## Monitoring & Observability

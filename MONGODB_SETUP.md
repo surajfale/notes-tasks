@@ -137,6 +137,8 @@ openssl rand -hex 64
 
 ## Step 9: Test Connection
 
+**Important**: Always use localhost for testing, not production URLs.
+
 Create a test script `test-connection.js`:
 
 ```javascript
@@ -161,6 +163,13 @@ node test-connection.js
 ```
 
 You should see: `✅ MongoDB Connected Successfully!`
+
+Or test with backend:
+```bash
+cd backend
+npm run dev
+# Then test: curl http://localhost:3000/health
+```
 
 ## Step 10: Verify Collections
 
