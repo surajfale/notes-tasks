@@ -9,10 +9,14 @@ Complete implementation reference for the Notes & Tasks Flutter Web frontend.
 The frontend is already built with:
 - ✅ Authentication (login, register)
 - ✅ JWT token management
-- ✅ Notes feature (list, create, edit)
-- ✅ Tasks feature (list, create, edit)
+- ✅ Account management (settings, delete account)
+- ✅ Theme customization (light/dark mode, accent colors)
+- ✅ Notes feature (list, create, edit, delete)
+- ✅ Tasks feature (list, create, edit, delete)
 - ✅ Home screen with navigation
+- ✅ Responsive layout (desktop and mobile)
 - ✅ Freezed models for type safety
+- ✅ Riverpod 3.0 with code generation
 
 ## Running the Project
 
@@ -27,6 +31,8 @@ The frontend is already built with:
 
 ## Dependencies (pubspec.yaml)
 
+**Updated 2025** - Latest versions with breaking changes resolved:
+
 ```yaml
 name: notes_tasks_frontend
 description: Notes & Tasks Web Application
@@ -40,43 +46,40 @@ dependencies:
   flutter:
     sdk: flutter
   
-  # State Management
-  flutter_riverpod: ^2.5.1
-  riverpod_annotation: ^2.3.5
+  # State Management (Riverpod 3.0)
+  flutter_riverpod: ^3.0.3
+  riverpod_annotation: ^3.0.3
   
   # HTTP & API
   dio: ^5.4.0
   
   # Local Storage
   shared_preferences: ^2.2.3
-  idb_shim: ^2.4.1+1
-  
-  # Routing
-  go_router: ^13.2.0
   
   # UI
   google_fonts: ^6.2.1
-  flutter_slidable: ^3.1.1
-  intl: ^0.19.0
+  flutter_slidable: ^4.0.3
+  intl: ^0.20.2
+  flutter_markdown: ^0.7.7+1
   
   # Utilities
-  freezed_annotation: ^2.4.1
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   logger: ^2.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
   
   # Code Generation
-  build_runner: ^2.4.9
-  riverpod_generator: ^2.4.0
-  freezed: ^2.5.2
-  json_serializable: ^6.8.0
+  build_runner: ^2.7.1
+  riverpod_generator: ^3.0.3
+  freezed: ^3.2.3
+  json_serializable: ^6.11.1
   
   # Testing
-  mockito: ^5.4.4
+  mockito: ^5.5.0
 
 flutter:
   uses-material-design: true
@@ -351,14 +354,15 @@ class AuthRepository {
 
 ### 6. lib/features/auth/providers/auth_provider.dart
 
+**Updated for Riverpod 3.0** - Uses code generation with `@riverpod` annotation:
+
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/models/user.dart';
 import '../data/auth_repository.dart';
 
-final authStateProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.watch(authRepositoryProvider));
-});
+part 'auth_provider.g.dart';
 
 class AuthState {
   final User? user;
@@ -378,17 +382,18 @@ class AuthState {
   }
 }
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthRepository _repository;
-
-  AuthNotifier(this._repository) : super(AuthState()) {
+@riverpod
+class AuthStateNotifier extends _$AuthStateNotifier {
+  @override
+  AuthState build() {
     checkAuthStatus();
+    return AuthState();
   }
 
   Future<void> checkAuthStatus() async {
     state = state.copyWith(isLoading: true);
     try {
-      final user = await _repository.getCurrentUser();
+      final user = await ref.read(authRepositoryProvider).getCurrentUser();
       state = AuthState(user: user, isLoading: false);
     } catch (e) {
       state = AuthState(isLoading: false);
@@ -398,7 +403,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> login(String username, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final authResponse = await _repository.login(
+      final authResponse = await ref.read(authRepositoryProvider).login(
         username: username,
         password: password,
       );
@@ -417,7 +422,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final authResponse = await _repository.register(
+      final authResponse = await ref.read(authRepositoryProvider).register(
         username: username,
         email: email,
         password: password,
@@ -431,11 +436,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await _repository.logout();
+    await ref.read(authRepositoryProvider).logout();
     state = AuthState(isLoading: false);
   }
 }
 ```
+
+**Key Changes from Riverpod 2 to 3:**
+- Removed `StateNotifier` and `StateNotifierProvider`
+- Added `@riverpod` annotation for code generation
+- Class extends generated `_$AuthStateNotifier`
+- Added `part 'auth_provider.g.dart'` directive
+- Provider accessed via generated `authStateProvider`
+- Repository accessed via `ref.read()` instead of constructor injection
 
 ### 7. lib/features/auth/presentation/login_screen.dart
 

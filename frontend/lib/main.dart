@@ -15,15 +15,16 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
-    final currentTheme = ref.watch(themeProvider);
+    final authState = ref.watch(authStateNotifierProvider);
+    final themeMode = ref.watch(themeNotifierProvider);
+    final accentColor = ref.watch(accentColorNotifierProvider);
 
     return MaterialApp(
       title: 'Notes & Tasks',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.getTheme(currentTheme, Brightness.light),
-      darkTheme: AppTheme.getTheme(currentTheme, Brightness.dark),
-      themeMode: ThemeMode.system,
+      theme: AppTheme.getLightTheme(accentColor: accentColor),
+      darkTheme: AppTheme.getDarkTheme(accentColor: accentColor),
+      themeMode: themeMode,
       home: authState.isLoading
           ? const Scaffold(body: Center(child: CircularProgressIndicator()))
           : authState.isAuthenticated

@@ -1,29 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/models/task.dart';
 import '../data/tasks_repository.dart';
 
-final tasksProvider = StateNotifierProvider<TasksNotifier, AsyncValue<List<Task>>>((ref) {
-  return TasksNotifier(ref.watch(tasksRepositoryProvider));
-});
+part 'tasks_provider.g.dart';
 
-class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
-  final TasksRepository _repository;
-
-  TasksNotifier(this._repository) : super(const AsyncValue.loading()) {
-    loadTasks();
+@riverpod
+class Tasks extends _$Tasks {
+  @override
+  Future<List<Task>> build() async {
+    return await loadTasks();
   }
 
-  Future<void> loadTasks({bool? isCompleted, TaskPriority? priority, String? listId}) async {
+  Future<List<Task>> loadTasks({bool? isCompleted, TaskPriority? priority, String? listId}) async {
     state = const AsyncValue.loading();
     try {
-      final tasks = await _repository.getTasks(
+      final tasks = await ref.read(tasksRepositoryProvider).getTasks(
         isCompleted: isCompleted,
         priority: priority,
         listId: listId,
       );
       state = AsyncValue.data(tasks);
+      return tasks;
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
+      rethrow;
     }
   }
 
@@ -36,7 +37,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
     List<String>? tags,
   }) async {
     try {
-      await _repository.createTask(
+      await ref.read(tasksRepositoryProvider).createTask(
         title: title,
         description: description,
         priority: priority,
@@ -60,7 +61,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
     List<String>? tags,
   }) async {
     try {
-      await _repository.updateTask(
+      await ref.read(tasksRepositoryProvider).updateTask(
         id: id,
         title: title,
         description: description,
@@ -84,7 +85,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
 
   Future<void> toggleComplete(String id) async {
     try {
-      await _repository.toggleComplete(id);
+      await ref.read(tasksRepositoryProvider).toggleComplete(id);
       await loadTasks();
     } catch (e) {
       rethrow;
@@ -93,7 +94,7 @@ class TasksNotifier extends StateNotifier<AsyncValue<List<Task>>> {
 
   Future<void> deleteTask(String id) async {
     try {
-      await _repository.deleteTask(id);
+      await ref.read(tasksRepositoryProvider).deleteTask(id);
       await loadTasks();
     } catch (e) {
       rethrow;

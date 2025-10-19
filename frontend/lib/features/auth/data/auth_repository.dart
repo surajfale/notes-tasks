@@ -57,6 +57,15 @@ class AuthRepository {
     await TokenStorage.clearToken();
   }
 
+  Future<void> deleteAccount() async {
+    try {
+      await _dio.delete('/auth/account');
+      await TokenStorage.clearToken();
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   Future<User?> getCurrentUser() async {
     final hasToken = await TokenStorage.hasToken();
     if (!hasToken) return null;

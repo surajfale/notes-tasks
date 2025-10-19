@@ -237,9 +237,9 @@ A production-ready web application for managing notes and tasks, built using Flu
 ### Authentication
 - `POST /api/auth/register` - Create new user account
 - `POST /api/auth/login` - Authenticate and get JWT
-- `POST /api/auth/refresh` - Refresh JWT token
-- `POST /api/auth/logout` - Invalidate token (client-side)
+- `GET /api/auth/me` - Get current user info
 - `PUT /api/auth/password` - Change password (authenticated)
+- `DELETE /api/auth/account` - Delete account and all associated data
 
 ### Lists
 - `GET /api/lists` - Get all user's lists

@@ -1,29 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/models/note.dart';
 import '../data/notes_repository.dart';
 
-final notesProvider = StateNotifierProvider<NotesNotifier, AsyncValue<List<Note>>>((ref) {
-  return NotesNotifier(ref.watch(notesRepositoryProvider));
-});
+part 'notes_provider.g.dart';
 
-class NotesNotifier extends StateNotifier<AsyncValue<List<Note>>> {
-  final NotesRepository _repository;
-
-  NotesNotifier(this._repository) : super(const AsyncValue.loading()) {
-    loadNotes();
+@riverpod
+class Notes extends _$Notes {
+  @override
+  Future<List<Note>> build() async {
+    return await loadNotes();
   }
 
-  Future<void> loadNotes({String? search, List<String>? tags, bool? isArchived}) async {
+  Future<List<Note>> loadNotes({String? search, List<String>? tags, bool? isArchived}) async {
     state = const AsyncValue.loading();
     try {
-      final notes = await _repository.getNotes(
+      final notes = await ref.read(notesRepositoryProvider).getNotes(
         search: search,
         tags: tags,
         isArchived: isArchived,
       );
       state = AsyncValue.data(notes);
+      return notes;
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
+      rethrow;
     }
   }
 
@@ -33,7 +34,7 @@ class NotesNotifier extends StateNotifier<AsyncValue<List<Note>>> {
     List<String>? tags,
   }) async {
     try {
-      await _repository.createNote(
+      await ref.read(notesRepositoryProvider).createNote(
         title: title,
         content: content,
         tags: tags,
@@ -52,7 +53,7 @@ class NotesNotifier extends StateNotifier<AsyncValue<List<Note>>> {
     bool? isArchived,
   }) async {
     try {
-      await _repository.updateNote(
+      await ref.read(notesRepositoryProvider).updateNote(
         id: id,
         title: title,
         content: content,
@@ -67,7 +68,7 @@ class NotesNotifier extends StateNotifier<AsyncValue<List<Note>>> {
 
   Future<void> deleteNote(String id) async {
     try {
-      await _repository.deleteNote(id);
+      await ref.read(notesRepositoryProvider).deleteNote(id);
       await loadNotes();
     } catch (e) {
       rethrow;

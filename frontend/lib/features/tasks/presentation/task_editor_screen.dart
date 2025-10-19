@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/layout/app_scaffold.dart';
 import '../../../core/models/task.dart';
+import '../../../core/theme/app_theme.dart';
 import '../providers/tasks_provider.dart';
 import 'package:intl/intl.dart';
 
@@ -27,7 +29,8 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task?.title ?? '');
-    _descriptionController = TextEditingController(text: widget.task?.description ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.task?.description ?? '');
     _tagController = TextEditingController();
     _priority = widget.task?.priority ?? TaskPriority.medium;
     _dueDate = widget.task?.dueDate;
@@ -192,211 +195,219 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.task == null ? 'New Task' : 'Edit Task'),
-        actions: [
-          if (widget.task != null)
-            IconButton(
-              onPressed: _isLoading ? null : _deleteTask,
-              icon: const Icon(Icons.delete),
-              color: Colors.red,
-            ),
-        ],
-      ),
-      body: LayoutBuilder(
+    return AppScaffold(
+      title: widget.task == null ? 'New Task' : 'Edit Task',
+      actions: [
+        if (widget.task != null)
+          IconButton(
+            onPressed: _isLoading ? null : _deleteTask,
+            icon: const Icon(Icons.delete),
+            color: Colors.red,
+          ),
+      ],
+      child: LayoutBuilder(
         builder: (context, constraints) {
           // Responsive padding based on screen width
           final padding = constraints.maxWidth < 600 ? 12.0 : 16.0;
           return SingleChildScrollView(
             padding: EdgeInsets.all(padding),
             child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title field
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Task Title',
-                hintText: 'Enter task title...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 1,
-              textInputAction: TextInputAction.next,
-            ),
-            const SizedBox(height: 16),
-
-            // Description field
-            TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description (Optional)',
-                hintText: 'Enter task description...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
-              textInputAction: TextInputAction.newline,
-            ),
-            const SizedBox(height: 24),
-
-            // Priority selector
-            Text(
-              'Priority',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: TaskPriority.values.map((priority) {
-                final isSelected = _priority == priority;
-                return ChoiceChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _getPriorityIcon(priority),
-                        size: 18,
-                        color: isSelected
-                            ? Colors.white
-                            : _getPriorityColor(priority),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        priority.name.toUpperCase(),
-                        style: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : _getPriorityColor(priority),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() => _priority = priority);
-                    }
-                  },
-                  selectedColor: _getPriorityColor(priority),
-                  backgroundColor: _getPriorityColor(priority).withOpacity(0.1),
-                  side: BorderSide(
-                    color: _getPriorityColor(priority),
-                    width: isSelected ? 0 : 1,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
-
-            // Tags section
-            Text(
-              'Tags',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ..._tags.map((tag) => Chip(
-                      label: Text(tag),
-                      onDeleted: () => _removeTag(tag),
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      deleteIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                    )),
-                ActionChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.add,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Add Tag',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                // Title field
+                TextField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Task Title',
+                    hintText: 'Enter task title...',
+                    border: OutlineInputBorder(),
                   ),
-                  onPressed: () => _showAddTagDialog(),
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                  maxLines: 1,
+                  textInputAction: TextInputAction.next,
                 ),
-              ],
-            ),
-            const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
-            // Due date selector
-            Text(
-              'Due Date',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.calendar_today),
-                title: Text(_dueDate == null
-                    ? 'No due date'
-                    : DateFormat('EEEE, MMMM dd, yyyy').format(_dueDate!)),
-                trailing: _dueDate == null
-                    ? const Icon(Icons.add)
-                    : IconButton(
-                        onPressed: () => setState(() => _dueDate = null),
-                        icon: const Icon(Icons.clear),
+                // Description field
+                TextField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Description (Optional)',
+                    hintText: 'Enter task description...',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                  textInputAction: TextInputAction.newline,
+                ),
+                const SizedBox(height: 24),
+
+                // Priority selector
+                Text(
+                  'Priority',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: TaskPriority.values.map((priority) {
+                    final isSelected = _priority == priority;
+                    return ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getPriorityIcon(priority),
+                            size: 18,
+                            color: isSelected
+                                ? Colors.white
+                                : _getPriorityColor(priority),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            priority.name.toUpperCase(),
+                            style: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : _getPriorityColor(priority),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                onTap: _selectDueDate,
-              ),
-            ),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() => _priority = priority);
+                        }
+                      },
+                      selectedColor: _getPriorityColor(priority),
+                      backgroundColor:
+                          _getPriorityColor(priority).withOpacity(0.1),
+                      side: BorderSide(
+                        color: _getPriorityColor(priority),
+                        width: isSelected ? 0 : 1,
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 24),
 
-            // Completion status (only for editing)
-            if (widget.task != null) ...[
-              const SizedBox(height: 24),
-              Card(
-                child: SwitchListTile(
-                  title: const Text('Mark as completed'),
-                  value: _isCompleted,
-                  onChanged: (value) => setState(() => _isCompleted = value),
-                  secondary: Icon(
-                    _isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-                    color: _isCompleted ? Colors.green : null,
+                // Tags section
+                Text(
+                  'Tags',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ..._tags.map((tag) => Chip(
+                          label: Text(tag),
+                          onDeleted: () => _removeTag(tag),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primaryContainer,
+                          labelStyle: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          deleteIconColor:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
+                        )),
+                    ActionChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add,
+                            size: 18,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Add Tag',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      onPressed: () => _showAddTagDialog(),
+                      backgroundColor: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withOpacity(0.1),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Due date selector
+                Text(
+                  'Due Date',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.calendar_today),
+                    title: Text(_dueDate == null
+                        ? 'No due date'
+                        : DateFormat('EEEE, MMMM dd, yyyy').format(_dueDate!)),
+                    trailing: _dueDate == null
+                        ? const Icon(Icons.add)
+                        : IconButton(
+                            onPressed: () => setState(() => _dueDate = null),
+                            icon: const Icon(Icons.clear),
+                          ),
+                    onTap: _selectDueDate,
                   ),
                 ),
-              ),
-            ],
 
-            const SizedBox(height: 32),
-
-            // Save button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _saveTask,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        widget.task == null ? 'Create Task' : 'Update Task',
-                        style: const TextStyle(fontSize: 16),
+                // Completion status (only for editing)
+                if (widget.task != null) ...[
+                  const SizedBox(height: 24),
+                  Card(
+                    child: SwitchListTile(
+                      title: const Text('Mark as completed'),
+                      value: _isCompleted,
+                      onChanged: (value) =>
+                          setState(() => _isCompleted = value),
+                      secondary: Icon(
+                        _isCompleted
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: _isCompleted ? Colors.green : null,
                       ),
-              ),
-            ),
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 32),
+
+                // Save button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _saveTask,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(
+                            widget.task == null ? 'Create Task' : 'Update Task',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                  ),
+                ),
               ],
             ),
           );
@@ -406,35 +417,118 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   }
 
   void _showAddTagDialog() {
+    final allTasks = ref.read(tasksProvider).value ?? [];
+
+    // Get all existing tags from all tasks
+    final Set<String> existingTags = {};
+    for (final task in allTasks) {
+      existingTags.addAll(task.tags);
+    }
+
+    // Filter out tags that are already added to this task
+    final availableTags =
+        existingTags.where((tag) => !_tags.contains(tag)).toList()..sort();
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Tag'),
-        content: TextField(
-          controller: _tagController,
-          decoration: const InputDecoration(
-            hintText: 'Enter tag name',
-            border: OutlineInputBorder(),
-          ),
-          textCapitalization: TextCapitalization.none,
-          onSubmitted: (_) {
-            _addTag();
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              _addTag();
-              Navigator.pop(context);
-            },
-            child: const Text('Add'),
-          ),
-        ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          final filterText = _tagController.text.toLowerCase();
+          final suggestedTags = availableTags
+              .where((tag) => tag.toLowerCase().contains(filterText))
+              .take(5)
+              .toList();
+
+          return AlertDialog(
+            title: const Text('Add Tag'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _tagController,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter tag name',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.label),
+                    ),
+                    textCapitalization: TextCapitalization.none,
+                    autofocus: true,
+                    onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) {
+                      _addTag();
+                      Navigator.pop(context);
+                    },
+                  ),
+                  if (suggestedTags.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'Suggested Tags',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: suggestedTags.map((tag) {
+                        final color = AppTheme.getTagColor(tag);
+                        return InkWell(
+                          onTap: () {
+                            _tagController.text = tag;
+                            _addTag();
+                            Navigator.pop(context);
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: color.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: color.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Text(
+                              tag,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: color,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  _addTag();
+                  Navigator.pop(context);
+                },
+                child: const Text('Add'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

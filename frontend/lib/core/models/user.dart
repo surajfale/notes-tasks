@@ -5,6 +5,8 @@ part 'user.g.dart';
 
 @freezed
 class User with _$User {
+  const User._();
+  
   const factory User({
     @JsonKey(name: '_id') required String id,
     required String username,
@@ -18,15 +20,13 @@ class User with _$User {
 
 @freezed
 class AuthResponse with _$AuthResponse {
+  const AuthResponse._();
+  
   const factory AuthResponse({
     required String token,
     required User user,
   }) = _AuthResponse;
 
-  factory AuthResponse.fromJson(Map<String, dynamic> json) {
-    return AuthResponse(
-      token: json['token'] as String,
-      user: User.fromJson(json['user'] as Map<String, dynamic>),
-    );
-  }
+  factory AuthResponse.fromJson(Map<String, dynamic> json) =>
+      _$AuthResponseFromJson(json);
 }

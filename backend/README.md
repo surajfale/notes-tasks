@@ -5,8 +5,9 @@ Production-ready Node.js REST API for the Notes & Tasks web application.
 ## Features
 
 - **Authentication**: JWT-based auth with bcrypt password hashing
-- **User Management**: Registration, login, password change
+- **User Management**: Registration, login, password change, account deletion
 - **CRUD Operations**: Full CRUD for lists, notes, and tasks
+- **Data Isolation**: All user data is completely isolated and scoped
 - **Security**: Rate limiting, CORS, Helmet, input validation
 - **Error Handling**: Comprehensive error handling with detailed responses
 - **Logging**: Winston logging with different levels
@@ -93,6 +94,7 @@ Expected response:
 | POST | `/api/auth/login` | Login user | No |
 | GET | `/api/auth/me` | Get current user | Yes |
 | PUT | `/api/auth/password` | Change password | Yes |
+| DELETE | `/api/auth/account` | Delete account and all data | Yes |
 
 ### Lists
 
@@ -218,6 +220,22 @@ curl -X POST http://localhost:3000/api/tasks \
     "listId": "507f1f77bcf86cd799439011"
   }'
 ```
+
+### Delete Account
+
+```bash
+curl -X DELETE http://localhost:3000/api/auth/account \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+Response:
+```json
+{
+  "message": "Account and all associated data deleted successfully"
+}
+```
+
+**Note**: This permanently deletes the user account and all associated lists, notes, and tasks. This action cannot be undone.
 
 ## Error Responses
 

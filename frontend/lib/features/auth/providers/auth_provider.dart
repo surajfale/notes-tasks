@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/models/user.dart';
 import '../data/auth_repository.dart';
 
-final authStateProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.watch(authRepositoryProvider));
-});
+part 'auth_provider.g.dart';
 
 class AuthState {
   final User? user;
@@ -24,17 +23,19 @@ class AuthState {
   }
 }
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthRepository _repository;
-
-  AuthNotifier(this._repository) : super(AuthState()) {
-    checkAuthStatus();
+@riverpod
+class AuthStateNotifier extends _$AuthStateNotifier {
+  @override
+  AuthState build() {
+    // Schedule auth check after build
+    Future.microtask(() => checkAuthStatus());
+    return AuthState();
   }
 
   Future<void> checkAuthStatus() async {
-    state = state.copyWith(isLoading: true);
+    state = AuthState(isLoading: true);
     try {
-      final user = await _repository.getCurrentUser();
+      final user = await ref.read(authRepositoryProvider).getCurrentUser();
       state = AuthState(user: user, isLoading: false);
     } catch (e) {
       state = AuthState(isLoading: false);
@@ -44,7 +45,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> login(String username, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final authResponse = await _repository.login(
+      final authResponse = await ref.read(authRepositoryProvider).login(
         username: username,
         password: password,
       );
@@ -63,7 +64,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final authResponse = await _repository.register(
+      final authResponse = await ref.read(authRepositoryProvider).register(
         username: username,
         email: email,
         password: password,
@@ -77,7 +78,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await _repository.logout();
+    await ref.read(authRepositoryProvider).logout();
     state = AuthState(isLoading: false);
+  }
+
+  Future<void> deleteAccount() async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      await ref.read(authRepositoryProvider).deleteAccount();
+      state = AuthState(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
   }
 }

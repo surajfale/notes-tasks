@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/models/task.dart';
 import '../providers/tasks_provider.dart';
 import 'task_editor_screen.dart';
 import 'package:intl/intl.dart';
+import '../../../core/theme/app_theme.dart';
+import 'widgets/task_card.dart';
 
-final selectedTaskTagsProvider = StateProvider<List<String>>((ref) => []);
-final selectedTaskPriorityProvider = StateProvider<TaskPriority?>((ref) => null);
+part 'tasks_screen.g.dart';
 
-class TasksScreen extends ConsumerWidget {
-  const TasksScreen({super.key});
+@riverpod
+class SelectedTaskTags extends _$SelectedTaskTags {
+  @override
+  List<String> build() => [];
+
+  void update(List<String> value) => state = value;
+}
+
+@riverpod
+class SelectedTaskPriority extends _$SelectedTaskPriority {
+  @override
+  TaskPriority? build() => null;
+
+  void update(TaskPriority? value) => state = value;
+}
+
+class TasksScreenContent extends ConsumerWidget {
+  const TasksScreenContent({super.key});
 
   Set<String> _getAllTags(List<Task> tasks) {
     final tags = <String>{};
@@ -23,10 +41,10 @@ class TasksScreen extends ConsumerWidget {
     return tasks.where((task) {
       // Tag filter
       final matchesTags = selectedTags.isEmpty || selectedTags.every((tag) => task.tags.contains(tag));
-      
+
       // Priority filter
       final matchesPriority = selectedPriority == null || task.priority == selectedPriority;
-      
+
       return matchesTags && matchesPriority;
     }).toList();
   }
@@ -37,8 +55,7 @@ class TasksScreen extends ConsumerWidget {
     final selectedTags = ref.watch(selectedTaskTagsProvider);
     final selectedPriority = ref.watch(selectedTaskPriorityProvider);
 
-    return Scaffold(
-      body: tasksAsync.when(
+    return tasksAsync.when(
         data: (tasks) {
           if (tasks.isEmpty) {
             return Center(
@@ -97,19 +114,23 @@ class TasksScreen extends ConsumerWidget {
                             selected: isSelected,
                             onSelected: (selected) {
                               if (selected) {
-                                ref.read(selectedTaskTagsProvider.notifier).state = [
+                                ref.read(selectedTaskTagsProvider.notifier).update([
                                   ...selectedTags,
                                   tag
-                                ];
+                                ]);
                               } else {
-                                ref.read(selectedTaskTagsProvider.notifier).state =
-                                    selectedTags.where((t) => t != tag).toList();
+                                ref.read(selectedTaskTagsProvider.notifier).update(
+                                    selectedTags.where((t) => t != tag).toList());
                               }
                             },
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainerHighest,
-                            selectedColor: Theme.of(context).colorScheme.primaryContainer,
-                            checkmarkColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor: AppTheme.getTagColor(tag).withOpacity(0.1),
+                            selectedColor: AppTheme.getTagColor(tag).withOpacity(0.2),
+                            checkmarkColor: AppTheme.getTagColor(tag),
+                            side: BorderSide(
+                              color: isSelected
+                                  ? AppTheme.getTagColor(tag)
+                                  : AppTheme.getTagColor(tag).withOpacity(0.3),
+                            ),
                           ),
                         );
                       },
@@ -141,14 +162,51 @@ class TasksScreen extends ConsumerWidget {
                         )
                       : LayoutBuilder(
                           builder: (context, constraints) {
-                            // Responsive padding based on screen size
-                            final padding = constraints.maxWidth < 600 ? 12.0 : 16.0;
-                            return ListView.builder(
+                            // Responsive grid layout like notes
+                            int crossAxisCount;
+                            double childAspectRatio;
+                            double padding;
+                            double spacing;
+
+                            if (constraints.maxWidth < 360) {
+                              crossAxisCount = 1;
+                              childAspectRatio = 2.2;
+                              padding = 12;
+                              spacing = 12;
+                            } else if (constraints.maxWidth < 600) {
+                              crossAxisCount = 1;
+                              childAspectRatio = 2.5;
+                              padding = 12;
+                              spacing = 12;
+                            } else if (constraints.maxWidth < 840) {
+                              crossAxisCount = 2;
+                              childAspectRatio = 2.2;
+                              padding = 16;
+                              spacing = 12;
+                            } else if (constraints.maxWidth < 1200) {
+                              crossAxisCount = 3;
+                              childAspectRatio = 2.0;
+                              padding = 16;
+                              spacing = 12;
+                            } else {
+                              crossAxisCount = 4;
+                              childAspectRatio = 2.0;
+                              padding = 20;
+                              spacing = 16;
+                            }
+
+                            return GridView.builder(
                               padding: EdgeInsets.all(padding),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: crossAxisCount,
+                                childAspectRatio: childAspectRatio,
+                                crossAxisSpacing: spacing,
+                                mainAxisSpacing: spacing,
+                              ),
                               itemCount: filteredTasks.length,
                               itemBuilder: (context, index) {
                                 final task = filteredTasks[index];
-                                return _TaskItem(task: task);
+                                return TaskCard(task: task);
                               },
                             );
                           },
@@ -175,42 +233,7 @@ class TasksScreen extends ConsumerWidget {
             ],
           ),
         ),
-      ),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF6366F1),
-              Color(0xFF8B5CF6),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF6366F1).withOpacity(0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const TaskEditorScreen()),
-            );
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text(
-            'New Task',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    );
+      );
   }
 }
 
@@ -264,7 +287,7 @@ class _FilterChips extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPriority = ref.watch(selectedTaskPriorityProvider);
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Responsive padding for filter chips
@@ -313,406 +336,6 @@ class _FilterChips extends ConsumerWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _TaskItem extends ConsumerStatefulWidget {
-  final Task task;
-
-  const _TaskItem({required this.task});
-
-  @override
-  ConsumerState<_TaskItem> createState() => _TaskItemState();
-}
-
-class _TaskItemState extends ConsumerState<_TaskItem> {
-  bool _isExpanded = false;
-
-  LinearGradient _getPriorityGradient(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.high:
-        return const LinearGradient(
-          colors: [Color(0xFFEF4444), Color(0xFFF87171)],
-        );
-      case TaskPriority.medium:
-        return const LinearGradient(
-          colors: [Color(0xFFF97316), Color(0xFFFB923C)],
-        );
-      case TaskPriority.low:
-        return const LinearGradient(
-          colors: [Color(0xFF22C55E), Color(0xFF4ADE80)],
-        );
-    }
-  }
-
-  Color _getPriorityColor(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.high:
-        return const Color(0xFFEF4444);
-      case TaskPriority.medium:
-        return const Color(0xFFF97316);
-      case TaskPriority.low:
-        return const Color(0xFF22C55E);
-    }
-  }
-
-  IconData _getPriorityIcon(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.high:
-        return Icons.keyboard_double_arrow_up;
-      case TaskPriority.medium:
-        return Icons.keyboard_arrow_up;
-      case TaskPriority.low:
-        return Icons.keyboard_arrow_down;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isOverdue = widget.task.dueDate != null &&
-        widget.task.dueDate!.isBefore(DateTime.now()) &&
-        !widget.task.isCompleted;
-
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: widget.task.isCompleted
-              ? LinearGradient(
-                  colors: [
-                    Colors.grey.shade100,
-                    Colors.grey.shade50,
-                  ],
-                )
-              : null,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: widget.task.isCompleted
-                          ? const LinearGradient(
-                              colors: [Color(0xFF10B981), Color(0xFF34D399)],
-                            )
-                          : null,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Checkbox(
-                      value: widget.task.isCompleted,
-                      onChanged: (value) {
-                        ref.read(tasksProvider.notifier).toggleComplete(widget.task.id);
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        if (widget.task.description?.isNotEmpty == true) {
-                          setState(() {
-                            _isExpanded = !_isExpanded;
-                          });
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.task.title,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    decoration: widget.task.isCompleted
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                    color: widget.task.isCompleted
-                                        ? Theme.of(context).colorScheme.outline
-                                        : null,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            if (widget.task.description?.isNotEmpty == true) ...[
-                              const SizedBox(height: 4),
-                              AnimatedCrossFade(
-                                firstChild: Text(
-                                  widget.task.description!,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        decoration: widget.task.isCompleted
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                      ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                secondChild: Text(
-                                  widget.task.description!,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        decoration: widget.task.isCompleted
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                      ),
-                                ),
-                                crossFadeState: _isExpanded
-                                    ? CrossFadeState.showSecond
-                                    : CrossFadeState.showFirst,
-                                duration: const Duration(milliseconds: 200),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (widget.task.description?.isNotEmpty == true)
-                    IconButton(
-                      icon: AnimatedRotation(
-                        turns: _isExpanded ? 0.5 : 0,
-                        duration: const Duration(milliseconds: 200),
-                        child: const Icon(Icons.expand_more),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isExpanded = !_isExpanded;
-                        });
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined, size: 20),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => TaskEditorScreen(task: widget.task),
-                        ),
-                      );
-                    },
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      gradient: _getPriorityGradient(widget.task.priority),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _getPriorityColor(widget.task.priority).withOpacity(0.3),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      _getPriorityIcon(widget.task.priority),
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  itemBuilder: (context) => [
-                    PopupMenuItem<String>(
-                      value: 'edit',
-                      child: const ListTile(
-                        leading: Icon(Icons.edit),
-                        title: Text('Edit'),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'delete',
-                      child: const ListTile(
-                        leading: Icon(Icons.delete, color: Colors.red),
-                        title: Text('Delete', style: TextStyle(color: Colors.red)),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ],
-                  onSelected: (value) async {
-                    if (value == 'edit') {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => TaskEditorScreen(task: widget.task),
-                        ),
-                      );
-                    } else if (value == 'delete') {
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Delete Task'),
-                          content: Text('Are you sure you want to delete "${widget.task.title}"?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              style: TextButton.styleFrom(foregroundColor: Colors.red),
-                              child: const Text('Delete'),
-                            ),
-                          ],
-                        ),
-                      );
-                      
-                      if (confirmed == true) {
-                        try {
-                          await ref.read(tasksProvider.notifier).deleteTask(widget.task.id);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Task deleted successfully')),
-                            );
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error deleting task: $e')),
-                            );
-                          }
-                        }
-                      }
-                    }
-                    },
-                  ),
-                ],
-              ),
-              if (widget.task.dueDate != null) ...[
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isOverdue
-                            ? Colors.red.withOpacity(0.1)
-                            : Theme.of(context).colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(10),
-                        border: isOverdue
-                            ? Border.all(color: Colors.red.withOpacity(0.3))
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.schedule,
-                            size: 14,
-                            color: isOverdue
-                                ? Colors.red
-                                : Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            DateFormat('MMM dd').format(widget.task.dueDate!),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: isOverdue
-                                      ? Colors.red
-                                      : Theme.of(context).colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (isOverdue) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFEF4444), Color(0xFFF87171)],
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          'OVERDUE',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                    const Spacer(),
-                    Text(
-                      DateFormat('MMM dd').format(widget.task.updatedAt),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                  ],
-                ),
-              ],
-              if (widget.task.dueDate == null) ...[
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Spacer(),
-                    Text(
-                      'Updated ${DateFormat('MMM dd').format(widget.task.updatedAt)}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                  ],
-                ),
-              ],
-              // Tags display
-              if (widget.task.tags.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: widget.task.tags.map((tag) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.tag,
-                            size: 12,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            tag,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

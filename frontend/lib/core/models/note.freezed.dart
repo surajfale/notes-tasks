@@ -32,12 +32,8 @@ mixin _$Note {
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
-  /// Serializes this Note to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Note
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $NoteCopyWith<Note> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -68,8 +64,6 @@ class _$NoteCopyWithImpl<$Res, $Val extends Note>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Note
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -150,8 +144,6 @@ class __$$NoteImplCopyWithImpl<$Res>
   __$$NoteImplCopyWithImpl(_$NoteImpl _value, $Res Function(_$NoteImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Note
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -208,7 +200,7 @@ class __$$NoteImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$NoteImpl implements _Note {
+class _$NoteImpl extends _Note {
   const _$NoteImpl(
       {@JsonKey(name: '_id') required this.id,
       this.userId,
@@ -219,7 +211,8 @@ class _$NoteImpl implements _Note {
       this.isArchived = false,
       required this.createdAt,
       required this.updatedAt})
-      : _tags = tags;
+      : _tags = tags,
+        super._();
 
   factory _$NoteImpl.fromJson(Map<String, dynamic> json) =>
       _$$NoteImplFromJson(json);
@@ -277,7 +270,7 @@ class _$NoteImpl implements _Note {
                 other.updatedAt == updatedAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -291,9 +284,7 @@ class _$NoteImpl implements _Note {
       createdAt,
       updatedAt);
 
-  /// Create a copy of Note
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$NoteImplCopyWith<_$NoteImpl> get copyWith =>
@@ -307,7 +298,7 @@ class _$NoteImpl implements _Note {
   }
 }
 
-abstract class _Note implements Note {
+abstract class _Note extends Note {
   const factory _Note(
       {@JsonKey(name: '_id') required final String id,
       final String? userId,
@@ -318,6 +309,7 @@ abstract class _Note implements Note {
       final bool isArchived,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$NoteImpl;
+  const _Note._() : super._();
 
   factory _Note.fromJson(Map<String, dynamic> json) = _$NoteImpl.fromJson;
 
@@ -341,11 +333,8 @@ abstract class _Note implements Note {
   DateTime get createdAt;
   @override
   DateTime get updatedAt;
-
-  /// Create a copy of Note
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$NoteImplCopyWith<_$NoteImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -5,6 +5,8 @@ part 'note.g.dart';
 
 @freezed
 class Note with _$Note {
+  const Note._();
+  
   const factory Note({
     @JsonKey(name: '_id') required String id,
     String? userId,

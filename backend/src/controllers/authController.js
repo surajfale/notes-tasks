@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Note = require('../models/Note');
+const Task = require('../models/Task');
+const List = require('../models/List');
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -167,9 +170,37 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+// @desc    Delete account and all associated data
+// @route   DELETE /api/auth/account
+// @access  Private
+const deleteAccount = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    // Delete all user's notes
+    await Note.deleteMany({ userId });
+
+    // Delete all user's tasks
+    await Task.deleteMany({ userId });
+
+    // Delete all user's lists
+    await List.deleteMany({ userId });
+
+    // Delete the user account
+    await User.findByIdAndDelete(userId);
+
+    res.json({
+      message: 'Account and all associated data deleted successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   getMe,
   changePassword,
+  deleteAccount,
 };

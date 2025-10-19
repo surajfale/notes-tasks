@@ -14,6 +14,8 @@ enum TaskPriority {
 
 @freezed
 class Task with _$Task {
+  const Task._();
+  
   const factory Task({
     @JsonKey(name: '_id') required String id,
     required String userId,

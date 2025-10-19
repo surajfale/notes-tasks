@@ -22,3 +22,15 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
       'displayName': instance.displayName,
       'createdAt': instance.createdAt.toIso8601String(),
     };
+
+_$AuthResponseImpl _$$AuthResponseImplFromJson(Map<String, dynamic> json) =>
+    _$AuthResponseImpl(
+      token: json['token'] as String,
+      user: User.fromJson(json['user'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$AuthResponseImplToJson(_$AuthResponseImpl instance) =>
+    <String, dynamic>{
+      'token': instance.token,
+      'user': instance.user,
+    };

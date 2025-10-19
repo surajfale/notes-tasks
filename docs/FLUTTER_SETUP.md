@@ -46,10 +46,18 @@ cd frontend
 
 ## Install Dependencies
 
-Edit `frontend/pubspec.yaml` and add dependencies, then run:
+The project uses the following major dependencies:
+- **Riverpod 3.0** - State management with code generation
+- **Freezed 3.2** - Immutable data classes
+- **go_router 16.2** - Navigation
+- **dio 5.4** - HTTP client
+
+After cloning the project, install dependencies:
 
 ```bash
+cd frontend
 flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
 ## Project Structure
@@ -129,6 +137,11 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 # Code generation (watch mode)
 flutter pub run build_runner watch
+
+# Clean and rebuild (if issues arise)
+flutter clean
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
 
 # Run on Chrome
 flutter run -d chrome
