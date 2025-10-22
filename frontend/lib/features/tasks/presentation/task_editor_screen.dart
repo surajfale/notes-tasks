@@ -196,6 +196,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      resizeToAvoidBottomInset: true,
       title: widget.task == null ? 'New Task' : 'Edit Task',
       actions: [
         if (widget.task != null)
@@ -210,6 +211,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
           // Responsive padding based on screen width
           final padding = constraints.maxWidth < 600 ? 12.0 : 16.0;
           return SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: EdgeInsets.all(padding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

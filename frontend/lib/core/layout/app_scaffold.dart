@@ -12,6 +12,7 @@ class AppScaffold extends ConsumerWidget {
   final String title;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
+  final bool? resizeToAvoidBottomInset;
 
   const AppScaffold({
     super.key,
@@ -19,6 +20,7 @@ class AppScaffold extends ConsumerWidget {
     required this.title,
     this.actions,
     this.floatingActionButton,
+    this.resizeToAvoidBottomInset,
   });
 
   @override
@@ -31,6 +33,7 @@ class AppScaffold extends ConsumerWidget {
     return Scaffold(
       // Key is important for accessing the Scaffold state
       key: GlobalKey<ScaffoldState>(),
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       // Only show drawer on mobile/tablet (not desktop)
       drawer: !isDesktop ? _buildDrawer(context, ref, user, currentPage) : null,
       appBar: _buildAppBar(context, ref, isDesktop, user),

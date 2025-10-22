@@ -183,6 +183,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      resizeToAvoidBottomInset: true,
       title: widget.note == null ? 'New Note' : 'Edit Note',
       actions: [
         if (widget.note != null)
@@ -213,6 +214,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 600;
           return SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Padding(
               padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
               child: Center(
