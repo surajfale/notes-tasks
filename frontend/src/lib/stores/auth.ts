@@ -1,0 +1,142 @@
+/**
+ * Authentication Store
+ * 
+ * Manages authentication state including user data, login/logout flows,
+ * and token persistence. Uses Svelte stores for reactive state management.
+ */
+
+import { writable, derived } from 'svelte/store';
+import { authRepository } from '$lib/repositories/auth.repository';
+import { tokenStorage } from '$lib/storage/token';
+import type { User, LoginCredentials, RegisterData } from '$lib/types/user';
+
+/**
+ * Authentication state interface
+ */
+interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+/**
+ * Initial authentication state
+ */
+const initialState: AuthState = {
+  user: null,
+  isLoading: true,
+  error: null
+};
+
+/**
+ * Create the authentication store with methods for managing auth state
+ */
+function createAuthStore() {
+  const { subscribe, set, update } = writable<AuthState>(initialState);
+
+  return {
+    subscribe,
+
+    /**
+     * Initialize authentication state by checking for existing token
+     * and fetching user data if token exists
+     */
+    async initialize(): Promise<void> {
+      const token = tokenStorage.getToken();
+      
+      if (!token) {
+        set({ user: null, isLoading: false, error: null });
+        return;
+      }
+
+      try {
+        const user = await authRepository.getCurrentUser();
+        set({ user, isLoading: false, error: null });
+      } catch (error: any) {
+        // Token is invalid or expired, clear it
+        tokenStorage.clearToken();
+        set({ user: null, isLoading: false, error: null });
+      }
+    },
+
+    /**
+     * Login with username and password
+     * @param username - User's username
+     * @param password - User's password
+     * @returns Promise resolving to true if login successful, false otherwise
+     */
+    async login(username: string, password: string): Promise<boolean> {
+      update(state => ({ ...state, isLoading: true, error: null }));
+
+      try {
+        const credentials: LoginCredentials = { username, password };
+        const { token, user } = await authRepository.login(credentials);
+        
+        tokenStorage.setToken(token);
+        set({ user, isLoading: false, error: null });
+        return true;
+      } catch (error: any) {
+        const errorMessage = error.message || 'Login failed';
+        set({ user: null, isLoading: false, error: errorMessage });
+        return false;
+      }
+    },
+
+    /**
+     * Register a new user account
+     * @param data - Registration data (username, email, password, displayName)
+     * @returns Promise resolving to true if registration successful, false otherwise
+     */
+    async register(data: RegisterData): Promise<boolean> {
+      update(state => ({ ...state, isLoading: true, error: null }));
+
+      try {
+        const { token, user } = await authRepository.register(data);
+        
+        tokenStorage.setToken(token);
+        set({ user, isLoading: false, error: null });
+        return true;
+      } catch (error: any) {
+        const errorMessage = error.message || 'Registration failed';
+        set({ user: null, isLoading: false, error: errorMessage });
+        return false;
+      }
+    },
+
+    /**
+     * Logout the current user by clearing token and resetting state
+     */
+    logout(): void {
+      tokenStorage.clearToken();
+      set({ user: null, isLoading: false, error: null });
+    },
+
+    /**
+     * Clear any error messages
+     */
+    clearError(): void {
+      update(state => ({ ...state, error: null }));
+    }
+  };
+}
+
+/**
+ * Main authentication store instance
+ */
+export const authStore = createAuthStore();
+
+/**
+ * Derived store that returns true if user is authenticated
+ */
+export const isAuthenticated = derived(
+  authStore,
+  $auth => $auth.user !== null
+);
+
+/**
+ * Derived store that returns the current user or null
+ */
+export const currentUser = derived(
+  authStore,
+  $auth => $auth.user
+);

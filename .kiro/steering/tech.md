@@ -28,31 +28,34 @@ backend/src/
 
 ## Frontend
 
-- **Framework**: Flutter 3.0+ (Web target)
-- **State Management**: Riverpod 3.0+ with code generation (`@riverpod` annotations)
-- **HTTP Client**: dio 5.4+ with JWT interceptor
-- **Code Generation**: Freezed 3.2+ (immutable models), json_serializable
-- **UI Components**: flutter_slidable 4.0, google_fonts 6.2+
-- **Local Storage**: shared_preferences, idb_shim
-- **Routing**: Built-in Flutter navigation
+- **Framework**: SvelteKit with Static Adapter
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with JIT mode
+- **HTTP Client**: Fetch API with custom wrappers
+- **State Management**: Svelte stores (writable, derived)
+- **Offline Storage**: IndexedDB via idb library
+- **Build Tool**: Vite 5.0+
 
 ### Frontend Structure
 ```
-frontend/lib/
-├── core/
-│   ├── api/        # Dio HTTP client with JWT interceptor
-│   ├── config/     # API base URL configuration
-│   ├── layout/     # App scaffold and layout
-│   ├── models/     # Freezed models (User, Note, Task, List)
-│   ├── storage/    # JWT token persistence
-│   └── theme/      # Material Design 3 theme
-├── features/
-│   ├── auth/       # Login, register, account management
-│   ├── home/       # Main navigation
-│   ├── notes/      # Notes CRUD with repository pattern
-│   ├── settings/   # Theme, account settings
-│   └── tasks/      # Tasks CRUD with repository pattern
-└── main.dart       # App entry + routing
+frontend/src/
+├── lib/
+│   ├── components/  # Reusable UI components
+│   ├── repositories/# API client wrappers
+│   ├── stores/      # Svelte stores for state
+│   ├── storage/     # IndexedDB and offline sync
+│   ├── types/       # TypeScript type definitions
+│   └── utils/       # Utility functions
+├── routes/          # SvelteKit file-based routing
+│   ├── +layout.svelte    # Root layout
+│   ├── +page.svelte      # Home page
+│   ├── login/            # Login page
+│   ├── register/         # Register page
+│   ├── notes/            # Notes pages
+│   ├── tasks/            # Tasks pages
+│   ├── lists/            # Lists page
+│   └── settings/         # Settings page
+└── app.html         # HTML template
 ```
 
 ## Common Commands
@@ -74,16 +77,12 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ### Frontend Development
 ```bash
 cd frontend
-flutter pub get              # Install dependencies
-flutter run -d chrome        # Run in browser (default port 8080)
-flutter test                 # Run tests
-flutter analyze              # Static analysis
-flutter build web --release  # Production build
-
-# Code generation (REQUIRED after model/provider changes)
-flutter pub run build_runner build --delete-conflicting-outputs
-flutter pub run build_runner watch  # Watch mode for development
-flutter pub run build_runner clean  # Clean generated files
+npm install                  # Install dependencies
+npm run dev                  # Start dev server (Vite, port 5173)
+npm run build                # Production build
+npm run preview              # Preview production build
+npm run check                # Type checking
+npm run check:watch          # Type checking in watch mode
 ```
 
 ### Quick Start (Windows)
@@ -94,11 +93,11 @@ flutter pub run build_runner clean  # Clean generated files
 ## Deployment
 
 - **Backend**: Railway (Node.js environment, auto-deploy from GitHub)
-- **Frontend**: Netlify (automated Flutter installation, static hosting)
+- **Frontend**: Netlify (static site hosting, auto-deploy from GitHub)
 - **Database**: MongoDB Atlas (cloud-hosted, M0 free tier or higher)
 
 ## Build System
 
 - **Backend**: No build step, runs directly with Node.js
-- **Frontend**: Flutter web compiler generates optimized JavaScript bundle
-- **Code Generation**: Freezed and Riverpod use build_runner for code generation
+- **Frontend**: Vite builds optimized static site with code splitting
+- **Optimization**: Automatic tree-shaking, minification, and compression

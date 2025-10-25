@@ -71,7 +71,7 @@ Backend automatically uses PORT from Railway environment.
 - Netlify account (https://netlify.com)
 - Railway backend URL from above
 
-### Steps
+### Quick Start
 
 1. **Connect GitHub to Netlify**
    - Go to https://app.netlify.com
@@ -83,30 +83,45 @@ Backend automatically uses PORT from Railway environment.
 
 2. **Set environment variable in Netlify**
    - Go to Site settings → Environment variables
-   - Add: `API_BASE_URL=https://your-app.up.railway.app/api`
-   
-   Note: The Flutter SDK will be automatically installed during each build
+   - Add: `VITE_API_BASE_URL=https://your-app.up.railway.app/api`
 
-5. **Update CORS in Railway**
+3. **Update CORS in Railway**
    - Go back to Railway dashboard
    - Update `CORS_ORIGINS` environment variable with your Netlify URL
    - Example: `https://your-app.netlify.app`
 
-### Netlify Configuration
+### Detailed Configuration
 
-The `netlify.toml` file is configured with:
-```toml
-[build]
-  base = "frontend"
-  publish = "build/web"
-  command = "git clone https://github.com/flutter/flutter.git -b stable --depth 1 ../flutter && export PATH=$PATH:$PWD/../flutter/bin && flutter config --enable-web && flutter pub get && flutter build web --release"
-```
+For comprehensive deployment instructions, troubleshooting, and optimization tips, see:
+**[NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)**
 
-This configuration:
-- Installs Flutter SDK during build (in ../flutter directory)
-- Enables Flutter web support
-- Builds the Flutter web app
-- Publishes the build/web directory
+### Netlify Configuration Features
+
+The `netlify.toml` file provides:
+
+**Build Configuration**:
+- Base directory: `frontend`
+- Publish directory: `build`
+- Build command: `npm run build`
+- Node.js version: 20
+
+**Performance Optimizations**:
+- Precompression (gzip/brotli) enabled via SvelteKit adapter
+- Aggressive caching for static assets (1 year)
+- No caching for HTML files (always fresh)
+- CDN distribution via Netlify's global network
+
+**Security Headers**:
+- X-Frame-Options (clickjacking protection)
+- X-Content-Type-Options (MIME sniffing protection)
+- X-XSS-Protection (XSS filtering)
+- Content-Security-Policy (resource loading restrictions)
+- Referrer-Policy (referrer information control)
+- Permissions-Policy (browser feature restrictions)
+
+**SPA Routing**:
+- All routes redirect to `index.html` for client-side routing
+- Enables deep linking and browser history support
 
 ## Local Development Testing
 
@@ -162,7 +177,9 @@ Go to MongoDB Atlas → Network Access → Add IP Address
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `API_BASE_URL` | Backend API URL | `https://your-app.up.railway.app/api` |
+| `VITE_API_BASE_URL` | Backend API URL | `https://your-app.up.railway.app/api` |
+
+**Note**: Vite requires environment variables to be prefixed with `VITE_` to be exposed to the client.
 
 ## Troubleshooting
 

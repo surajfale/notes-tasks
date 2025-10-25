@@ -1,7 +1,64 @@
+# Netlify Configuration for Notes & Tasks SvelteKit Application
+# This configuration handles build settings, environment variables, redirects, and headers
+
 [build]
   base = "frontend"
-  publish = "build/web"
-  command = "rm -rf ../flutter && git clone https://github.com/flutter/flutter.git -b stable --depth 1 ../flutter && export PATH=$PATH:$PWD/../flutter/bin && flutter config --enable-web && flutter pub get && flutter build web --release --dart-define=API_BASE_URL=$API_BASE_URL"
+  publish = "build"
+  command = "npm run build"
 
 [build.environment]
-  API_BASE_URL = "https://notes-tasks.up.railway.app/api"
+  NODE_VERSION = "20"
+  # Note: VITE_API_BASE_URL should be set in Netlify UI for production
+  # This is just a fallback for build time
+
+# SPA redirect rule - all routes should serve index.html
+# This enables client-side routing for SvelteKit
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security and performance headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    
+    # Content Security Policy
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://notes-tasks.up.railway.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
+# Cache static assets for 1 year (immutable files with hashed names)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache precompressed files
+[[headers]]
+  for = "/*.br"
+  [headers.values]
+    Content-Encoding = "br"
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.gz"
+  [headers.values]
+    Content-Encoding = "gzip"
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Don't cache the main HTML file
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Don't cache service worker (if added in future)
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
