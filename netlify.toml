@@ -30,7 +30,7 @@
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
     
     # Content Security Policy
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://notes-tasks.up.railway.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://notes-tasks.up.railway.app https://*.railway.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 
 # Cache static assets for 1 year (immutable files with hashed names)
 [[headers]]
