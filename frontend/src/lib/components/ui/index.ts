@@ -7,3 +7,6 @@ export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 export { default as LoadingOverlay } from './LoadingOverlay.svelte';
 export { default as ErrorMessage } from './ErrorMessage.svelte';
 export { default as ErrorBoundary } from './ErrorBoundary.svelte';
+export { default as MarkdownEditor } from './MarkdownEditor.svelte';
+export { default as MarkdownRenderer } from './MarkdownRenderer.svelte';
+export { default as Tag } from './Tag.svelte';

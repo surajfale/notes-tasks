@@ -40,7 +40,7 @@
     <p class="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">Add a new task to your list</p>
   </div>
 
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
+  <div class="bg-white dark:bg-black rounded-lg shadow-md p-4 sm:p-6">
     <TaskEditor
       on:submit={handleSubmit}
       on:cancel={handleCancel}

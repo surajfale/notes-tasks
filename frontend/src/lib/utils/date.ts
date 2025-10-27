@@ -180,6 +180,7 @@ export function parseApiDate(dateString: string | null | undefined): Date | null
 
 /**
  * Format a date for input fields (YYYY-MM-DD)
+ * Uses UTC to avoid timezone issues
  * @param date - Date string or Date object
  * @returns Formatted date string for input fields
  */
@@ -194,9 +195,10 @@ export function formatDateForInput(date: string | Date | null | undefined): stri
     return '';
   }
 
-  const year = targetDate.getFullYear();
-  const month = String(targetDate.getMonth() + 1).padStart(2, '0');
-  const day = String(targetDate.getDate()).padStart(2, '0');
+  // Use UTC to avoid timezone shifts
+  const year = targetDate.getUTCFullYear();
+  const month = String(targetDate.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(targetDate.getUTCDate()).padStart(2, '0');
   
   return `${year}-${month}-${day}`;
 }

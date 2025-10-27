@@ -2,13 +2,23 @@
   import { goto } from '$app/navigation';
   import Card from '$lib/components/ui/Card.svelte';
   import PendingBadge from '$lib/components/sync/PendingBadge.svelte';
+  import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
   import { tasksStore } from '$lib/stores/tasks';
   import { listsStore } from '$lib/stores/lists';
   import { isTaskPending } from '$lib/stores/syncStatus';
   import { formatDueDate, isPastDate } from '$lib/utils/date';
+  import { getTagColor } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types/task';
 
   export let task: Task;
+  
+  // Get color based on first tag (or default if no tags)
+  $: cardColor = task.tags && task.tags.length > 0 
+    ? (() => {
+        const color = getTagColor(task.tags[0]);
+        return { bg: color.cardBg || color.bg, border: color.border };
+      })()
+    : { bg: 'bg-white dark:bg-gray-900', border: 'border-gray-200 dark:border-gray-700' };
   
   // Check if this task has pending changes
   $: hasPendingChanges = isTaskPending(task._id);
@@ -22,10 +32,7 @@
     ? $listsStore.items.find(l => l._id === task.listId)
     : null;
 
-  // Truncate description for preview
-  $: descriptionPreview = task.description.length > 120 
-    ? task.description.substring(0, 120) + '...' 
-    : task.description;
+
 
   // Priority colors and labels
   const priorityConfig = {
@@ -81,8 +88,17 @@
   }
 </script>
 
-<Card hover clickable padding="medium" on:click={handleClick}>
-  <div class="flex gap-4">
+<div 
+  class="relative rounded-xl border-2 transition-all duration-200 cursor-pointer
+         {cardColor.border} {cardColor.bg}
+         hover:shadow-lg hover:scale-[1.02]"
+  on:click={handleClick}
+  on:keydown={(e) => e.key === 'Enter' && handleClick()}
+  role="button"
+  tabindex="0"
+>
+  <div class="p-4 sm:p-6">
+    <div class="flex gap-4">
     <!-- Completion checkbox -->
     <div class="flex-shrink-0 pt-1">
       <button
@@ -134,11 +150,11 @@
           </div>
         </div>
 
-        <!-- Description preview -->
+        <!-- Description preview with markdown rendering -->
         {#if task.description}
-          <p class="text-sm line-clamp-2 {task.isCompleted ? 'text-gray-500 dark:text-gray-500' : 'text-gray-600 dark:text-gray-400'}">
-            {descriptionPreview}
-          </p>
+          <div class="text-sm line-clamp-2 {task.isCompleted ? 'text-gray-500 dark:text-gray-500' : 'text-gray-600 dark:text-gray-400'}">
+            <MarkdownRenderer content={task.description} maxLength={150} />
+          </div>
         {/if}
 
         <!-- Due date -->
@@ -194,5 +210,6 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
-</Card>
+</div>

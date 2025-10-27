@@ -7,6 +7,7 @@
   import NoteCard from '$lib/components/notes/NoteCard.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
+  import Tag from '$lib/components/ui/Tag.svelte';
   import { LoadingOverlay, ErrorMessage } from '$lib/components/ui';
   import type { NoteFilters } from '$lib/types/note';
 
@@ -138,7 +139,7 @@
   </div>
 
   <!-- Filters -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6 sm:mb-8">
+  <div class="bg-white dark:bg-gray-950 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
       <!-- Search -->
       <div class="w-full">
@@ -162,7 +163,7 @@
             bind:value={selectedListId}
             on:change={handleListFilterChange}
             class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-gray-300 dark:border-gray-600 
-                   bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                   bg-white dark:bg-black text-gray-900 dark:text-gray-100
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All Lists</option>
@@ -218,15 +219,13 @@
           </div>
           <div class="flex flex-wrap gap-2">
             {#each allTags as tag}
-              <button
+              <Tag 
+                {tag} 
+                size="md" 
+                clickable={true}
+                selected={selectedTags.includes(tag)}
                 on:click={() => toggleTag(tag)}
-                class="px-3 py-1 rounded-md text-sm transition-colors
-                       {selectedTags.includes(tag)
-                         ? 'bg-primary-600 text-white'
-                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}"
-              >
-                #{tag}
-              </button>
+              />
             {/each}
           </div>
         </div>

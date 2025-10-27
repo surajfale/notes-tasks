@@ -112,7 +112,7 @@
 </script>
 
 <!-- Main app container with theme classes -->
-<div class="min-h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="min-h-screen bg-background-light dark:bg-black text-gray-900 dark:text-gray-100">
   
   <!-- Offline Indicator (shown globally when offline) -->
   <OfflineIndicator />
@@ -140,7 +140,7 @@
       
       <!-- Sidebar -->
       <aside 
-        class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0"
+        class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-surface-light dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0"
       >
         <div class="flex flex-col h-full">
           
@@ -320,7 +320,7 @@
       <div class="flex-1 flex flex-col overflow-hidden">
         
         <!-- Mobile header with hamburger -->
-        <header class="md:hidden bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-700 p-4">
+        <header class="md:hidden bg-surface-light dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 p-4">
           <button
             on:click={toggleSidebar}
             class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"

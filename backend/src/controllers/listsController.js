@@ -6,7 +6,7 @@ const List = require('../models/List');
 const getLists = async (req, res, next) => {
   try {
     const lists = await List.find({ userId: req.user._id }).sort({ updatedAt: -1 });
-    res.json({ lists });
+    res.json(lists);
   } catch (error) {
     next(error);
   }
@@ -31,7 +31,7 @@ const getList = async (req, res, next) => {
       });
     }
 
-    res.json({ list });
+    res.json(list);
   } catch (error) {
     next(error);
   }
@@ -51,7 +51,7 @@ const createList = async (req, res, next) => {
       emoji,
     });
 
-    res.status(201).json({ list });
+    res.status(201).json(list);
   } catch (error) {
     next(error);
   }
@@ -84,7 +84,7 @@ const updateList = async (req, res, next) => {
 
     await list.save();
 
-    res.json({ list });
+    res.json(list);
   } catch (error) {
     next(error);
   }

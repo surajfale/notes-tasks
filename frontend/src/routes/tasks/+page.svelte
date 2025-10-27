@@ -121,7 +121,7 @@
   </div>
 
   <!-- Filters -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6 sm:mb-8">
+  <div class="bg-white dark:bg-gray-950 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
       <!-- Filter controls row -->
       <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-stretch sm:items-end">
@@ -135,7 +135,7 @@
             bind:value={selectedListId}
             on:change={handleListFilterChange}
             class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-gray-300 dark:border-gray-600 
-                   bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                   bg-white dark:bg-black text-gray-900 dark:text-gray-100
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All Lists</option>
@@ -157,7 +157,7 @@
             bind:value={completionFilter}
             on:change={handleCompletionFilterChange}
             class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-gray-300 dark:border-gray-600 
-                   bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                   bg-white dark:bg-black text-gray-900 dark:text-gray-100
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="all">All Tasks</option>
@@ -176,7 +176,7 @@
             bind:value={selectedPriority}
             on:change={handlePriorityFilterChange}
             class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-gray-300 dark:border-gray-600 
-                   bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                   bg-white dark:bg-black text-gray-900 dark:text-gray-100
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All Priorities</option>

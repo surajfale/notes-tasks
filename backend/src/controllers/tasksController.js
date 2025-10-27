@@ -6,18 +6,18 @@ const Task = require('../models/Task');
 const getTasks = async (req, res, next) => {
   try {
     const { listId, isCompleted, priority } = req.query;
-    
+
     const filter = { userId: req.user._id };
-    
+
     if (listId) filter.listId = listId;
     if (isCompleted !== undefined) filter.isCompleted = isCompleted === 'true';
     if (priority) filter.priority = parseInt(priority);
-    
+
     const tasks = await Task.find(filter)
       .sort({ isCompleted: 1, priority: -1, dueAt: 1 })
       .limit(100);
-    
-    res.json({ tasks });
+
+    res.json(tasks);
   } catch (error) {
     next(error);
   }
@@ -42,7 +42,7 @@ const getTask = async (req, res, next) => {
       });
     }
 
-    res.json({ task });
+    res.json(task);
   } catch (error) {
     next(error);
   }
@@ -67,7 +67,7 @@ const createTask = async (req, res, next) => {
       tags,
     });
 
-    res.status(201).json({ task });
+    res.status(201).json(task);
   } catch (error) {
     next(error);
   }
@@ -105,7 +105,7 @@ const updateTask = async (req, res, next) => {
 
     await task.save();
 
-    res.json({ task });
+    res.json(task);
   } catch (error) {
     next(error);
   }
@@ -160,7 +160,7 @@ const toggleComplete = async (req, res, next) => {
     task.isCompleted = !task.isCompleted;
     await task.save();
 
-    res.json({ task });
+    res.json(task);
   } catch (error) {
     next(error);
   }

@@ -22,7 +22,7 @@ const getNotes = async (req, res, next) => {
     
     const notes = await Note.find(filter).sort({ updatedAt: -1 }).limit(100);
     
-    res.json({ notes });
+    res.json(notes);
   } catch (error) {
     next(error);
   }
@@ -47,7 +47,7 @@ const getNote = async (req, res, next) => {
       });
     }
 
-    res.json({ note });
+    res.json(note);
   } catch (error) {
     next(error);
   }
@@ -69,7 +69,7 @@ const createNote = async (req, res, next) => {
       isArchived,
     });
 
-    res.status(201).json({ note });
+    res.status(201).json(note);
   } catch (error) {
     next(error);
   }
@@ -104,7 +104,7 @@ const updateNote = async (req, res, next) => {
 
     await note.save();
 
-    res.json({ note });
+    res.json(note);
   } catch (error) {
     next(error);
   }
@@ -159,7 +159,7 @@ const toggleArchive = async (req, res, next) => {
     note.isArchived = !note.isArchived;
     await note.save();
 
-    res.json({ note });
+    res.json(note);
   } catch (error) {
     next(error);
   }

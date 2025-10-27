@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
+  import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import { listsStore } from '$lib/stores/lists';
   import type { Note } from '$lib/types/note';
 
@@ -69,24 +70,13 @@
     disabled={isSubmitting}
   />
 
-  <!-- Body -->
-  <div class="flex flex-col gap-1">
-    <label for="body" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-      Body
-    </label>
-    <textarea
-      id="body"
-      bind:value={body}
-      placeholder="Enter note content"
-      rows="10"
-      disabled={isSubmitting}
-      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
-             bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-             focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-             disabled:opacity-50 disabled:cursor-not-allowed
-             resize-y"
-    />
-  </div>
+  <!-- Body with Markdown Editor -->
+  <MarkdownEditor
+    label="Body"
+    bind:value={body}
+    placeholder="Enter note content... Supports **bold**, *italic*, # headings, - lists, and more"
+    rows={12}
+  />
 
   <!-- Tags -->
   <Input
@@ -108,7 +98,7 @@
       bind:value={listId}
       disabled={isSubmitting}
       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
-             bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+             bg-white dark:bg-black text-gray-900 dark:text-gray-100
              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
              disabled:opacity-50 disabled:cursor-not-allowed"
     >

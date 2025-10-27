@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Button from '$lib/components/ui/Button.svelte';
+  import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
   import { listsStore } from '$lib/stores/lists';
   import type { Task, CreateTaskData, UpdateTaskData, TaskPriority } from '$lib/types/task';
@@ -37,12 +38,21 @@
       return;
     }
 
+    // Convert date string to ISO format at noon UTC to avoid timezone issues
+    let dueAtISO: string | undefined = undefined;
+    if (dueAt) {
+      // Parse the date as local and set to noon to avoid timezone shifts
+      const [year, month, day] = dueAt.split('-').map(Number);
+      const dateObj = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+      dueAtISO = dateObj.toISOString();
+    }
+
     const data: CreateTaskData | UpdateTaskData = {
       title: title.trim(),
       description: description.trim(),
       priority,
       listId: listId || undefined,
-      dueAt: dueAt || undefined
+      dueAt: dueAtISO
     };
 
     dispatch('submit', data);
@@ -73,31 +83,15 @@
     on:input={() => clearError('title')}
   />
 
-  <!-- Description -->
-  <div>
-    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-      Description
-    </label>
-    <textarea
-      id="description"
-      bind:value={description}
-      on:input={() => clearError('description')}
-      rows="4"
-      placeholder="Enter task description"
-      class="w-full px-4 py-3 rounded-lg border transition-colors
-             {errors.description 
-               ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
-               : 'border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring-primary-500'}
-             bg-white dark:bg-gray-800 
-             text-gray-900 dark:text-gray-100
-             placeholder-gray-400 dark:placeholder-gray-500
-             focus:outline-none focus:ring-2 focus:ring-offset-0
-             disabled:opacity-50 disabled:cursor-not-allowed"
-    />
-    {#if errors.description}
-      <p class="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
-    {/if}
-  </div>
+  <!-- Description with Markdown Editor -->
+  <MarkdownEditor
+    label="Description"
+    bind:value={description}
+    placeholder="Enter task description... Supports **bold**, *italic*, # headings, - lists, and more"
+    rows={6}
+    error={errors.description}
+    on:input={() => clearError('description')}
+  />
 
   <!-- Due Date and Priority Row -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -111,7 +105,7 @@
         type="date"
         bind:value={dueAt}
         class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
-               bg-white dark:bg-gray-800 
+               bg-white dark:bg-black 
                text-gray-900 dark:text-gray-100
                focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
                disabled:opacity-50 disabled:cursor-not-allowed"
@@ -127,7 +121,7 @@
         id="priority"
         bind:value={priority}
         class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
-               bg-white dark:bg-gray-800 
+               bg-white dark:bg-black 
                text-gray-900 dark:text-gray-100
                focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
                disabled:opacity-50 disabled:cursor-not-allowed"

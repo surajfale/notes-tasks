@@ -33,7 +33,7 @@
       {required}
       class="w-full px-4 py-2.5 pr-10 rounded-lg border {error
         ? 'border-error-500 focus:ring-error-500 focus:border-error-500'
-        : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500'} bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
+        : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500'} bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
     >
       <option value="">{placeholder}</option>
       {#each lists as list (list._id)}

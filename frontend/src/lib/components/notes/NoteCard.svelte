@@ -3,13 +3,24 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import PendingBadge from '$lib/components/sync/PendingBadge.svelte';
+  import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
+  import Tag from '$lib/components/ui/Tag.svelte';
   import { notesStore } from '$lib/stores/notes';
   import { listsStore } from '$lib/stores/lists';
   import { isNotePending } from '$lib/stores/syncStatus';
   import { formatRelativeDate } from '$lib/utils/date';
+  import { getTagColor } from '$lib/utils/tagColors';
   import type { Note } from '$lib/types/note';
 
   export let note: Note;
+  
+  // Get color based on first tag (or default if no tags)
+  $: cardColor = note.tags && note.tags.length > 0 
+    ? (() => {
+        const color = getTagColor(note.tags[0]);
+        return { bg: color.cardBg || color.bg, border: color.border };
+      })()
+    : { bg: 'bg-white dark:bg-gray-900', border: 'border-gray-200 dark:border-gray-700' };
   
   // Check if this note has pending changes
   $: hasPendingChanges = isNotePending(note._id);
@@ -22,10 +33,7 @@
     ? $listsStore.items.find(l => l._id === note.listId)
     : null;
 
-  // Truncate body for preview
-  $: bodyPreview = note.body.length > 150 
-    ? note.body.substring(0, 150) + '...' 
-    : note.body;
+
 
   async function handleArchiveToggle(e: Event) {
     e.stopPropagation();
@@ -63,8 +71,17 @@
   }
 </script>
 
-<Card hover clickable padding="medium" on:click={handleClick}>
-  <div class="flex flex-col gap-3">
+<div 
+  class="relative rounded-xl border-2 transition-all duration-200 cursor-pointer
+         {cardColor.border} {cardColor.bg}
+         hover:shadow-lg hover:scale-[1.02]"
+  on:click={handleClick}
+  on:keydown={(e) => e.key === 'Enter' && handleClick()}
+  role="button"
+  tabindex="0"
+>
+  <div class="p-4 sm:p-6">
+    <div class="flex flex-col gap-3">
     <!-- Header with title and badges -->
     <div class="flex items-start justify-between gap-2">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex-1 line-clamp-2">
@@ -86,20 +103,18 @@
       </div>
     </div>
 
-    <!-- Body preview -->
+    <!-- Body preview with markdown rendering -->
     {#if note.body}
-      <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
-        {bodyPreview}
-      </p>
+      <div class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+        <MarkdownRenderer content={note.body} maxLength={200} />
+      </div>
     {/if}
 
     <!-- Tags -->
-    {#if note.tags && note.tags.length > 0}
+    {#if note.tags && Array.isArray(note.tags) && note.tags.length > 0}
       <div class="flex flex-wrap gap-2">
         {#each note.tags as tag}
-          <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs">
-            #{tag}
-          </span>
+          <Tag {tag} size="sm" />
         {/each}
       </div>
     {/if}
@@ -148,5 +163,6 @@
         </span>
       {/if}
     </div>
+    </div>
   </div>
-</Card>
+</div>

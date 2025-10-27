@@ -4,6 +4,7 @@
   import { listsStore } from '$lib/stores/lists';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
+  import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
   import { onMount } from 'svelte';
   import { validateNoteForm } from '$lib/utils/validation';
@@ -74,7 +75,7 @@
   </div>
 
   <form on:submit={handleSubmit} class="space-y-6">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 space-y-6">
+    <div class="bg-white dark:bg-black rounded-lg shadow-md p-4 sm:p-6 space-y-6">
       <Input
         type="text"
         label="Title"
@@ -85,28 +86,12 @@
         disabled={isSubmitting}
       />
 
-      <div class="w-full">
-        <label
-          for="body"
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          Body
-        </label>
-        <textarea
-          id="body"
-          bind:value={body}
-          placeholder="Enter note content"
-          rows="10"
-          disabled={isSubmitting}
-          class="w-full px-4 py-3 min-h-[120px] text-base rounded-lg border border-gray-300 dark:border-gray-600
-                 bg-white dark:bg-gray-800 
-                 text-gray-900 dark:text-gray-100
-                 placeholder-gray-400 dark:placeholder-gray-500
-                 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-                 disabled:opacity-50 disabled:cursor-not-allowed
-                 resize-vertical"
-        />
-      </div>
+      <MarkdownEditor
+        label="Body"
+        bind:value={body}
+        placeholder="Enter note content... Supports **bold**, *italic*, # headings, - lists, and more"
+        rows={12}
+      />
 
       <Input
         type="text"

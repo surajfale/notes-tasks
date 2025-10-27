@@ -1,0 +1,283 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+
+  export let value: string = '';
+  export let placeholder: string = 'Enter text...';
+  export let label: string = '';
+  export let error: string = '';
+  export let rows: number = 10;
+  export let showPreview: boolean = false;
+
+  let textareaElement: HTMLTextAreaElement;
+  let activeTab: 'write' | 'preview' = 'write';
+
+  // Markdown formatting functions
+  function insertFormatting(before: string, after: string = '') {
+    if (!textareaElement) return;
+
+    const start = textareaElement.selectionStart;
+    const end = textareaElement.selectionEnd;
+    const selectedText = value.substring(start, end);
+    const beforeText = value.substring(0, start);
+    const afterText = value.substring(end);
+
+    value = beforeText + before + selectedText + after + afterText;
+
+    // Set cursor position after formatting
+    setTimeout(() => {
+      const newPos = start + before.length + selectedText.length;
+      textareaElement.focus();
+      textareaElement.setSelectionRange(newPos, newPos);
+    }, 0);
+  }
+
+  function makeBold() {
+    insertFormatting('**', '**');
+  }
+
+  function makeItalic() {
+    insertFormatting('*', '*');
+  }
+
+  function makeHeading(level: number) {
+    const prefix = '#'.repeat(level) + ' ';
+    insertFormatting(prefix);
+  }
+
+  function makeBulletList() {
+    insertFormatting('- ');
+  }
+
+  function makeNumberedList() {
+    insertFormatting('1. ');
+  }
+
+  function makeLink() {
+    insertFormatting('[', '](url)');
+  }
+
+  function makeCode() {
+    insertFormatting('`', '`');
+  }
+
+  // Simple markdown to HTML converter
+  function markdownToHtml(markdown: string): string {
+    if (!markdown) return '';
+
+    let html = markdown;
+
+    // Escape HTML
+    html = html.replace(/&/g, '&amp;')
+               .replace(/</g, '&lt;')
+               .replace(/>/g, '&gt;');
+
+    // Headers (must be before bold)
+    html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mt-4 mb-2">$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>');
+
+    // Bold
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+
+    // Italic
+    html = html.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>');
+
+    // Inline code
+    html = html.replace(/`(.+?)`/g, '<code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm font-mono">$1</code>');
+
+    // Links
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
+
+    // Unordered lists
+    html = html.replace(/^\- (.+)$/gim, '<li class="ml-4">$1</li>');
+    html = html.replace(/(<li class="ml-4">.*<\/li>)/s, '<ul class="list-disc list-inside space-y-1 my-2">$1</ul>');
+
+    // Ordered lists
+    html = html.replace(/^\d+\. (.+)$/gim, '<li class="ml-4">$1</li>');
+    html = html.replace(/(<li class="ml-4">.*<\/li>)/s, '<ol class="list-decimal list-inside space-y-1 my-2">$1</ol>');
+
+    // Line breaks
+    html = html.replace(/\n/g, '<br>');
+
+    return html;
+  }
+
+  $: previewHtml = markdownToHtml(value);
+</script>
+
+<div class="space-y-2">
+  {#if label}
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      {label}
+    </label>
+  {/if}
+
+  <!-- Toolbar -->
+  <div class="border border-gray-300 dark:border-gray-600 rounded-t-lg bg-gray-50 dark:bg-gray-900 p-2">
+    <div class="flex items-center gap-1 flex-wrap">
+      <!-- Tab switcher -->
+      <div class="flex gap-1 mr-2 border-r border-gray-300 dark:border-gray-600 pr-2">
+        <button
+          type="button"
+          on:click={() => activeTab = 'write'}
+          class="px-3 py-1 text-sm rounded transition-colors {activeTab === 'write' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
+        >
+          Write
+        </button>
+        <button
+          type="button"
+          on:click={() => activeTab = 'preview'}
+          class="px-3 py-1 text-sm rounded transition-colors {activeTab === 'preview' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
+        >
+          Preview
+        </button>
+      </div>
+
+      {#if activeTab === 'write'}
+        <!-- Formatting buttons -->
+        <button
+          type="button"
+          on:click={makeBold}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Bold (Ctrl+B)"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M11 5H7v10h4c2.21 0 4-1.79 4-4s-1.79-4-4-4zm-1 6H9V7h1c1.1 0 2 .9 2 2s-.9 2-2 2z"/>
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          on:click={makeItalic}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Italic (Ctrl+I)"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/>
+          </svg>
+        </button>
+
+        <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
+        <button
+          type="button"
+          on:click={() => makeHeading(1)}
+          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Heading 1"
+        >
+          H1
+        </button>
+
+        <button
+          type="button"
+          on:click={() => makeHeading(2)}
+          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Heading 2"
+        >
+          H2
+        </button>
+
+        <button
+          type="button"
+          on:click={() => makeHeading(3)}
+          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Heading 3"
+        >
+          H3
+        </button>
+
+        <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
+        <button
+          type="button"
+          on:click={makeBulletList}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Bullet List"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4zm4-11h10v2H8V5zm0 6h10v2H8v-2zm0 6h10v2H8v-2z"/>
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          on:click={makeNumberedList}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Numbered List"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 4h1v4H3V4zm0 6h1v4H3v-4zm0 6h1v4H3v-4zm4-11h12v2H7V5zm0 6h12v2H7v-2zm0 6h12v2H7v-2z"/>
+          </svg>
+        </button>
+
+        <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
+        <button
+          type="button"
+          on:click={makeLink}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Link"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"/>
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          on:click={makeCode}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          title="Inline Code"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      {/if}
+    </div>
+  </div>
+
+  <!-- Editor/Preview area -->
+  <div class="relative">
+    {#if activeTab === 'write'}
+      <textarea
+        bind:this={textareaElement}
+        bind:value
+        {placeholder}
+        {rows}
+        class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-gray-300 dark:border-gray-600 transition-colors
+               {error 
+                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+                 : 'focus:border-primary-500 focus:ring-primary-500'}
+               bg-white dark:bg-black 
+               text-gray-900 dark:text-gray-100
+               placeholder-gray-400 dark:placeholder-gray-500
+               focus:outline-none focus:ring-2 focus:ring-offset-0
+               disabled:opacity-50 disabled:cursor-not-allowed
+               font-mono text-sm"
+        on:input
+      />
+    {:else}
+      <div class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-black min-h-[200px]">
+        {#if value.trim()}
+          <div class="prose prose-sm dark:prose-invert max-w-none text-gray-900 dark:text-gray-100">
+            {@html previewHtml}
+          </div>
+        {:else}
+          <p class="text-gray-400 dark:text-gray-500 italic">Nothing to preview</p>
+        {/if}
+      </div>
+    {/if}
+  </div>
+
+  {#if error}
+    <p class="text-sm text-red-600 dark:text-red-400">{error}</p>
+  {/if}
+
+  <!-- Help text -->
+  {#if activeTab === 'write'}
+    <p class="text-xs text-gray-500 dark:text-gray-400">
+      Supports Markdown: **bold**, *italic*, # heading, - list, 1. numbered, [link](url), `code`
+    </p>
+  {/if}
+</div>

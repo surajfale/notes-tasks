@@ -46,6 +46,28 @@ function setStoredAccentColor(color: string): void {
   localStorage.setItem(ACCENT_COLOR_KEY, color);
 }
 
+// Helper function to convert hex to RGB
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      }
+    : null;
+}
+
+// Helper function to mix colors (for generating shades)
+function mixColors(color1: { r: number; g: number; b: number }, color2: { r: number; g: number; b: number }, weight: number): string {
+  const w1 = weight;
+  const w2 = 1 - w1;
+  const r = Math.round(color1.r * w1 + color2.r * w2);
+  const g = Math.round(color1.g * w1 + color2.g * w2);
+  const b = Math.round(color1.b * w1 + color2.b * w2);
+  return `${r} ${g} ${b}`;
+}
+
 // Apply theme to document
 function applyThemeToDocument(mode: ThemeMode, accentColor: string): void {
   if (!browser) return;
@@ -55,8 +77,26 @@ function applyThemeToDocument(mode: ThemeMode, accentColor: string): void {
   html.classList.remove('light', 'dark');
   html.classList.add(mode);
   
-  // Apply accent color as CSS custom property
+  // Convert accent color to RGB
+  const rgb = hexToRgb(accentColor);
+  if (!rgb) return;
+  
+  // Generate color shades by mixing with white and black
+  const white = { r: 255, g: 255, b: 255 };
+  const black = { r: 0, g: 0, b: 0 };
+  
+  // Set CSS custom properties for all primary color shades
   html.style.setProperty('--accent-color', accentColor);
+  html.style.setProperty('--primary-50', mixColors(rgb, white, 0.1));
+  html.style.setProperty('--primary-100', mixColors(rgb, white, 0.2));
+  html.style.setProperty('--primary-200', mixColors(rgb, white, 0.4));
+  html.style.setProperty('--primary-300', mixColors(rgb, white, 0.6));
+  html.style.setProperty('--primary-400', mixColors(rgb, white, 0.8));
+  html.style.setProperty('--primary-500', `${rgb.r} ${rgb.g} ${rgb.b}`);
+  html.style.setProperty('--primary-600', mixColors(rgb, black, 0.9));
+  html.style.setProperty('--primary-700', mixColors(rgb, black, 0.8));
+  html.style.setProperty('--primary-800', mixColors(rgb, black, 0.7));
+  html.style.setProperty('--primary-900', mixColors(rgb, black, 0.6));
 }
 
 function createThemeStore() {
