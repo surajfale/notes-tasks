@@ -23,6 +23,8 @@
   let showDeleteModal = false;
   let isDeleting = false;
   let errors: { title?: string; body?: string } = {};
+  let copySuccess = false;
+  let copyTimeout: ReturnType<typeof setTimeout>;
 
   $: lists = Array.isArray($listsStore.items) ? $listsStore.items : [];
 
@@ -106,15 +108,95 @@
   function handleCancel() {
     goto('/notes');
   }
+
+  // Convert markdown to plain text with formatting preserved
+  function markdownToFormattedText(markdown: string): string {
+    let text = markdown;
+    
+    // Convert headers to uppercase with spacing
+    text = text.replace(/^### (.+)$/gim, '\n$1\n');
+    text = text.replace(/^## (.+)$/gim, '\n$1\n');
+    text = text.replace(/^# (.+)$/gim, '\n$1\n\n');
+    
+    // Convert bold to uppercase or keep asterisks
+    text = text.replace(/\*\*(.+?)\*\*/g, '$1');
+    
+    // Convert italic (keep as is or remove asterisks)
+    text = text.replace(/\*(.+?)\*/g, '$1');
+    
+    // Convert inline code (keep backticks or remove)
+    text = text.replace(/`(.+?)`/g, '$1');
+    
+    // Convert links to "text (url)"
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1 ($2)');
+    
+    // Lists are already in good format, just ensure proper spacing
+    text = text.replace(/^- /gim, '• ');
+    
+    return text.trim();
+  }
+
+  async function handleCopyNote() {
+    try {
+      // Create formatted text
+      const formattedContent = `${title}\n${'='.repeat(title.length)}\n\n${markdownToFormattedText(body)}`;
+      
+      // Add tags if present
+      const tags = tagsInput.trim();
+      const fullContent = tags 
+        ? `${formattedContent}\n\nTags: ${tags}`
+        : formattedContent;
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(fullContent);
+      
+      // Show success message
+      copySuccess = true;
+      clearTimeout(copyTimeout);
+      copyTimeout = setTimeout(() => {
+        copySuccess = false;
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to copy note:', error);
+      alert('Failed to copy note to clipboard');
+    }
+  }
 </script>
 
 <div class="max-w-4xl mx-auto p-6">
   <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Edit Note</h1>
-    <div class="mt-2 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-      <span>Last updated {formatRelativeDate(data.note.updatedAt)}</span>
-      <span class="text-gray-400 dark:text-gray-600">•</span>
-      <span title={formatAbsoluteDateTime(data.note.createdAt)}>Created {formatRelativeDate(data.note.createdAt)}</span>
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex-1">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Edit Note</h1>
+        <div class="mt-2 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+          <span>Last updated {formatRelativeDate(data.note.updatedAt)}</span>
+          <span class="text-gray-400 dark:text-gray-600">•</span>
+          <span title={formatAbsoluteDateTime(data.note.createdAt)}>Created {formatRelativeDate(data.note.createdAt)}</span>
+        </div>
+      </div>
+      
+      <!-- Copy Button -->
+      <button
+        type="button"
+        on:click={handleCopyNote}
+        class="flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all
+               {copySuccess 
+                 ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' 
+                 : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-primary-500 dark:hover:border-primary-400'}"
+        title="Copy note content"
+      >
+        {#if copySuccess}
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span class="hidden sm:inline">Copied!</span>
+        {:else}
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          <span class="hidden sm:inline">Copy</span>
+        {/if}
+      </button>
     </div>
   </div>
 

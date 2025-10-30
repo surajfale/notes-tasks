@@ -60,6 +60,79 @@
     insertFormatting('`', '`');
   }
 
+  // Handle Enter key for list continuation
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      const textarea = event.target as HTMLTextAreaElement;
+      const cursorPos = textarea.selectionStart;
+      const textBeforeCursor = value.substring(0, cursorPos);
+      const textAfterCursor = value.substring(cursorPos);
+      
+      // Get the current line
+      const lines = textBeforeCursor.split('\n');
+      const currentLine = lines[lines.length - 1];
+      
+      // Check if current line is a bullet list item
+      const bulletMatch = currentLine.match(/^(\s*)- (.*)$/);
+      if (bulletMatch) {
+        const indent = bulletMatch[1];
+        const content = bulletMatch[2];
+        
+        // If the line is empty (just "- "), end the list
+        if (content.trim() === '') {
+          event.preventDefault();
+          // Remove the empty bullet and add a new line
+          const newValue = textBeforeCursor.slice(0, -2) + '\n' + textAfterCursor;
+          value = newValue;
+          setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = cursorPos - 1;
+          }, 0);
+          return;
+        }
+        
+        // Continue the bullet list
+        event.preventDefault();
+        const newValue = textBeforeCursor + '\n' + indent + '- ' + textAfterCursor;
+        value = newValue;
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = cursorPos + indent.length + 3;
+        }, 0);
+        return;
+      }
+      
+      // Check if current line is a numbered list item
+      const numberMatch = currentLine.match(/^(\s*)(\d+)\. (.*)$/);
+      if (numberMatch) {
+        const indent = numberMatch[1];
+        const currentNumber = parseInt(numberMatch[2]);
+        const content = numberMatch[3];
+        
+        // If the line is empty (just "1. "), end the list
+        if (content.trim() === '') {
+          event.preventDefault();
+          // Remove the empty number and add a new line
+          const removeLength = indent.length + numberMatch[2].length + 2;
+          const newValue = textBeforeCursor.slice(0, -removeLength) + '\n' + textAfterCursor;
+          value = newValue;
+          setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = cursorPos - removeLength + 1;
+          }, 0);
+          return;
+        }
+        
+        // Continue the numbered list with incremented number
+        event.preventDefault();
+        const nextNumber = currentNumber + 1;
+        const newValue = textBeforeCursor + '\n' + indent + nextNumber + '. ' + textAfterCursor;
+        value = newValue;
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = cursorPos + indent.length + nextNumber.toString().length + 3;
+        }, 0);
+        return;
+      }
+    }
+  }
+
   // Simple markdown to HTML converter
   function markdownToHtml(markdown: string): string {
     if (!markdown) return '';
@@ -88,16 +161,69 @@
     // Links
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
 
-    // Unordered lists
-    html = html.replace(/^\- (.+)$/gim, '<li class="ml-4">$1</li>');
-    html = html.replace(/(<li class="ml-4">.*<\/li>)/s, '<ul class="list-disc list-inside space-y-1 my-2">$1</ul>');
-
-    // Ordered lists
-    html = html.replace(/^\d+\. (.+)$/gim, '<li class="ml-4">$1</li>');
-    html = html.replace(/(<li class="ml-4">.*<\/li>)/s, '<ol class="list-decimal list-inside space-y-1 my-2">$1</ol>');
-
-    // Line breaks
-    html = html.replace(/\n/g, '<br>');
+    // Process lists line by line to maintain proper structure
+    const lines = html.split('\n');
+    const processedLines: string[] = [];
+    let inUnorderedList = false;
+    let inOrderedList = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmedLine = line.trim();
+      
+      // Check for unordered list item
+      if (trimmedLine.match(/^- (.+)$/)) {
+        const content = trimmedLine.substring(2);
+        if (!inUnorderedList) {
+          processedLines.push('<ul class="list-disc list-inside space-y-1 my-2">');
+          inUnorderedList = true;
+        }
+        if (inOrderedList) {
+          processedLines.push('</ol>');
+          inOrderedList = false;
+          processedLines.push('<ul class="list-disc list-inside space-y-1 my-2">');
+          inUnorderedList = true;
+        }
+        processedLines.push(`<li class="ml-4">${content}</li>`);
+      }
+      // Check for ordered list item
+      else if (trimmedLine.match(/^\d+\. (.+)$/)) {
+        const content = trimmedLine.replace(/^\d+\. /, '');
+        if (!inOrderedList) {
+          processedLines.push('<ol class="list-decimal list-inside space-y-1 my-2">');
+          inOrderedList = true;
+        }
+        if (inUnorderedList) {
+          processedLines.push('</ul>');
+          inUnorderedList = false;
+          processedLines.push('<ol class="list-decimal list-inside space-y-1 my-2">');
+          inOrderedList = true;
+        }
+        processedLines.push(`<li class="ml-4">${content}</li>`);
+      }
+      // Regular line
+      else {
+        if (inUnorderedList) {
+          processedLines.push('</ul>');
+          inUnorderedList = false;
+        }
+        if (inOrderedList) {
+          processedLines.push('</ol>');
+          inOrderedList = false;
+        }
+        processedLines.push(line);
+      }
+    }
+    
+    // Close any open lists
+    if (inUnorderedList) {
+      processedLines.push('</ul>');
+    }
+    if (inOrderedList) {
+      processedLines.push('</ol>');
+    }
+    
+    html = processedLines.join('<br>');
 
     return html;
   }
@@ -256,6 +382,7 @@
                disabled:opacity-50 disabled:cursor-not-allowed
                font-mono text-sm"
         on:input
+        on:keydown={handleKeyDown}
       />
     {:else}
       <div class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-black min-h-[200px]">

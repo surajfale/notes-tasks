@@ -117,15 +117,17 @@ export function formatDueDate(dueDate: string | Date): string {
   const now = new Date();
   const targetDate = typeof dueDate === 'string' ? new Date(dueDate) : dueDate;
   
-  const diffMs = targetDate.getTime() - now.getTime();
+  // Compare dates only (ignore time) by setting both to midnight local time
+  const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetDateOnly = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+  
+  const diffMs = targetDateOnly.getTime() - nowDate.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   // Overdue
-  if (diffMs < 0) {
+  if (diffDays < 0) {
     const absDiffDays = Math.abs(diffDays);
-    if (absDiffDays === 0) {
-      return 'Overdue (today)';
-    } else if (absDiffDays === 1) {
+    if (absDiffDays === 1) {
       return 'Overdue (yesterday)';
     } else if (absDiffDays < 7) {
       return `Overdue (${absDiffDays} days ago)`;
@@ -205,14 +207,19 @@ export function formatDateForInput(date: string | Date | null | undefined): stri
 
 /**
  * Check if a date is in the past
+ * Compares dates only (ignores time)
  * @param date - Date string or Date object
- * @returns True if date is in the past
+ * @returns True if date is in the past (before today)
  */
 export function isPastDate(date: string | Date): boolean {
   const targetDate = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
   
-  return targetDate.getTime() < now.getTime();
+  // Compare dates only (ignore time)
+  const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetDateOnly = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+  
+  return targetDateOnly.getTime() < nowDate.getTime();
 }
 
 /**

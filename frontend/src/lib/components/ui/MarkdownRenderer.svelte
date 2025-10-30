@@ -36,16 +36,69 @@
     // Links
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
 
-    // Unordered lists
-    html = html.replace(/^\- (.+)$/gim, '<li class="ml-4">$1</li>');
-    html = html.replace(/(<li class="ml-4">.*?<\/li>)/gs, '<ul class="list-disc list-inside space-y-0.5 my-1">$1</ul>');
-
-    // Ordered lists
-    html = html.replace(/^\d+\. (.+)$/gim, '<li class="ml-4">$1</li>');
-    html = html.replace(/(<li class="ml-4">.*?<\/li>)/gs, '<ol class="list-decimal list-inside space-y-0.5 my-1">$1</ol>');
-
-    // Line breaks
-    html = html.replace(/\n/g, '<br>');
+    // Process lists line by line to maintain proper structure
+    const lines = html.split('\n');
+    const processedLines: string[] = [];
+    let inUnorderedList = false;
+    let inOrderedList = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmedLine = line.trim();
+      
+      // Check for unordered list item
+      if (trimmedLine.match(/^- (.+)$/)) {
+        const content = trimmedLine.substring(2);
+        if (!inUnorderedList) {
+          processedLines.push('<ul class="list-disc list-inside space-y-0.5 my-1">');
+          inUnorderedList = true;
+        }
+        if (inOrderedList) {
+          processedLines.push('</ol>');
+          inOrderedList = false;
+          processedLines.push('<ul class="list-disc list-inside space-y-0.5 my-1">');
+          inUnorderedList = true;
+        }
+        processedLines.push(`<li class="ml-4">${content}</li>`);
+      }
+      // Check for ordered list item
+      else if (trimmedLine.match(/^\d+\. (.+)$/)) {
+        const content = trimmedLine.replace(/^\d+\. /, '');
+        if (!inOrderedList) {
+          processedLines.push('<ol class="list-decimal list-inside space-y-0.5 my-1">');
+          inOrderedList = true;
+        }
+        if (inUnorderedList) {
+          processedLines.push('</ul>');
+          inUnorderedList = false;
+          processedLines.push('<ol class="list-decimal list-inside space-y-0.5 my-1">');
+          inOrderedList = true;
+        }
+        processedLines.push(`<li class="ml-4">${content}</li>`);
+      }
+      // Regular line
+      else {
+        if (inUnorderedList) {
+          processedLines.push('</ul>');
+          inUnorderedList = false;
+        }
+        if (inOrderedList) {
+          processedLines.push('</ol>');
+          inOrderedList = false;
+        }
+        processedLines.push(line);
+      }
+    }
+    
+    // Close any open lists
+    if (inUnorderedList) {
+      processedLines.push('</ul>');
+    }
+    if (inOrderedList) {
+      processedLines.push('</ol>');
+    }
+    
+    html = processedLines.join('<br>');
 
     return html;
   }
