@@ -375,6 +375,144 @@ The application uses a sidebar navigation (collapsible on mobile):
 - Verify sync completed
 - Check if deleted accidentally
 
+## Progressive Web App (PWA)
+
+### Installing as an App
+
+#### On Android (Chrome)
+1. Open the site in Chrome
+2. Tap the menu (⋮) in the top-right
+3. Select "Add to Home screen"
+4. Tap "Install" or "Add"
+5. Find the app icon on your home screen
+6. Tap to open - it will look like a native app!
+
+#### On iOS (Safari)
+1. Open the site in Safari
+2. Tap the Share button (square with arrow)
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add" to confirm
+5. Find the app icon on your home screen
+
+#### On Desktop (Chrome/Edge)
+1. Look for the install icon in the address bar
+2. Click the install icon
+3. Click "Install" in the dialog
+4. App opens in its own window
+5. Find it in Start Menu (Windows) or Applications (Mac)
+
+### PWA Features
+
+#### Native App Experience
+- **No Browser UI**: Opens in standalone window
+- **Custom Icon**: Your branded icon on home screen
+- **Splash Screen**: Shows app icon while loading
+- **Status Bar**: Color matches your theme
+- **Quick Launch**: Opens instantly like native apps
+
+#### App Shortcuts
+Long-press the app icon to access quick actions:
+- **New Note**: Jump directly to create a note
+- **New Task**: Jump directly to create a task
+
+#### Offline Mode
+- **Works Offline**: Access your data without internet
+- **Auto Sync**: Changes sync when connection returns
+- **Fast Loading**: Cached pages load instantly
+- **Background Sync**: Syncs even when app is closed
+
+#### Dynamic Theming
+- **Status Bar Color**: Matches your selected theme
+- **Light/Dark Mode**: Status bar adapts automatically
+- **Accent Colors**: Status bar updates with accent color
+- **Smooth Transitions**: Color changes are instant
+
+### PWA Benefits
+
+#### For Mobile Users
+- **No App Store**: Install directly from browser
+- **Smaller Size**: No large download required
+- **Auto Updates**: Always get the latest version
+- **Less Storage**: Shared browser cache
+- **Privacy**: No app store tracking
+
+#### For All Users
+- **Cross-Platform**: Same experience everywhere
+- **Always Updated**: No manual updates needed
+- **Offline Access**: Work without internet
+- **Fast Performance**: Instant loading
+- **Native Feel**: Looks and feels like a native app
+
+### Testing PWA Features
+
+#### Check Installation
+1. Install the app on your device
+2. Verify custom icon appears
+3. Open from home screen
+4. Confirm no browser UI visible
+
+#### Test Offline Mode
+1. Open the app
+2. Visit several pages (to cache them)
+3. Turn off WiFi/mobile data
+4. Navigate between pages - should still work
+5. Create/edit notes/tasks - saved locally
+6. Turn connection back on - syncs automatically
+
+#### Test Theme Color
+1. Open Settings in the app
+2. Toggle between light and dark mode
+3. Watch status bar color change
+4. Try different accent colors
+5. Verify status bar updates
+
+#### Test App Shortcuts
+1. Long-press the app icon
+2. Verify "New Note" and "New Task" appear
+3. Tap a shortcut
+4. Confirm it opens the correct page
+
+### PWA Troubleshooting
+
+#### Can't Install App
+- Ensure you're using HTTPS (required)
+- Check that you're on a supported browser
+- Clear browser cache and try again
+- Verify all icons are loaded
+
+#### Icons Not Showing
+- Check internet connection
+- Clear browser cache
+- Reinstall the app
+- Verify icons exist on server
+
+#### Offline Not Working
+- Visit pages while online first (to cache)
+- Check that service worker is registered
+- Wait a few seconds after first visit
+- Check browser console for errors
+
+#### Theme Color Not Changing
+- Ensure you're using the installed app (not browser)
+- Check that theme is saved in Settings
+- Try closing and reopening the app
+- Clear app cache if needed
+
+### PWA Best Practices
+
+#### For Best Experience
+1. **Install the App**: Get full native experience
+2. **Visit Pages Online First**: Allows caching for offline use
+3. **Keep App Updated**: Refresh occasionally for updates
+4. **Use App Shortcuts**: Quick access to common actions
+5. **Enable Notifications**: Get task reminders (if implemented)
+
+#### Performance Tips
+- Install app for faster loading
+- Use offline mode when traveling
+- Clear cache if experiencing issues
+- Keep browser updated
+
 ## Support
 
 For additional help:

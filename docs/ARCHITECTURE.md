@@ -342,6 +342,216 @@ Database: MongoDB Atlas (cloud cluster)
 - **Health Check**: GET /health endpoint
 - **Metrics**: Request count, response time, error rate
 
+## Progressive Web App (PWA)
+
+### Overview
+
+The application is a full-featured Progressive Web App that provides a native app-like experience on mobile devices.
+
+### PWA Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Browser / Device                        │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │                  Service Worker                       │  │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌──────────────┐  │  │
+│  │  │   Cache     │  │   Network   │  │    Sync      │  │  │
+│  │  │  Strategy   │  │   First     │  │    Queue     │  │  │
+│  │  └─────────────┘  └─────────────┘  └──────────────┘  │  │
+│  └───────────────────────│───────────────────────────────┘  │
+│                          │                                   │
+│  ┌───────────────────────▼───────────────────────────────┐  │
+│  │              SvelteKit Application                    │  │
+│  │  ┌─────────────────────────────────────────────────┐  │  │
+│  │  │  ThemeColorManager (Dynamic Status Bar)         │  │  │
+│  │  └─────────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Components
+
+#### Web App Manifest (`static/manifest.json`)
+- **Display Mode**: `standalone` (no browser UI)
+- **Orientation**: `portrait-primary` (optimized for mobile)
+- **Theme Color**: Dynamic (updates with user preference)
+- **Background Color**: White (for splash screen)
+- **Start URL**: `/` (opens to home page)
+- **Icons**: 8 sizes (72×72 to 512×512)
+- **Shortcuts**: Quick actions (New Note, New Task)
+
+#### Service Worker (`static/service-worker.js`)
+- **Caching Strategy**: Network-first with cache fallback
+- **Runtime Caching**: Caches pages as visited
+- **Offline Support**: Serves cached content when offline
+- **API Bypass**: API calls handled by app's offline logic
+- **Cache Versioning**: Automatic cleanup of old caches
+
+#### Theme Color Manager
+- **Dynamic Updates**: Status bar color changes with theme
+- **Mode Adaptation**: Darkens color in dark mode
+- **Accent Integration**: Responds to accent color changes
+- **Real-time**: Updates without page reload
+
+### PWA Features
+
+#### Native App Appearance
+- Standalone window (no browser UI)
+- Custom splash screen with app icon
+- Dynamic status bar color
+- Full-screen content
+- Portrait orientation lock
+
+#### Installation
+- Add to Home Screen on Android/iOS
+- Custom app icon on home screen
+- App name in app drawer
+- Quick launch like native apps
+- Desktop installation support
+
+#### Performance
+- Offline functionality
+- Fast loading from cache
+- Background sync when online
+- Intelligent caching strategy
+- Minimal network requests
+
+#### App Shortcuts
+Long-press app icon for quick actions:
+- New Note (jumps to `/notes/new`)
+- New Task (jumps to `/tasks/new`)
+
+### Browser Support
+
+#### Full PWA Support
+- ✅ Chrome/Edge on Android
+- ✅ Samsung Internet
+- ✅ Firefox on Android
+- ✅ Chrome/Edge on Desktop
+
+#### Partial Support
+- ⚠️ Safari on iOS (limited features)
+- ⚠️ Chrome on iOS (uses Safari engine)
+
+### Icon Specifications
+
+All icons generated using Sharp image processing:
+
+| Size | Purpose | File Size |
+|------|---------|-----------|
+| 72×72 | Android Small | ~2.7 KB |
+| 96×96 | Android Medium | ~3.1 KB |
+| 128×128 | Android Large | ~3.6 KB |
+| 144×144 | Android XL | ~4.3 KB |
+| 152×152 | iOS / Apple Touch | ~4.4 KB |
+| 192×192 | Android Standard | ~5.3 KB |
+| 384×384 | Android XXL | ~10.2 KB |
+| 512×512 | Splash Screen | ~10.2 KB |
+
+**Total**: ~53 KB (excellent for web performance)
+
+### Icon Design
+- Purple gradient background (#6366f1 → #8b5cf6)
+- White notepad with folded corner
+- Checkboxes with checkmark
+- Text lines representing notes
+- Rounded corners for modern look
+- High contrast for visibility
+
+### PWA Metrics
+
+Expected Lighthouse PWA scores:
+- **Installable**: 100/100
+- **PWA Optimized**: 90+/100
+- **Fast and Reliable**: 90+/100
+- **Works Offline**: Yes
+
+### Offline Capabilities
+
+#### Storage Strategy
+- **IndexedDB**: Local data persistence
+- **Sync Queue**: Tracks pending changes
+- **Automatic Sync**: Syncs when connection returns
+- **Conflict Resolution**: Handles sync conflicts
+
+#### Caching Strategy
+- **Network First**: Always tries fresh data
+- **Cache Fallback**: Uses cache if offline
+- **Runtime Caching**: Caches visited pages
+- **Selective Caching**: Only caches app pages, not API
+
+### Installation Flow
+
+#### Android
+1. User visits site in Chrome
+2. "Add to Home screen" appears in menu
+3. User taps to install
+4. App icon added to home screen
+5. Opens in standalone mode
+
+#### iOS
+1. User visits site in Safari
+2. Taps Share button
+3. Selects "Add to Home Screen"
+4. App icon added to home screen
+5. Opens with minimal Safari UI
+
+#### Desktop
+1. User visits site in Chrome/Edge
+2. Install icon appears in address bar
+3. User clicks to install
+4. App opens in standalone window
+5. Added to Start Menu/Applications
+
+### Customization
+
+#### Theme Color
+Edit `manifest.json` and `app.html`:
+```json
+"theme_color": "#6366f1"
+```
+
+#### App Name
+Edit `manifest.json`:
+```json
+{
+  "name": "Notes & Tasks",
+  "short_name": "Notes"
+}
+```
+
+#### Background Color
+Edit `manifest.json`:
+```json
+"background_color": "#ffffff"
+```
+
+### Verification
+
+After deployment:
+1. **Lighthouse Audit**: Run PWA audit in DevTools
+2. **PWA Builder**: Test at https://www.pwabuilder.com/
+3. **Manual Testing**: Install on Android device
+
+### Troubleshooting
+
+**Installation Not Available**
+- Ensure HTTPS (required for PWA)
+- Check manifest.json is accessible
+- Verify all icons exist
+- Clear browser cache
+
+**Theme Color Not Updating**
+- Check ThemeColorManager is loaded
+- Verify theme store is working
+- Inspect meta theme-color tag
+
+**Offline Not Working**
+- Visit pages while online first
+- Check service worker is registered
+- Verify IndexedDB is enabled
+
 ## Future Enhancements
 
 1. **Real-time Sync**: WebSocket connections for live updates
@@ -349,9 +559,11 @@ Database: MongoDB Atlas (cloud cluster)
 3. **Rich Text**: Markdown or WYSIWYG editor for notes
 4. **File Attachments**: Image/file uploads to S3/GridFS
 5. **Email Reminders**: Scheduled jobs for task reminders
-6. **Mobile Apps**: Native mobile apps (iOS/Android) with same backend
-7. **Search**: MongoDB Atlas Search for full-text search
-8. **Analytics**: Usage tracking and insights
+6. **Push Notifications**: Task reminders via PWA notifications
+7. **Background Sync**: Sync even when app is closed
+8. **Share Target**: Share content to app from other apps
+9. **Search**: MongoDB Atlas Search for full-text search
+10. **Analytics**: Usage tracking and insights
 
 
 ## Performance Optimization

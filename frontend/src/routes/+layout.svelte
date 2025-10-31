@@ -9,6 +9,7 @@
   import { isPublicRoute, isAuthOnlyRoute } from '../hooks.client';
   import OfflineIndicator from '$lib/components/sync/OfflineIndicator.svelte';
   import SyncStatusIndicator from '$lib/components/sync/SyncStatusIndicator.svelte';
+  import ThemeColorManager from '$lib/components/ThemeColorManager.svelte';
   import { ErrorBoundary } from '$lib/components/ui';
   
   // Reactive state
@@ -113,6 +114,9 @@
 
 <!-- Main app container with theme classes -->
 <div class="min-h-screen bg-background-light dark:bg-black text-gray-900 dark:text-gray-100">
+  
+  <!-- Theme Color Manager (updates meta theme-color dynamically) -->
+  <ThemeColorManager />
   
   <!-- Offline Indicator (shown globally when offline) -->
   <OfflineIndicator />

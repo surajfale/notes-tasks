@@ -8,10 +8,18 @@ A production-ready web application for managing notes and tasks with offline cap
 - **Notes Management**: Rich text notes with tags, search, and archive
 - **Tasks Management**: Task tracking with due dates, priorities, and completion status
 - **Lists Organization**: Organize notes and tasks into colored lists
+- **Progressive Web App**: Install on mobile devices for native app experience
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 - **Offline Support**: Full offline functionality with automatic sync
 - **Theme Customization**: Light/dark mode with customizable accent colors
 - **Material Design 3**: Modern, accessible UI
+
+### PWA Features
+- 📱 Install directly from browser (no app store needed)
+- 🎨 Native app appearance with custom splash screen
+- ⚡ Offline functionality with service worker caching
+- 🎯 App shortcuts for quick actions (New Note, New Task)
+- 🌈 Dynamic theme color that adapts to your preferences
 
 ## Tech Stack
 
@@ -88,8 +96,8 @@ Expected response: `{"status":"OK",...}`
 
 ## Documentation
 
-- **[docs/USAGE.md](docs/USAGE.md)** - Complete user guide
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture, performance, and responsive design
+- **[docs/USAGE.md](docs/USAGE.md)** - Complete user guide with PWA installation instructions
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture, PWA implementation, performance, and responsive design
 - **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Deployment guide (Railway + Netlify)
 - **[docs/MONGODB_SETUP.md](docs/MONGODB_SETUP.md)** - MongoDB Atlas setup
 - **[backend/README.md](backend/README.md)** - Backend API documentation
@@ -147,6 +155,48 @@ npm run build
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed deployment instructions.
 
+## Progressive Web App
+
+### Installation
+
+Install the app on your device for a native app experience:
+
+**Android (Chrome)**
+1. Visit the site in Chrome
+2. Tap menu (⋮) → "Add to Home screen"
+3. Tap "Install"
+
+**iOS (Safari)**
+1. Visit the site in Safari
+2. Tap Share → "Add to Home Screen"
+
+**Desktop (Chrome/Edge)**
+1. Click install icon in address bar
+2. Click "Install"
+
+### PWA Features
+
+- **Offline Support**: Works without internet connection
+- **Native App Feel**: Standalone window, no browser UI
+- **Custom Icon**: Branded icon on home screen
+- **Splash Screen**: Shows while loading
+- **Dynamic Theme**: Status bar color matches your theme
+- **App Shortcuts**: Long-press icon for quick actions (New Note, New Task)
+- **Fast Loading**: Cached assets load instantly
+- **Auto Updates**: Always get the latest version
+
+### Icon Generation
+
+Icons are generated using Sharp:
+
+```bash
+cd frontend
+npm run create:base-icon    # Create base 512×512 icon
+npm run generate:icons      # Generate all 8 PWA icon sizes
+```
+
+All icons are stored in `frontend/static/` and total ~53 KB.
+
 ## Performance
 
 - Initial load: ~37 KB (gzipped)
@@ -154,6 +204,7 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed deployment instruction
 - Preloading on navigation hover
 - Debounced search (300ms)
 - IndexedDB caching for offline support
+- Service worker caching for PWA
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for performance details.
 

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA Icons Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+    
+    .subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 1.1rem;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    
+    .icon-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .icon-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 150px;
+      margin-bottom: 20px;
+    }
+    
+    .icon-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .icon-info {
+      margin-top: 15px;
+    }
+    
+    .icon-size {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #6366f1;
+      margin-bottom: 5px;
+    }
+    
+    .icon-purpose {
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    .success-banner {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 40px;
+    }
+    
+    .success-banner h2 {
+      color: #10b981;
+      margin-bottom: 10px;
+      font-size: 1.8rem;
+    }
+    
+    .success-banner p {
+      color: #666;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .next-steps {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .next-steps h2 {
+      color: #6366f1;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    
+    .next-steps ol {
+      margin-left: 20px;
+      color: #333;
+      line-height: 2;
+    }
+    
+    .next-steps li {
+      margin-bottom: 10px;
+    }
+    
+    .next-steps code {
+      background: #f3f4f6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #6366f1;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 PWA Icons Preview</h1>
+    <p class="subtitle">Notes & Tasks App - All icons generated successfully!</p>
+    
+    <div class="success-banner">
+      <h2>✅ All 8 Icons Generated</h2>
+      <p>Your Progressive Web App icons are ready for deployment. Each icon is optimized for different device sizes and use cases.</p>
+    </div>
+    
+    <div class="grid">
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-72x72.png" alt="72x72 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">72×72</div>
+          <div class="icon-purpose">Android Small</div>
+        </div>
+      </div>
+      
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-96x96.png" alt="96x96 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">96×96</div>
+          <div class="icon-purpose">Android Medium</div>
+        </div>
+      </div>
+      
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-128x128.png" alt="128x128 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">128×128</div>
+          <div class="icon-purpose">Android Large</div>
+        </div>
+      </div>
+      
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-144x144.png" alt="144x144 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">144×144</div>
+          <div class="icon-purpose">Android XL</div>
+        </div>
+      </div>
+      
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-152x152.png" alt="152x152 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">152×152</div>
+          <div class="icon-purpose">iOS / Apple Touch</div>
+        </div>
+      </div>
+      
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-192x192.png" alt="192x192 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">192×192</div>
+          <div class="icon-purpose">Android Standard</div>
+        </div>
+      </div>
+      
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-384x384.png" alt="384x384 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">384×384</div>
+          <div class="icon-purpose">Android XXL</div>
+        </div>
+      </div>
+      
+      <div class="icon-card">
+        <div class="icon-wrapper">
+          <img src="static/icon-512x512.png" alt="512x512 icon">
+        </div>
+        <div class="icon-info">
+          <div class="icon-size">512×512</div>
+          <div class="icon-purpose">Splash Screen</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="next-steps">
+      <h2>🚀 Next Steps</h2>
+      <ol>
+        <li>Build your app: <code>npm run build</code></li>
+        <li>Preview locally: <code>npm run preview</code></li>
+        <li>Test PWA at <code>http://localhost:4173</code></li>
+        <li>Deploy to production (Netlify)</li>
+        <li>Install on Android device from Chrome</li>
+        <li>Enjoy your native app experience! 🎉</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
