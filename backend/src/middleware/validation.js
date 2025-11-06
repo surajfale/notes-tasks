@@ -60,7 +60,7 @@ const schemas = {
   createNote: Joi.object({
     listId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional(),
     title: Joi.string().max(200).required(),
-    body: Joi.string().max(50000).allow('').optional(),
+    body: Joi.string().max(2000).allow('').optional(),
     tags: Joi.array().items(Joi.string().max(30)).max(20).optional(),
     isArchived: Joi.boolean().optional(),
   }),
@@ -68,7 +68,7 @@ const schemas = {
   updateNote: Joi.object({
     listId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).allow(null).optional(),
     title: Joi.string().max(200).optional(),
-    body: Joi.string().max(50000).allow('').optional(),
+    body: Joi.string().max(2000).allow('').optional(),
     tags: Joi.array().items(Joi.string().max(30)).max(20).optional(),
     isArchived: Joi.boolean().optional(),
   }).min(1),
@@ -92,6 +92,12 @@ const schemas = {
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
   }).min(1),
+
+  enhanceContent: Joi.object({
+    content: Joi.string().required().min(1).max(10000),
+    contentType: Joi.string().valid('note', 'task').required(),
+    tone: Joi.string().valid('concise', 'detailed', 'professional', 'casual').optional().default('casual'),
+  }),
 };
 
 module.exports = { validate, schemas };

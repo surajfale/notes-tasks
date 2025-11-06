@@ -7,10 +7,12 @@
   import Modal from '$lib/components/ui/Modal.svelte';
   import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
+
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import { validateNoteForm } from '$lib/utils/validation';
   import { formatRelativeDate, formatAbsoluteDateTime } from '$lib/utils/date';
+  import { aiRepository } from '$lib/repositories/ai.repository';
 
   export let data: PageData;
 
@@ -20,6 +22,11 @@
   let listId = data.note.listId || '';
   let isArchived = data.note.isArchived;
   let isSubmitting = false;
+  let enhancing = false;
+  let enhanceError = '';
+  let selectedTone: 'concise' | 'detailed' | 'professional' | 'casual' = 'casual';
+  let originalBody = '';
+  let hasEnhanced = false;
   let showDeleteModal = false;
   let isDeleting = false;
   let errors: { title?: string; body?: string } = {};
@@ -161,6 +168,36 @@
       alert('Failed to copy note to clipboard');
     }
   }
+
+  async function handleEnhance() {
+    if (!body || body.trim().length === 0) {
+      return;
+    }
+
+    enhancing = true;
+    enhanceError = '';
+
+    try {
+      // Save original content before enhancing
+      originalBody = body;
+      const enhancedContent = await aiRepository.enhanceContent(body, 'note', selectedTone);
+      body = enhancedContent;
+      hasEnhanced = true;
+    } catch (error: any) {
+      enhanceError = error.message || 'Failed to enhance content';
+      console.error('AI enhancement error:', error);
+    } finally {
+      enhancing = false;
+    }
+  }
+
+  function handleRevert() {
+    if (originalBody) {
+      body = originalBody;
+      hasEnhanced = false;
+      enhanceError = '';
+    }
+  }
 </script>
 
 <div class="max-w-4xl mx-auto p-6">
@@ -215,8 +252,15 @@
       <MarkdownEditor
         label="Body"
         bind:value={body}
+        bind:selectedTone
         placeholder="Enter note content... Supports **bold**, *italic*, # headings, - lists, and more"
         rows={12}
+        disabled={enhancing}
+        showAiControls={true}
+        onEnhance={handleEnhance}
+        onRevert={handleRevert}
+        {enhancing}
+        {hasEnhanced}
       />
 
       <Input
@@ -251,6 +295,12 @@
         </label>
       </div>
     </div>
+
+    {#if enhanceError}
+      <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <p class="text-red-800 dark:text-red-200">{enhanceError}</p>
+      </div>
+    {/if}
 
     {#if $notesStore.error}
       <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">

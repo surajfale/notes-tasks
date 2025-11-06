@@ -35,7 +35,14 @@ This guide covers deploying the Notes & Tasks application to production.
    RATE_LIMIT_WINDOW_MS=900000
    RATE_LIMIT_MAX_REQUESTS=100
    AUTH_RATE_LIMIT_MAX_REQUESTS=5
+   
+   # AI Enhancement (Optional)
+   OLLAMA_API_URL=https://ollama.com/api/chat
+   OLLAMA_API_KEY=your_ollama_api_key
+   OLLAMA_MODEL=gpt-oss:120b-cloud
    ```
+   
+   **Note**: AI enhancement features are optional. If you don't set the Ollama API credentials, the app will work normally but the AI enhancement button will show an error when clicked.
 
 4. **Generate JWT Secret**
    ```bash

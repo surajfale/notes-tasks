@@ -31,5 +31,10 @@ export const API_ENDPOINTS = {
   LISTS: {
     BASE: '/api/lists',
     BY_ID: (id: string) => `/api/lists/${id}`
+  },
+
+  // AI endpoints
+  AI: {
+    ENHANCE: '/api/ai/enhance'
   }
 } as const;

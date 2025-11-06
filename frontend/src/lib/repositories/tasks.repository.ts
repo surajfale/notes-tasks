@@ -79,6 +79,7 @@ export const tasksRepository = {
         priority: data.priority || 2,
         listId: data.listId,
         isCompleted: false,
+        checklistItems: data.checklistItems || [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };

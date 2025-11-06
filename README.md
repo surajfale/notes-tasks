@@ -5,6 +5,7 @@ A production-ready web application for managing notes and tasks with offline cap
 ## Features
 
 - **User Authentication**: Secure JWT-based authentication with account management
+- **AI-Powered Content Enhancement**: Intelligent content improvement with customizable tone styles
 - **Notes Management**: Rich text notes with tags, search, and archive
 - **Tasks Management**: Task tracking with due dates, priorities, and completion status
 - **Lists Organization**: Organize notes and tasks into colored lists
@@ -13,6 +14,14 @@ A production-ready web application for managing notes and tasks with offline cap
 - **Offline Support**: Full offline functionality with automatic sync
 - **Theme Customization**: Light/dark mode with customizable accent colors
 - **Material Design 3**: Modern, accessible UI
+
+### AI Enhancement Features
+- 🤖 **Smart Content Enhancement**: Improve notes and tasks with AI assistance
+- 🎨 **Customizable Tone Styles**: Choose from concise, detailed, professional, or casual tones
+- 📝 **Note Enhancement**: Automatically format, organize, and improve note content with markdown
+- ✅ **Task Breakdown**: Convert task descriptions into actionable checklist items
+- 🔄 **Revert Option**: Easily undo AI changes if needed
+- 🚀 **Powered by Ollama Cloud**: Uses advanced language models for intelligent suggestions
 
 ### PWA Features
 - 📱 Install directly from browser (no app store needed)
@@ -29,6 +38,7 @@ A production-ready web application for managing notes and tasks with offline cap
 - JWT Authentication
 - Joi Validation
 - Winston Logging
+- Ollama Cloud API (AI Enhancement)
 
 ### Frontend
 - SvelteKit with Static Adapter
@@ -49,7 +59,10 @@ A production-ready web application for managing notes and tasks with offline cap
 cd backend
 npm install
 cp .env.example .env
-# Edit .env with your MongoDB connection string and JWT secret
+# Edit .env with:
+# - MongoDB connection string
+# - JWT secret
+# - Ollama Cloud API credentials (optional, for AI features)
 npm run dev
 ```
 
@@ -111,6 +124,9 @@ Expected response: `{"status":"OK",...}`
 - `GET /api/auth/me` - Get current user
 - `PUT /api/auth/password` - Change password
 - `DELETE /api/auth/account` - Delete account
+
+### AI Enhancement
+- `POST /api/ai/enhance` - Enhance note or task content with AI
 
 ### Resources
 - `GET /api/lists` - Get user's lists
@@ -214,6 +230,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for performance details.
 - **MongoDB connection failed**: Check connection string in `.env`
 - **JWT errors**: Ensure `JWT_SECRET` is set in `.env`
 - **CORS errors**: Add frontend URL to `CORS_ORIGINS` in `.env`
+- **AI enhancement not working**: Verify `OLLAMA_API_KEY` and `OLLAMA_API_URL` are set in `.env`
 
 ### Frontend
 - **Build errors**: Run `npm install` and restart dev server

@@ -105,6 +105,7 @@ A production-ready web application for managing notes and tasks, built using Sve
 - **Security**: helmet, cors, express-rate-limit
 - **Logging**: winston
 - **Environment**: dotenv
+- **AI Integration**: Ollama Cloud API (axios)
 
 ### Database
 - **MongoDB Atlas**: M0 (free tier) or higher
@@ -265,6 +266,13 @@ A production-ready web application for managing notes and tasks, built using Sve
 - `PUT /api/tasks/:id` - Update task
 - `DELETE /api/tasks/:id` - Delete task
 - `PUT /api/tasks/:id/complete` - Toggle completion
+
+### AI Enhancement
+- `POST /api/ai/enhance` - Enhance note or task content using AI
+  - **Body**: `{ content: string, contentType: 'note'|'task', tone?: 'concise'|'detailed'|'professional'|'casual' }`
+  - **Response**: `{ success: true, enhancedContent: string }`
+  - **Authentication**: Required (JWT)
+  - **Rate Limiting**: Same as API endpoints (100 req/15min)
 
 ## Error Handling
 
@@ -551,6 +559,186 @@ After deployment:
 - Visit pages while online first
 - Check service worker is registered
 - Verify IndexedDB is enabled
+
+## AI Content Enhancement
+
+### Overview
+
+The application integrates AI-powered content enhancement using Ollama Cloud API to help users improve their notes and break down tasks into actionable checklists.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Frontend (SvelteKit)                    │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │              MarkdownEditor Component                 │  │
+│  │  ┌─────────────────────────────────────────────────┐  │  │
+│  │  │  Tone Selector (Concise/Detailed/Pro/Casual)    │  │  │
+│  │  │  Enhance Button → aiRepository.enhanceContent() │  │  │
+│  │  │  Revert Button (undo AI changes)                │  │  │
+│  │  └─────────────────────────────────────────────────┘  │  │
+│  └───────────────────────│───────────────────────────────┘  │
+└────────────────────────────│──────────────────────────────┘
+                             │ POST /api/ai/enhance
+                             │ { content, contentType, tone }
+                             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Backend (Express.js)                     │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │              AI Controller & Routes                   │  │
+│  │  ┌─────────────────────────────────────────────────┐  │  │
+│  │  │  JWT Auth → Validation → aiController           │  │  │
+│  │  └─────────────────────────────────────────────────┘  │  │
+│  │                            │                          │  │
+│  │                            ▼                          │  │
+│  │              ┌──────────────────────────┐             │  │
+│  │              │   Ollama Service         │             │  │
+│  │              │  - Build prompt          │             │  │
+│  │              │  - Call Ollama API       │             │  │
+│  │              │  - Validate response     │             │  │
+│  │              └──────────────────────────┘             │  │
+│  └───────────────────────│───────────────────────────────┘  │
+└────────────────────────────│──────────────────────────────┘
+                             │ HTTPS POST
+                             │ Authorization: Bearer <API_KEY>
+                             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Ollama Cloud API                         │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │              gpt-oss:120b-cloud Model                 │  │
+│  │  - Temperature: 0.7 (balanced creativity)             │  │
+│  │  - Top-p: 0.9 (diverse responses)                     │  │
+│  │  - System prompt: First-person assistant              │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Features
+
+#### Note Enhancement
+- **Markdown Formatting**: Applies proper headers, lists, bold, italic, tables
+- **Grammar Correction**: Fixes spelling and grammar errors
+- **Content Organization**: Structures information logically
+- **Context Addition**: Adds helpful insights where relevant
+- **Character Limit**: Maximum 2000 characters
+- **First Person**: Writes as if the user wrote it themselves
+
+#### Task Enhancement
+- **Checklist Generation**: Converts task descriptions into actionable items
+- **Markdown Checkboxes**: Uses `- [ ]` format for compatibility
+- **Item Limit**: Each item max 255 characters, max 20 items total
+- **Organized Sections**: Groups related items with headers
+- **Specific Actions**: Breaks down vague tasks into concrete steps
+- **First Person**: Writes as if the user wrote it themselves
+
+#### Tone Styles
+- **Concise**: Brief and to the point, removes fluff
+- **Detailed**: Comprehensive with context and examples
+- **Professional**: Formal, business-appropriate language
+- **Casual**: Friendly, conversational with personality
+
+### Implementation Details
+
+#### Backend Service (`ollamaService.js`)
+```javascript
+// Key features:
+- Dynamic prompt building based on content type and tone
+- 30-second timeout for API requests
+- Comprehensive error handling (401, 404, 429, 500+)
+- Character limit enforcement
+- Response validation
+```
+
+#### Frontend Repository (`ai.repository.ts`)
+```typescript
+// Key features:
+- Input validation before API call
+- User-friendly error messages
+- Network error detection
+- Type-safe request/response handling
+```
+
+#### UI Components
+- **MarkdownEditor**: Integrated AI controls with tone selector
+- **Enhance Button**: Triggers AI enhancement
+- **Revert Button**: Restores original content
+- **Loading State**: Shows "Enhancing..." during processing
+- **Error Display**: Shows user-friendly error messages
+
+### Configuration
+
+#### Environment Variables
+```bash
+# Backend .env
+OLLAMA_API_URL=https://ollama.com/api/chat
+OLLAMA_API_KEY=your_api_key_here
+OLLAMA_MODEL=gpt-oss:120b-cloud
+```
+
+#### API Credentials
+- Sign up at https://ollama.com
+- Generate API key from dashboard
+- Add to backend `.env` file
+- Restart backend server
+
+### Error Handling
+
+| Error Code | Status | User Message |
+|------------|--------|--------------|
+| SERVICE_UNAVAILABLE | 503 | AI service is not configured |
+| VALIDATION_ERROR | 400 | Content cannot be empty |
+| TIMEOUT | 504 | Request timed out |
+| AUTHENTICATION_ERROR | 401 | Invalid API key |
+| RATE_LIMIT_EXCEEDED | 429 | Too many requests |
+| AI_SERVICE_ERROR | 500+ | Service temporarily unavailable |
+
+### Performance
+
+- **Response Time**: Typically 2-5 seconds
+- **Timeout**: 30 seconds maximum
+- **Rate Limiting**: Shared with API endpoints (100 req/15min)
+- **Caching**: No caching (each request is unique)
+
+### Security
+
+- **Authentication**: Requires valid JWT token
+- **API Key**: Stored securely in backend environment
+- **User Isolation**: Each request tied to authenticated user
+- **Input Validation**: Content validated before processing
+- **Output Sanitization**: Response validated before returning
+
+### Usage Flow
+
+1. User writes note/task content
+2. User selects desired tone style
+3. User clicks "Enhance with AI" button
+4. Frontend shows loading state
+5. Backend builds tone-specific prompt
+6. Backend calls Ollama Cloud API
+7. AI processes and returns enhanced content
+8. Backend validates and enforces limits
+9. Frontend displays enhanced content
+10. User can revert if not satisfied
+
+### Limitations
+
+- **Character Limits**: Notes max 2000 chars, task items max 255 chars
+- **Timeout**: 30 seconds maximum processing time
+- **Rate Limiting**: Subject to API endpoint rate limits
+- **API Dependency**: Requires valid Ollama Cloud API key
+- **Language**: Optimized for English content
+
+### Future Enhancements
+
+1. **Batch Processing**: Enhance multiple notes/tasks at once
+2. **Custom Prompts**: User-defined enhancement instructions
+3. **Learning**: Remember user preferences for tone
+4. **Suggestions**: AI-powered tag and list suggestions
+5. **Smart Scheduling**: AI-suggested due dates for tasks
+6. **Content Templates**: Pre-built templates for common note types
+7. **Multi-language**: Support for non-English content
+8. **Offline Mode**: Local AI model for offline enhancement
 
 ## Future Enhancements
 

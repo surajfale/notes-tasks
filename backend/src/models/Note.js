@@ -22,7 +22,7 @@ const noteSchema = new mongoose.Schema(
     body: {
       type: String,
       default: '',
-      maxlength: [50000, 'Note body cannot exceed 50000 characters'],
+      maxlength: [2000, 'Note body cannot exceed 2000 characters'],
     },
     tags: {
       type: [String],

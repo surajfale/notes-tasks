@@ -6,6 +6,7 @@ Production-ready Node.js REST API for the Notes & Tasks web application.
 
 - **Authentication**: JWT-based auth with bcrypt password hashing
 - **User Management**: Registration, login, password change, account deletion
+- **AI Content Enhancement**: Intelligent content improvement with customizable tone styles
 - **CRUD Operations**: Full CRUD for lists, notes, and tasks
 - **Data Isolation**: All user data is completely isolated and scoped
 - **Security**: Rate limiting, CORS, Helmet, input validation
@@ -43,12 +44,26 @@ JWT_SECRET=your-generated-secret-key
 PORT=3000
 NODE_ENV=development
 CORS_ORIGINS=http://localhost:8080,http://127.0.0.1:8080
+OLLAMA_API_KEY=your_ollama_api_key_here
 ```
 
 Generate a secure JWT secret:
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
+
+#### AI Enhancement Configuration (Optional)
+
+The application includes AI-powered content enhancement using Ollama Cloud's DeepSeek-v3.1:671b-cloud model. To enable this feature:
+
+1. Sign up for an Ollama Cloud account at https://ollama.cloud
+2. Generate an API key from your account dashboard
+3. Add the API key to your `.env` file:
+   ```env
+   OLLAMA_API_KEY=your_actual_api_key_here
+   ```
+
+If the `OLLAMA_API_KEY` is not configured, the AI enhancement feature will be disabled, and the API will return an error when users attempt to use it. All other features will continue to work normally.
 
 ### 3. Start Development Server
 
@@ -136,8 +151,70 @@ Query parameters for GET `/api/notes`:
 
 Query parameters for GET `/api/tasks`:
 - `listId` - Filter by list ID
+- `isCompleted` - Filter by completion status (true/false)
+- `priority` - Filter by priority (1=high, 2=normal, 3=low)
+
+### AI Enhancement
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/ai/enhance` | Enhance note or task content with AI | Yes |
+
+**Request Body:**
+```json
+{
+  "content": "string (required) - The content to enhance",
+  "contentType": "note|task (required) - Type of content",
+  "tone": "concise|detailed|professional|casual (optional, default: casual)"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "enhancedContent": "string - The AI-enhanced content"
+}
+```
+
+**Error Responses:**
+- `400` - Validation error (empty content, invalid type)
+- `401` - Authentication required
+- `429` - Rate limit exceeded
+- `503` - AI service not configured or unavailable
+- `504` - Request timeout (30 seconds)
+
+Query parameters for GET `/api/tasks`:
+- `listId` - Filter by list ID
 - `isCompleted` - Filter by completion (true/false)
 - `priority` - Filter by priority (1, 2, or 3)
+
+### AI Enhancement
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/ai/enhance` | Enhance note or task content with AI | Yes |
+
+Request body:
+```json
+{
+  "content": "Your draft content here",
+  "contentType": "note"
+}
+```
+
+- `content` (string, required): The text content to enhance (1-10000 characters)
+- `contentType` (string, required): Either "note" or "task"
+
+Response:
+```json
+{
+  "success": true,
+  "enhancedContent": "AI-improved version of your content"
+}
+```
+
+**Note**: Requires `OLLAMA_API_KEY` to be configured in environment variables. The AI enhancement uses Ollama Cloud's DeepSeek-v3.1:671b-cloud model to improve clarity, structure, and grammar while preserving the original intent.
 
 ## API Usage Examples
 
@@ -221,6 +298,26 @@ curl -X POST http://localhost:3000/api/tasks \
   }'
 ```
 
+### Enhance Content with AI
+
+```bash
+curl -X POST http://localhost:3000/api/ai/enhance \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "content": "meeting notes - discussed new features and timeline",
+    "contentType": "note"
+  }'
+```
+
+Response:
+```json
+{
+  "success": true,
+  "enhancedContent": "Meeting Notes\n\nDiscussed the following topics:\n- New feature requirements and specifications\n- Project timeline and key milestones\n- Resource allocation and team responsibilities"
+}
+```
+
 ### Delete Account
 
 ```bash
@@ -263,7 +360,52 @@ Common error codes:
 - `DUPLICATE_ERROR` - Resource already exists
 - `NOT_FOUND` - Resource not found
 - `RATE_LIMIT_EXCEEDED` - Too many requests
+- `AI_SERVICE_ERROR` - AI enhancement service error
 - `SERVER_ERROR` - Internal server error
+
+### AI Enhancement Errors
+
+The AI enhancement endpoint may return specific errors:
+
+- **Service Not Configured** (500):
+  ```json
+  {
+    "error": {
+      "code": "AI_SERVICE_ERROR",
+      "message": "AI enhancement service is not configured"
+    }
+  }
+  ```
+
+- **Timeout** (504):
+  ```json
+  {
+    "error": {
+      "code": "AI_SERVICE_ERROR",
+      "message": "AI enhancement request timed out"
+    }
+  }
+  ```
+
+- **Invalid API Key** (401):
+  ```json
+  {
+    "error": {
+      "code": "AI_SERVICE_ERROR",
+      "message": "Invalid API key"
+    }
+  }
+  ```
+
+- **Rate Limit** (429):
+  ```json
+  {
+    "error": {
+      "code": "AI_SERVICE_ERROR",
+      "message": "Rate limit exceeded, please try again later"
+    }
+  }
+  ```
 
 ## Project Structure
 
@@ -276,7 +418,8 @@ backend/
 │   │   ├── authController.js    # Auth logic
 │   │   ├── listsController.js   # Lists CRUD
 │   │   ├── notesController.js   # Notes CRUD
-│   │   └── tasksController.js   # Tasks CRUD
+│   │   ├── tasksController.js   # Tasks CRUD
+│   │   └── aiController.js      # AI enhancement logic
 │   ├── middleware/
 │   │   ├── auth.js              # JWT verification
 │   │   ├── validation.js        # Input validation (Joi)
@@ -290,7 +433,10 @@ backend/
 │   │   ├── authRoutes.js        # Auth routes
 │   │   ├── listsRoutes.js       # Lists routes
 │   │   ├── notesRoutes.js       # Notes routes
-│   │   └── tasksRoutes.js       # Tasks routes
+│   │   ├── tasksRoutes.js       # Tasks routes
+│   │   └── aiRoutes.js          # AI enhancement routes
+│   ├── services/
+│   │   └── ollamaService.js     # Ollama Cloud API integration
 │   ├── utils/
 │   │   └── logger.js            # Winston logger
 │   └── server.js                # Express app entry
@@ -342,7 +488,10 @@ CORS_ORIGINS=https://yourdomain.com
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 AUTH_RATE_LIMIT_MAX_REQUESTS=5
+OLLAMA_API_KEY=your_production_ollama_api_key
 ```
+
+**Note**: The `OLLAMA_API_KEY` is optional. If not provided, the AI enhancement feature will be disabled, but all other features will work normally.
 
 ### Deploy to Railway
 

@@ -53,7 +53,7 @@ const getTask = async (req, res, next) => {
 // @access  Private
 const createTask = async (req, res, next) => {
   try {
-    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags } = req.body;
+    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags, checklistItems } = req.body;
 
     const task = await Task.create({
       userId: req.user._id,
@@ -65,6 +65,7 @@ const createTask = async (req, res, next) => {
       isCompleted,
       priority,
       tags,
+      checklistItems: checklistItems || [],
     });
 
     res.status(201).json(task);
@@ -92,7 +93,7 @@ const updateTask = async (req, res, next) => {
       });
     }
 
-    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags } = req.body;
+    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags, checklistItems } = req.body;
 
     if (listId !== undefined) task.listId = listId;
     if (title !== undefined) task.title = title;
@@ -102,6 +103,20 @@ const updateTask = async (req, res, next) => {
     if (isCompleted !== undefined) task.isCompleted = isCompleted;
     if (priority !== undefined) task.priority = priority;
     if (tags !== undefined) task.tags = tags;
+    if (checklistItems !== undefined) {
+      task.checklistItems = checklistItems;
+      
+      // Auto-complete task if all checklist items are completed
+      if (checklistItems.length > 0) {
+        const allCompleted = checklistItems.every(item => item.isCompleted);
+        if (allCompleted && !task.isCompleted) {
+          task.isCompleted = true;
+        } else if (!allCompleted && task.isCompleted) {
+          // If task was manually marked complete but items aren't, keep it complete
+          // User can manually uncheck if needed
+        }
+      }
+    }
 
     await task.save();
 

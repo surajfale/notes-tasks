@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const listsRoutes = require('./routes/listsRoutes');
 const notesRoutes = require('./routes/notesRoutes');
 const tasksRoutes = require('./routes/tasksRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Initialize express app
 const app = express();
@@ -94,6 +95,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/lists', listsRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/tasks', tasksRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -106,6 +108,7 @@ app.get('/', (req, res) => {
       lists: '/api/lists',
       notes: '/api/notes',
       tasks: '/api/tasks',
+      ai: '/api/ai',
     },
   });
 });

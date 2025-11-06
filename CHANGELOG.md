@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### 2025-10-31 01:04:35 - 910bfe6 [LOCAL]
+### 2025-11-05 23:48:32 - 01670a3 [LOCAL]
+
+feat(ai): add AI content enhancement feature for notes and tasks
+
+- Implement AI-powered content enhancement using Ollama Cloud
+- Introduce customizable tone styles for enhanced content
+- Add new API endpoint for content enhancement
+- Update README and documentation for AI features
+- Modify task model to support checklist items and enhancements### 2025-10-31 01:04:35 - 910bfe6 [PUSHED]
 
 feat(pwa): implement Progressive Web App features and icon generation
 

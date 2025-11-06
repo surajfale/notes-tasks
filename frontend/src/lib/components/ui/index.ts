@@ -10,3 +10,4 @@ export { default as ErrorBoundary } from './ErrorBoundary.svelte';
 export { default as MarkdownEditor } from './MarkdownEditor.svelte';
 export { default as MarkdownRenderer } from './MarkdownRenderer.svelte';
 export { default as Tag } from './Tag.svelte';
+export { default as LightningButton } from './LightningButton.svelte';

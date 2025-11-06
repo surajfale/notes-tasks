@@ -5,6 +5,7 @@ Complete guide for using the Notes & Tasks application.
 ## Table of Contents
 - [Getting Started](#getting-started)
 - [Authentication](#authentication)
+- [AI Content Enhancement](#ai-content-enhancement)
 - [Managing Notes](#managing-notes)
 - [Managing Tasks](#managing-tasks)
 - [Organizing with Lists](#organizing-with-lists)
@@ -53,6 +54,215 @@ The application uses a sidebar navigation (collapsible on mobile):
 - Click "Logout" in sidebar
 - Clears all local data
 - Redirects to login page
+
+## AI Content Enhancement
+
+### Overview
+
+The application includes AI-powered content enhancement to help you improve your notes and break down tasks into actionable checklists. This feature uses advanced language models to intelligently format, organize, and enhance your content.
+
+### Enhancing Notes
+
+#### How to Use
+
+1. **Create or Edit a Note**
+   - Open a new note or edit an existing one
+   - Write your note content in the body field
+
+2. **Select Tone Style**
+   - Choose from four tone options:
+     - **Concise**: Brief and to the point, removes fluff
+     - **Detailed**: Comprehensive with context and examples
+     - **Professional**: Formal, business-appropriate language
+     - **Casual**: Friendly, conversational with personality (default)
+
+3. **Enhance Content**
+   - Click the "✨ Enhance with AI" button
+   - Wait 2-5 seconds for processing
+   - Review the enhanced content
+
+4. **Review and Save**
+   - If satisfied, click "Save" to keep changes
+   - If not satisfied, click "↩ Revert" to restore original
+   - You can enhance multiple times with different tones
+
+#### What AI Does for Notes
+
+- **Markdown Formatting**: Applies proper headers, lists, bold, italic
+- **Grammar Correction**: Fixes spelling and grammar errors
+- **Content Organization**: Structures information logically
+- **Context Addition**: Adds helpful insights where relevant
+- **Clarity Improvement**: Makes content easier to understand
+- **First Person**: Writes as if you wrote it yourself
+
+#### Example
+
+**Original Note:**
+```
+meeting notes
+- discuss project timeline
+- budget concerns
+- need to hire 2 developers
+```
+
+**Enhanced (Professional Tone):**
+```
+# Meeting Notes
+
+## Project Timeline Discussion
+- Reviewed current project milestones and deadlines
+- Identified potential delays in Q2 deliverables
+- Agreed to weekly status updates
+
+## Budget Concerns
+- Current spending tracking 15% over budget
+- Need to reallocate resources from marketing
+- Propose cost-cutting measures for approval
+
+## Hiring Requirements
+- Immediate need for 2 senior developers
+- Skills required: React, Node.js, MongoDB
+- Target start date: Within 30 days
+```
+
+### Enhancing Tasks
+
+#### How to Use
+
+1. **Create or Edit a Task**
+   - Open a new task or edit an existing one
+   - Write your task description
+
+2. **Select Tone Style**
+   - Choose the tone that fits your work style
+   - Casual works well for personal tasks
+   - Professional works well for work tasks
+
+3. **Enhance Content**
+   - Click the "✨ Enhance with AI" button
+   - Wait 2-5 seconds for processing
+   - Review the generated checklist
+
+4. **Review and Save**
+   - AI converts your task into actionable checklist items
+   - Each item is a specific, actionable step
+   - Click "↩ Revert" if you want to start over
+   - Click "Save" to keep the checklist
+
+#### What AI Does for Tasks
+
+- **Checklist Generation**: Converts descriptions into actionable items
+- **Markdown Checkboxes**: Uses `- [ ]` format for compatibility
+- **Organized Sections**: Groups related items with headers
+- **Specific Actions**: Breaks down vague tasks into concrete steps
+- **Item Limits**: Each item max 255 characters, max 20 items
+- **First Person**: Writes as if you wrote it yourself
+
+#### Example
+
+**Original Task:**
+```
+Plan team building event
+```
+
+**Enhanced (Casual Tone):**
+```
+## Planning Phase
+- [ ] Survey team for preferred activities and dates
+- [ ] Set budget limit and get approval from manager
+- [ ] Research 3-5 venue options within budget
+
+## Booking & Logistics
+- [ ] Book venue at least 2 weeks in advance
+- [ ] Arrange catering or restaurant reservations
+- [ ] Send calendar invites to all team members
+
+## Day-of Preparation
+- [ ] Confirm final headcount 48 hours before
+- [ ] Prepare name tags and any materials needed
+- [ ] Arrive 30 minutes early to set up
+```
+
+### Tone Style Guide
+
+#### Concise
+- **Best for**: Quick notes, reminders, lists
+- **Style**: Brief, no fluff, essential information only
+- **Example**: "Buy groceries. Get milk, eggs, bread."
+
+#### Detailed
+- **Best for**: Documentation, tutorials, complex topics
+- **Style**: Comprehensive, includes context and examples
+- **Example**: "Buy groceries for the week. Need to get milk (2% or whole), a dozen eggs (free-range if available), and whole wheat bread. Check pantry first to avoid duplicates."
+
+#### Professional
+- **Best for**: Work notes, meeting minutes, reports
+- **Style**: Formal, business-appropriate, polished
+- **Example**: "Procure weekly groceries. Required items include dairy products (milk), protein sources (eggs), and grain products (bread). Verify inventory prior to purchase."
+
+#### Casual
+- **Best for**: Personal notes, creative writing, brainstorming
+- **Style**: Friendly, conversational, approachable
+- **Example**: "Time to hit the grocery store! Grab some milk, eggs, and bread. Maybe throw in some cookies too 😊"
+
+### Tips for Best Results
+
+#### For Notes
+1. **Provide Context**: More content gives AI better understanding
+2. **Use Bullet Points**: AI can expand and organize them
+3. **Include Keywords**: Mention important topics you want covered
+4. **Try Different Tones**: Experiment to find what works best
+5. **Iterate**: Enhance multiple times with different approaches
+
+#### For Tasks
+1. **Be Specific**: "Plan event" → "Plan team building event for 20 people"
+2. **Include Constraints**: Mention budget, timeline, requirements
+3. **State the Goal**: What's the desired outcome?
+4. **Add Context**: Background information helps AI understand
+5. **Review Carefully**: Ensure all steps make sense for your situation
+
+### Limitations
+
+- **Character Limits**: Notes max 2000 characters, task items max 255 characters
+- **Processing Time**: Typically 2-5 seconds, max 30 seconds
+- **Language**: Optimized for English content
+- **Internet Required**: AI enhancement requires active connection
+- **Rate Limiting**: Subject to API rate limits (100 requests per 15 minutes)
+
+### Troubleshooting
+
+#### "AI service is not configured"
+- AI feature requires backend configuration
+- Contact administrator to enable AI features
+- Check that OLLAMA_API_KEY is set in backend
+
+#### "Request timed out"
+- Try again with shorter content
+- Check your internet connection
+- Wait a moment and retry
+
+#### "Too many requests"
+- You've hit the rate limit (100 requests per 15 minutes)
+- Wait a few minutes and try again
+- Rate limit resets every 15 minutes
+
+#### "Content cannot be empty"
+- Ensure you've written some content before enhancing
+- AI needs at least a few words to work with
+
+#### Poor Results
+- Try a different tone style
+- Provide more context in your content
+- Be more specific about what you want
+- Enhance again with adjusted content
+
+### Privacy & Security
+
+- **Authentication Required**: Must be logged in to use AI
+- **Content Privacy**: Your content is sent to Ollama Cloud API
+- **No Storage**: AI doesn't store your content after processing
+- **Secure Transmission**: All requests use HTTPS encryption
+- **User Isolation**: Your content is never shared with other users
 
 ## Managing Notes
 
@@ -318,11 +528,13 @@ The application uses a sidebar navigation (collapsible on mobile):
 
 ### Productivity
 
-1. **Use Lists**: Organize by project or category
-2. **Tag Notes**: Add tags for easy filtering
-3. **Set Priorities**: Mark important tasks as high priority
-4. **Archive Old Notes**: Keep workspace clean
-5. **Use Search**: Quickly find content
+1. **Use AI Enhancement**: Let AI improve your notes and break down tasks
+2. **Use Lists**: Organize by project or category
+3. **Tag Notes**: Add tags for easy filtering
+4. **Set Priorities**: Mark important tasks as high priority
+5. **Archive Old Notes**: Keep workspace clean
+6. **Use Search**: Quickly find content
+7. **Try Different Tones**: Experiment with AI tone styles for different content types
 
 ### Keyboard Navigation
 

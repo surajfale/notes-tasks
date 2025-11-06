@@ -7,9 +7,23 @@
   export let error: string = '';
   export let rows: number = 10;
   export let showPreview: boolean = false;
+  export let disabled: boolean = false;
+  export let maxLength: number | undefined = undefined;
+  export let showCharCount: boolean = false;
+  
+  // AI Enhancement props
+  export let showAiControls: boolean = false;
+  export let onEnhance: (() => void) | null = null;
+  export let onRevert: (() => void) | null = null;
+  export let enhancing: boolean = false;
+  export let hasEnhanced: boolean = false;
+  export let selectedTone: 'concise' | 'detailed' | 'professional' | 'casual' = 'casual';
 
   let textareaElement: HTMLTextAreaElement;
   let activeTab: 'write' | 'preview' = 'write';
+  
+  $: charCount = value.length;
+  $: isOverLimit = maxLength !== undefined && charCount > maxLength;
 
   // Markdown formatting functions
   function insertFormatting(before: string, after: string = '') {
@@ -133,6 +147,44 @@
     }
   }
 
+  // Convert markdown table to HTML
+  function convertTableToHtml(tableRows: string[]): string {
+    if (tableRows.length < 2) return tableRows.join('\n');
+    
+    let html = '<table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 my-4">';
+    
+    for (let i = 0; i < tableRows.length; i++) {
+      const row = tableRows[i];
+      
+      // Skip separator row (contains only |, -, and spaces)
+      if (row.match(/^[\|\s\-:]+$/)) continue;
+      
+      // Split by | and filter empty cells at start/end
+      const cells = row.split('|').map(cell => cell.trim()).filter((cell, idx, arr) => {
+        // Keep all cells except first and last if they're empty (from leading/trailing |)
+        return !(idx === 0 && cell === '') && !(idx === arr.length - 1 && cell === '');
+      });
+      
+      // First row is header
+      if (i === 0) {
+        html += '<thead class="bg-gray-100 dark:bg-gray-800"><tr>';
+        cells.forEach(cell => {
+          html += `<th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">${cell}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+      } else {
+        html += '<tr class="hover:bg-gray-50 dark:hover:bg-gray-900">';
+        cells.forEach(cell => {
+          html += `<td class="border border-gray-300 dark:border-gray-600 px-4 py-2">${cell}</td>`;
+        });
+        html += '</tr>';
+      }
+    }
+    
+    html += '</tbody></table>';
+    return html;
+  }
+
   // Simple markdown to HTML converter
   function markdownToHtml(markdown: string): string {
     if (!markdown) return '';
@@ -144,10 +196,45 @@
                .replace(/</g, '&lt;')
                .replace(/>/g, '&gt;');
 
+    // Process tables first (before other formatting)
+    const lines = html.split('\n');
+    const processedLines: string[] = [];
+    let inTable = false;
+    let tableRows: string[] = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      // Check if line is a table row (contains |)
+      if (line.includes('|')) {
+        if (!inTable) {
+          inTable = true;
+          tableRows = [];
+        }
+        tableRows.push(line);
+        
+        // Check if next line is not a table row or is the last line
+        const nextLine = i < lines.length - 1 ? lines[i + 1].trim() : '';
+        if (!nextLine.includes('|') || i === lines.length - 1) {
+          // Process the complete table
+          processedLines.push(convertTableToHtml(tableRows));
+          inTable = false;
+          tableRows = [];
+        }
+      } else {
+        processedLines.push(line);
+      }
+    }
+    
+    html = processedLines.join('\n');
+
     // Headers (must be before bold)
     html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>');
     html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mt-4 mb-2">$1</h2>');
     html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>');
+
+    // Strikethrough (must be before bold)
+    html = html.replace(/~~(.+?)~~/g, '<del class="line-through text-gray-500 dark:text-gray-400">$1</del>');
 
     // Bold
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
@@ -162,68 +249,82 @@
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
 
     // Process lists line by line to maintain proper structure
-    const lines = html.split('\n');
-    const processedLines: string[] = [];
+    const finalLines = html.split('\n');
+    const finalProcessedLines: string[] = [];
     let inUnorderedList = false;
     let inOrderedList = false;
     
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+    for (let i = 0; i < finalLines.length; i++) {
+      const line = finalLines[i];
       const trimmedLine = line.trim();
+      
+      // Skip if line is already HTML (table)
+      if (trimmedLine.startsWith('<table') || trimmedLine.startsWith('</table>')) {
+        if (inUnorderedList) {
+          finalProcessedLines.push('</ul>');
+          inUnorderedList = false;
+        }
+        if (inOrderedList) {
+          finalProcessedLines.push('</ol>');
+          inOrderedList = false;
+        }
+        finalProcessedLines.push(line);
+        continue;
+      }
       
       // Check for unordered list item
       if (trimmedLine.match(/^- (.+)$/)) {
         const content = trimmedLine.substring(2);
         if (!inUnorderedList) {
-          processedLines.push('<ul class="list-disc list-inside space-y-1 my-2">');
+          finalProcessedLines.push('<ul class="list-disc list-inside space-y-1 my-2">');
           inUnorderedList = true;
         }
         if (inOrderedList) {
-          processedLines.push('</ol>');
+          finalProcessedLines.push('</ol>');
           inOrderedList = false;
-          processedLines.push('<ul class="list-disc list-inside space-y-1 my-2">');
+          finalProcessedLines.push('<ul class="list-disc list-inside space-y-1 my-2">');
           inUnorderedList = true;
         }
-        processedLines.push(`<li class="ml-4">${content}</li>`);
+        finalProcessedLines.push(`<li class="ml-4">${content}</li>`);
       }
       // Check for ordered list item
       else if (trimmedLine.match(/^\d+\. (.+)$/)) {
         const content = trimmedLine.replace(/^\d+\. /, '');
         if (!inOrderedList) {
-          processedLines.push('<ol class="list-decimal list-inside space-y-1 my-2">');
+          finalProcessedLines.push('<ol class="list-decimal list-inside space-y-1 my-2">');
           inOrderedList = true;
         }
         if (inUnorderedList) {
-          processedLines.push('</ul>');
+          finalProcessedLines.push('</ul>');
           inUnorderedList = false;
-          processedLines.push('<ol class="list-decimal list-inside space-y-1 my-2">');
+          finalProcessedLines.push('<ol class="list-decimal list-inside space-y-1 my-2">');
           inOrderedList = true;
         }
-        processedLines.push(`<li class="ml-4">${content}</li>`);
+        finalProcessedLines.push(`<li class="ml-4">${content}</li>`);
       }
       // Regular line
       else {
         if (inUnorderedList) {
-          processedLines.push('</ul>');
+          finalProcessedLines.push('</ul>');
           inUnorderedList = false;
         }
         if (inOrderedList) {
-          processedLines.push('</ol>');
+          finalProcessedLines.push('</ol>');
           inOrderedList = false;
         }
-        processedLines.push(line);
+        finalProcessedLines.push(line);
       }
     }
     
     // Close any open lists
     if (inUnorderedList) {
-      processedLines.push('</ul>');
+      finalProcessedLines.push('</ul>');
     }
     if (inOrderedList) {
-      processedLines.push('</ol>');
+      finalProcessedLines.push('</ol>');
     }
     
-    html = processedLines.join('<br>');
+    html = finalProcessedLines.join('<br>');
 
     return html;
   }
@@ -246,25 +347,77 @@
         <button
           type="button"
           on:click={() => activeTab = 'write'}
-          class="px-3 py-1 text-sm rounded transition-colors {activeTab === 'write' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
+          disabled={disabled}
+          class="px-3 py-1 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'write' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
         >
           Write
         </button>
         <button
           type="button"
           on:click={() => activeTab = 'preview'}
-          class="px-3 py-1 text-sm rounded transition-colors {activeTab === 'preview' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
+          disabled={disabled}
+          class="px-3 py-1 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'preview' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
         >
           Preview
         </button>
       </div>
 
       {#if activeTab === 'write'}
+        <!-- AI Enhancement Controls -->
+        {#if showAiControls}
+          {#if hasEnhanced && onRevert}
+            <button
+              type="button"
+              on:click={onRevert}
+              disabled={disabled}
+              class="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Revert to original"
+            >
+              ↶ Revert
+            </button>
+          {/if}
+          
+          <select
+            bind:value={selectedTone}
+            disabled={disabled || enhancing}
+            class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option value="casual">Casual</option>
+            <option value="professional">Professional</option>
+            <option value="concise">Concise</option>
+            <option value="detailed">Detailed</option>
+          </select>
+          
+          {#if onEnhance}
+            <button
+              type="button"
+              on:click={onEnhance}
+              disabled={disabled || enhancing || !value || value.trim().length === 0}
+              class="p-2 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Enhance with AI"
+            >
+              {#if enhancing}
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              {:else}
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"/>
+                </svg>
+              {/if}
+            </button>
+          {/if}
+          
+          <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+        {/if}
+
         <!-- Formatting buttons -->
         <button
           type="button"
           on:click={makeBold}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Bold (Ctrl+B)"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -275,7 +428,8 @@
         <button
           type="button"
           on:click={makeItalic}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Italic (Ctrl+I)"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -288,7 +442,8 @@
         <button
           type="button"
           on:click={() => makeHeading(1)}
-          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Heading 1"
         >
           H1
@@ -297,7 +452,8 @@
         <button
           type="button"
           on:click={() => makeHeading(2)}
-          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Heading 2"
         >
           H2
@@ -306,7 +462,8 @@
         <button
           type="button"
           on:click={() => makeHeading(3)}
-          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Heading 3"
         >
           H3
@@ -317,7 +474,8 @@
         <button
           type="button"
           on:click={makeBulletList}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Bullet List"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -328,7 +486,8 @@
         <button
           type="button"
           on:click={makeNumberedList}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Numbered List"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -341,7 +500,8 @@
         <button
           type="button"
           on:click={makeLink}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Link"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -352,7 +512,8 @@
         <button
           type="button"
           on:click={makeCode}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+          disabled={disabled}
+          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Inline Code"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -371,6 +532,8 @@
         bind:value
         {placeholder}
         {rows}
+        {disabled}
+        maxlength={maxLength}
         class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-gray-300 dark:border-gray-600 transition-colors
                {error 
                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
@@ -401,10 +564,17 @@
     <p class="text-sm text-red-600 dark:text-red-400">{error}</p>
   {/if}
 
+  <!-- Character count -->
+  {#if showCharCount && maxLength !== undefined}
+    <div class="text-xs text-right" class:text-red-600={isOverLimit} class:dark:text-red-400={isOverLimit} class:text-gray-500={!isOverLimit} class:dark:text-gray-400={!isOverLimit}>
+      {charCount} / {maxLength} characters
+    </div>
+  {/if}
+
   <!-- Help text -->
   {#if activeTab === 'write'}
     <p class="text-xs text-gray-500 dark:text-gray-400">
-      Supports Markdown: **bold**, *italic*, # heading, - list, 1. numbered, [link](url), `code`
+      Supports Markdown: **bold**, *italic*, ~~strikethrough~~, # heading, - list, 1. numbered, [link](url), `code`, | table |
     </p>
   {/if}
 </div>

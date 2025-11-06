@@ -25,6 +25,11 @@
   
   // Check if current route is active
   function isActive(path: string): boolean {
+    // Special case for home - only match exact path
+    if (path === '/') {
+      return $page.url.pathname === '/';
+    }
+    // For other routes, match exact path or sub-paths
     return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
   }
   
@@ -181,7 +186,7 @@
             <a
               href="/"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/') && $page.url.pathname === '/' ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
               on:click={closeSidebar}
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

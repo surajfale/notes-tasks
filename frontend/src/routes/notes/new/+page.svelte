@@ -6,14 +6,21 @@
   import Input from '$lib/components/ui/Input.svelte';
   import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
+
   import { onMount } from 'svelte';
   import { validateNoteForm } from '$lib/utils/validation';
+  import { aiRepository } from '$lib/repositories/ai.repository';
 
   let title = '';
   let body = '';
   let tagsInput = '';
   let listId = '';
   let isSubmitting = false;
+  let enhancing = false;
+  let enhanceError = '';
+  let selectedTone: 'concise' | 'detailed' | 'professional' | 'casual' = 'casual';
+  let originalBody = '';
+  let hasEnhanced = false;
   let errors: { title?: string; body?: string } = {};
 
   $: lists = Array.isArray($listsStore.items) ? $listsStore.items : [];
@@ -66,6 +73,36 @@
   function handleCancel() {
     goto('/notes');
   }
+
+  async function handleEnhance() {
+    if (!body || body.trim().length === 0) {
+      return;
+    }
+
+    enhancing = true;
+    enhanceError = '';
+
+    try {
+      // Save original content before enhancing
+      originalBody = body;
+      const enhancedContent = await aiRepository.enhanceContent(body, 'note', selectedTone);
+      body = enhancedContent;
+      hasEnhanced = true;
+    } catch (error: any) {
+      enhanceError = error.message || 'Failed to enhance content';
+      console.error('AI enhancement error:', error);
+    } finally {
+      enhancing = false;
+    }
+  }
+
+  function handleRevert() {
+    if (originalBody) {
+      body = originalBody;
+      hasEnhanced = false;
+      enhanceError = '';
+    }
+  }
 </script>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
@@ -89,8 +126,15 @@
       <MarkdownEditor
         label="Body"
         bind:value={body}
+        bind:selectedTone
         placeholder="Enter note content... Supports **bold**, *italic*, # headings, - lists, and more"
         rows={12}
+        disabled={enhancing}
+        showAiControls={true}
+        onEnhance={handleEnhance}
+        onRevert={handleRevert}
+        {enhancing}
+        {hasEnhanced}
       />
 
       <Input
@@ -108,6 +152,12 @@
         disabled={isSubmitting}
       />
     </div>
+
+    {#if enhanceError}
+      <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <p class="text-red-800 dark:text-red-200">{enhanceError}</p>
+      </div>
+    {/if}
 
     {#if $notesStore.error}
       <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">

@@ -150,6 +150,27 @@
           </div>
         </div>
 
+        <!-- Checklist progress -->
+        {#if task.checklistItems && task.checklistItems.length > 0}
+          {@const completedCount = task.checklistItems.filter(item => item.isCompleted).length}
+          {@const totalCount = task.checklistItems.length}
+          {@const progress = (completedCount / totalCount) * 100}
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              <span>{completedCount} / {totalCount} items completed</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div
+                class="bg-primary-500 h-2 rounded-full transition-all duration-300"
+                style="width: {progress}%"
+              ></div>
+            </div>
+          </div>
+        {/if}
+
         <!-- Description preview with markdown rendering -->
         {#if task.description}
           <div class="text-sm line-clamp-2 {task.isCompleted ? 'text-gray-500 dark:text-gray-500' : 'text-gray-600 dark:text-gray-400'}">

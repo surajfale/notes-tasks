@@ -61,6 +61,32 @@ const taskSchema = new mongoose.Schema(
         },
       ],
     },
+    checklistItems: {
+      type: [
+        {
+          text: {
+            type: String,
+            required: true,
+            maxlength: [255, 'Checklist item cannot exceed 255 characters'],
+          },
+          isCompleted: {
+            type: Boolean,
+            default: false,
+          },
+          order: {
+            type: Number,
+            default: 0,
+          },
+        },
+      ],
+      default: [],
+      validate: {
+        validator: function (items) {
+          return items.length <= 50;
+        },
+        message: 'Cannot have more than 50 checklist items',
+      },
+    },
   },
   {
     timestamps: true,
