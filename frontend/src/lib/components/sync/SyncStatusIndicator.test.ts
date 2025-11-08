@@ -1,7 +1,13 @@
 import { render, screen } from '@testing-library/svelte';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { writable } from 'svelte/store';
 import SyncStatusIndicator from './SyncStatusIndicator.svelte';
+
+// Create writable stores for mocking
+const mockPendingCount = writable(0);
+const mockIsSyncing = writable(false);
+const mockSyncErrors = writable<string[]>([]);
+const mockIsOnline = writable(true);
 
 // Mock the sync stores and service
 vi.mock('$lib/storage/sync', () => ({
@@ -10,10 +16,10 @@ vi.mock('$lib/storage/sync', () => ({
     sync: vi.fn(),
     clearErrors: vi.fn()
   },
-  pendingCount: writable(0),
-  isSyncing: writable(false),
-  syncErrors: writable([]),
-  isOnline: writable(true)
+  pendingCount: mockPendingCount,
+  isSyncing: mockIsSyncing,
+  syncErrors: mockSyncErrors,
+  isOnline: mockIsOnline
 }));
 
 describe('SyncStatusIndicator', () => {
@@ -23,8 +29,7 @@ describe('SyncStatusIndicator', () => {
   });
 
   it('renders when there are pending changes', async () => {
-    const { pendingCount } = await import('$lib/storage/sync');
-    pendingCount.set(3);
+    mockPendingCount.set(3);
     
     render(SyncStatusIndicator);
     const pendingText = screen.getByText(/Pending Changes/);
@@ -32,8 +37,7 @@ describe('SyncStatusIndicator', () => {
   });
 
   it('displays pending count', async () => {
-    const { pendingCount } = await import('$lib/storage/sync');
-    pendingCount.set(5);
+    mockPendingCount.set(5);
     
     render(SyncStatusIndicator);
     const count = screen.getByText(/5 changes waiting to sync/);
@@ -41,9 +45,8 @@ describe('SyncStatusIndicator', () => {
   });
 
   it('shows syncing status', async () => {
-    const { isSyncing, pendingCount } = await import('$lib/storage/sync');
-    pendingCount.set(2);
-    isSyncing.set(true);
+    mockPendingCount.set(2);
+    mockIsSyncing.set(true);
     
     render(SyncStatusIndicator);
     const syncingText = screen.getByText(/Syncing\.\.\./);
@@ -51,10 +54,9 @@ describe('SyncStatusIndicator', () => {
   });
 
   it('displays sync errors', async () => {
-    const { syncErrors, pendingCount, isSyncing } = await import('$lib/storage/sync');
-    pendingCount.set(0);
-    isSyncing.set(false);
-    syncErrors.set(['Network error', 'Server error']);
+    mockPendingCount.set(0);
+    mockIsSyncing.set(false);
+    mockSyncErrors.set(['Network error', 'Server error']);
     
     render(SyncStatusIndicator);
     const errorText = screen.getByText(/Sync Failed/);

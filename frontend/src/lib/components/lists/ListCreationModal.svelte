@@ -125,6 +125,7 @@
 
     <!-- Emoji Selector -->
     <div>
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         Emoji (optional)
       </label>
@@ -164,6 +165,7 @@
 
     <!-- Color Picker -->
     <div>
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         Color
       </label>

@@ -33,6 +33,8 @@ const initialState: AuthState = {
  */
 function createAuthStore() {
   const { subscribe, set, update } = writable<AuthState>(initialState);
+  let isInitializing = false;
+  let hasInitialized = false;
 
   return {
     subscribe,
@@ -42,20 +44,45 @@ function createAuthStore() {
      * and fetching user data if token exists
      */
     async initialize(): Promise<void> {
+      // Prevent multiple simultaneous initializations
+      if (isInitializing) {
+        return;
+      }
+
+      // If already initialized and we have a user, skip
+      if (hasInitialized) {
+        let currentUser: User | null = null;
+        subscribe(state => { currentUser = state.user; })();
+        if (currentUser) {
+          return;
+        }
+      }
+
+      isInitializing = true;
+      update(state => ({ ...state, isLoading: true }));
+
       const token = tokenStorage.getToken();
-      
+
       if (!token) {
         set({ user: null, isLoading: false, error: null });
+        isInitializing = false;
+        hasInitialized = true;
         return;
       }
 
       try {
-        const user = await authRepository.getCurrentUser();
+        const response = await authRepository.getCurrentUser();
+        // Extract user from response (API returns {user: {...}})
+        const user = (response as any).user || response;
         set({ user, isLoading: false, error: null });
+        hasInitialized = true;
       } catch (error: any) {
         // Token is invalid or expired, clear it
         tokenStorage.clearToken();
         set({ user: null, isLoading: false, error: null });
+        hasInitialized = true;
+      } finally {
+        isInitializing = false;
       }
     },
 

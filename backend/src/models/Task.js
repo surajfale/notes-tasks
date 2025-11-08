@@ -87,6 +87,38 @@ const taskSchema = new mongoose.Schema(
         message: 'Cannot have more than 50 checklist items',
       },
     },
+    // Notification preference fields
+    notificationEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    notificationTimings: {
+      type: [String],
+      default: [],
+      enum: ['same_day', '1_day_before', '2_days_before'],
+      validate: {
+        validator: function (timings) {
+          return timings.length <= 3;
+        },
+        message: 'Cannot have more than 3 notification timings',
+      },
+    },
+    // Notification tracking fields
+    lastNotificationSent: {
+      type: Date,
+      index: true,
+    },
+    notificationsSent: {
+      type: [String],
+      default: [],
+      enum: ['same_day', '1_day_before', '2_days_before'],
+      validate: {
+        validator: function (notifications) {
+          return notifications.length <= 3;
+        },
+        message: 'Cannot have more than 3 notification types',
+      },
+    },
   },
   {
     timestamps: true,
@@ -98,6 +130,23 @@ taskSchema.index({ userId: 1, listId: 1, dueAt: 1 });
 taskSchema.index({ userId: 1, isCompleted: 1 });
 taskSchema.index({ userId: 1, priority: -1, dueAt: 1 });
 taskSchema.index({ userId: 1, tags: 1 });
+taskSchema.index({ userId: 1, dueAt: 1, lastNotificationSent: 1 });
+
+// Middleware to reset notification tracking when due date changes
+taskSchema.pre('save', function (next) {
+  if (this.isModified('dueAt')) {
+    // Reset notification tracking when due date changes
+    this.lastNotificationSent = undefined;
+    this.notificationsSent = [];
+    
+    // If due date is removed, disable notifications
+    if (!this.dueAt) {
+      this.notificationEnabled = false;
+      this.notificationTimings = [];
+    }
+  }
+  next();
+});
 
 // Transform output
 taskSchema.methods.toJSON = function () {

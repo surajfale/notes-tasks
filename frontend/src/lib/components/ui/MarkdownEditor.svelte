@@ -6,7 +6,8 @@
   export let label: string = '';
   export let error: string = '';
   export let rows: number = 10;
-  export let showPreview: boolean = false;
+  // showPreview is kept for external reference
+  export const showPreview: boolean = false;
   export let disabled: boolean = false;
   export let maxLength: number | undefined = undefined;
   export let showCharCount: boolean = false;
@@ -21,6 +22,7 @@
 
   let textareaElement: HTMLTextAreaElement;
   let activeTab: 'write' | 'preview' = 'write';
+  const textareaId = `markdown-editor-${Math.random().toString(36).substr(2, 9)}`;
   
   $: charCount = value.length;
   $: isOverLimit = maxLength !== undefined && charCount > maxLength;
@@ -334,7 +336,7 @@
 
 <div class="space-y-2">
   {#if label}
-    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label for={textareaId} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
       {label}
     </label>
   {/if}
@@ -528,6 +530,7 @@
   <div class="relative">
     {#if activeTab === 'write'}
       <textarea
+        id={textareaId}
         bind:this={textareaElement}
         bind:value
         {placeholder}

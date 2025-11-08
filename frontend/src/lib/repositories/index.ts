@@ -5,3 +5,4 @@ export { notesRepository } from './notes.repository';
 export { tasksRepository } from './tasks.repository';
 export { listsRepository } from './lists.repository';
 export { aiRepository } from './ai.repository';
+export { notificationsRepository } from './notifications.repository';

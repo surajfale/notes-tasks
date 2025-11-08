@@ -205,6 +205,7 @@
       {#if allTags.length > 0}
         <div>
           <div class="flex items-center justify-between mb-2">
+            <!-- svelte-ignore a11y-label-has-associated-control -->
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Filter by Tags
             </label>

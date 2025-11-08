@@ -5,15 +5,19 @@
   import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
   import ChecklistEditor from '$lib/components/tasks/ChecklistEditor.svelte';
+  import DueDatePicker from '$lib/components/ui/DueDatePicker.svelte';
+  import NotificationPreferences from '$lib/components/tasks/NotificationPreferences.svelte';
 
   import { listsStore } from '$lib/stores/lists';
   import { aiRepository } from '$lib/repositories/ai.repository';
-  import type { Task, CreateTaskData, UpdateTaskData, TaskPriority, ChecklistItem } from '$lib/types/task';
-  import { validateTaskForm } from '$lib/utils/validation';
-  import { formatDateForInput } from '$lib/utils/date';
+  import type { Task, CreateTaskData, UpdateTaskData, TaskPriority, ChecklistItem, NotificationTiming } from '$lib/types/task';
+  import { validateTaskForm, validateNotificationPreferences } from '$lib/utils/validation';
+  import { formatDateForInput, parseDateInput } from '$lib/utils/date';
 
   export let task: Task | null = null;
   export let isSubmitting = false;
+  export let apiError: string = '';
+  export let onRetry: (() => void) | null = null;
 
   const dispatch = createEventDispatcher<{
     submit: CreateTaskData | UpdateTaskData;
@@ -23,10 +27,17 @@
   // Form state
   let title = task?.title || '';
   let description = task?.description || '';
-  let dueAt = formatDateForInput(task?.dueAt);
+  let dueAtDate: Date | null = task?.dueAt ? parseDateInput(task.dueAt) : null;
   let priority: TaskPriority = task?.priority || 2;
   let listId = task?.listId || '';
   let checklistItems: ChecklistItem[] = task?.checklistItems || [];
+  
+  // Notification state - handle missing fields gracefully
+  // Default to disabled notifications for tasks without notification fields
+  let notificationEnabled = task?.notificationEnabled ?? false;
+  let notificationTimings: NotificationTiming[] = Array.isArray(task?.notificationTimings) 
+    ? task.notificationTimings 
+    : [];
 
   // AI enhancement state
   let enhancing = false;
@@ -42,7 +53,43 @@
   function validateForm(): boolean {
     const result = validateTaskForm({ title, description });
     errors = result.errors;
+    
+    // Validate notification preferences
+    const notificationError = validateNotificationPreferences(
+      notificationEnabled,
+      notificationTimings,
+      dueAtDate
+    );
+    
+    if (notificationError) {
+      errors = { ...errors, notifications: notificationError };
+      return false;
+    }
+    
     return result.isValid;
+  }
+
+  function handleDueDateChange(date: Date | null) {
+    dueAtDate = date;
+    
+    // If due date is cleared, disable notifications
+    if (!date) {
+      notificationEnabled = false;
+      notificationTimings = [];
+    }
+  }
+
+  function handleNotificationEnabledChange(enabled: boolean) {
+    notificationEnabled = enabled;
+    if (!enabled) {
+      notificationTimings = [];
+    }
+    clearError('notifications');
+  }
+
+  function handleNotificationTimingsChange(timings: NotificationTiming[]) {
+    notificationTimings = timings;
+    clearError('notifications');
   }
 
   function handleSubmit() {
@@ -50,12 +97,15 @@
       return;
     }
 
-    // Convert date string to ISO format at noon UTC to avoid timezone issues
+    // Convert date to ISO format at noon UTC to avoid timezone issues
     let dueAtISO: string | undefined = undefined;
-    if (dueAt) {
-      // Parse the date as local and set to noon to avoid timezone shifts
-      const [year, month, day] = dueAt.split('-').map(Number);
-      const dateObj = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    if (dueAtDate) {
+      const dateObj = new Date(Date.UTC(
+        dueAtDate.getFullYear(),
+        dueAtDate.getMonth(),
+        dueAtDate.getDate(),
+        12, 0, 0
+      ));
       dueAtISO = dateObj.toISOString();
     }
 
@@ -70,6 +120,8 @@
         isCompleted: item.isCompleted,
         order: index,
       })),
+      notificationEnabled,
+      notificationTimings,
     };
 
     dispatch('submit', data);
@@ -99,7 +151,7 @@
     originalDescription = description;
     
     // Preserve current values
-    const preservedDueAt = dueAt;
+    const preservedDueAt = dueAtDate;
     const preservedPriority = priority;
     const preservedListId = listId;
 
@@ -133,7 +185,7 @@
       }
 
       // Preserve task priority, due date, and list assignment
-      dueAt = preservedDueAt;
+      dueAtDate = preservedDueAt;
       priority = preservedPriority;
       listId = preservedListId;
       
@@ -143,7 +195,7 @@
       // Restore original content on error
       title = originalTitle;
       description = originalDescription;
-      dueAt = preservedDueAt;
+      dueAtDate = preservedDueAt;
       priority = preservedPriority;
       listId = preservedListId;
 
@@ -232,6 +284,32 @@
 </script>
 
 <form on:submit|preventDefault={handleSubmit} class="space-y-6">
+  {#if apiError}
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6" role="alert">
+      <div class="flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="flex-1">
+          <p class="text-sm font-semibold text-red-800 dark:text-red-200 mb-1">Failed to save task</p>
+          <p class="text-sm text-red-700 dark:text-red-300">{apiError}</p>
+          {#if onRetry}
+            <button
+              type="button"
+              on:click={onRetry}
+              class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 rounded-md transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Retry
+            </button>
+          {/if}
+        </div>
+      </div>
+    </div>
+  {/if}
+
   {#if enhanceError}
     <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
       <p class="text-sm text-red-800 dark:text-red-200">{enhanceError}</p>
@@ -270,22 +348,12 @@
   <!-- Due Date and Priority Row -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Due Date -->
-    <div>
-      <label for="dueAt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Due Date
-      </label>
-      <input
-        id="dueAt"
-        type="date"
-        bind:value={dueAt}
-        disabled={enhancing}
-        class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
-               bg-white dark:bg-black 
-               text-gray-900 dark:text-gray-100
-               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-               disabled:opacity-50 disabled:cursor-not-allowed"
-      />
-    </div>
+    <DueDatePicker
+      value={dueAtDate}
+      on:change={(e) => handleDueDateChange(e.detail)}
+      disabled={enhancing}
+      error={errors.dueAt}
+    />
 
     <!-- Priority -->
     <div>
@@ -307,6 +375,20 @@
         <option value={3}>High Priority</option>
       </select>
     </div>
+  </div>
+
+  <!-- Notification Preferences -->
+  <div role="region" aria-labelledby="notification-section-label">
+    <h2 id="notification-section-label" class="sr-only">Email Notification Preferences</h2>
+    <NotificationPreferences
+      dueDate={dueAtDate}
+      enabled={notificationEnabled}
+      selectedTimings={notificationTimings}
+      on:enabledChange={(e) => handleNotificationEnabledChange(e.detail)}
+      on:timingsChange={(e) => handleNotificationTimingsChange(e.detail)}
+      disabled={enhancing || isSubmitting}
+      error={errors.notifications}
+    />
   </div>
 
   <!-- Checklist Items -->

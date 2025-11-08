@@ -12,7 +12,7 @@
         3: (Array.isArray(tasks) ? tasks : []).filter(t => t.priority === 3),
         2: (Array.isArray(tasks) ? tasks : []).filter(t => t.priority === 2),
         1: (Array.isArray(tasks) ? tasks : []).filter(t => t.priority === 1)
-      }
+      } as Record<number, Task[]>
     : null;
 
   const priorityLabels: Record<number, string> = {

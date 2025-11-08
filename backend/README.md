@@ -7,6 +7,7 @@ Production-ready Node.js REST API for the Notes & Tasks web application.
 - **Authentication**: JWT-based auth with bcrypt password hashing
 - **User Management**: Registration, login, password change, account deletion
 - **AI Content Enhancement**: Intelligent content improvement with customizable tone styles
+- **Email Notifications**: Automated task reminders with Resend integration
 - **CRUD Operations**: Full CRUD for lists, notes, and tasks
 - **Data Isolation**: All user data is completely isolated and scoped
 - **Security**: Rate limiting, CORS, Helmet, input validation
@@ -184,37 +185,41 @@ Query parameters for GET `/api/tasks`:
 - `503` - AI service not configured or unavailable
 - `504` - Request timeout (30 seconds)
 
-Query parameters for GET `/api/tasks`:
-- `listId` - Filter by list ID
-- `isCompleted` - Filter by completion (true/false)
-- `priority` - Filter by priority (1, 2, or 3)
-
-### AI Enhancement
+### Notifications
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| POST | `/api/ai/enhance` | Enhance note or task content with AI | Yes |
+| GET | `/api/notifications/preferences` | Get user notification preferences | Yes |
+| PUT | `/api/notifications/preferences` | Update notification preferences | Yes |
+| GET | `/api/tasks/link/:token` | Handle email deep link | No |
 
-Request body:
+**Get Preferences Response:**
 ```json
 {
-  "content": "Your draft content here",
-  "contentType": "note"
+  "emailNotificationsEnabled": true,
+  "notificationDays": ["1_day_before", "same_day"],
+  "timezone": "America/New_York"
 }
 ```
 
-- `content` (string, required): The text content to enhance (1-10000 characters)
-- `contentType` (string, required): Either "note" or "task"
-
-Response:
+**Update Preferences Request:**
 ```json
 {
-  "success": true,
-  "enhancedContent": "AI-improved version of your content"
+  "emailNotificationsEnabled": true,
+  "notificationDays": ["1_day_before", "same_day", "2_days_before"],
+  "timezone": "America/New_York"
 }
 ```
 
-**Note**: Requires `OLLAMA_API_KEY` to be configured in environment variables. The AI enhancement uses Ollama Cloud's DeepSeek-v3.1:671b-cloud model to improve clarity, structure, and grammar while preserving the original intent.
+**Note**: See [Email Notifications Documentation](../docs/EMAIL_NOTIFICATIONS.md) for setup and configuration.
+
+### Admin Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/admin/notifications/stats` | Get notification statistics | Yes (Admin) |
+| GET | `/api/admin/notifications/health` | Get email service health | Yes (Admin) |
+| POST | `/api/admin/notifications/circuit-breaker/reset` | Reset circuit breaker | Yes (Admin) |
 
 ## API Usage Examples
 
@@ -538,6 +543,15 @@ Check:
 If hitting rate limits during development:
 - Increase `RATE_LIMIT_MAX_REQUESTS` in `.env`
 - Or disable in `server.js` for local dev
+
+## Documentation
+
+For detailed information about specific features:
+
+- **[Email Notifications](../docs/EMAIL_NOTIFICATIONS.md)** - Email notification system setup, configuration, and troubleshooting
+- **[Architecture](../docs/ARCHITECTURE.md)** - System architecture and design patterns
+- **[Deployment](../docs/DEPLOYMENT.md)** - Production deployment guide
+- **[MongoDB Setup](../docs/MONGODB_SETUP.md)** - Database configuration
 
 ## License
 

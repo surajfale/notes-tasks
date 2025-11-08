@@ -13,6 +13,21 @@ import type {
 } from '$lib/types/task';
 
 /**
+ * Normalize task to ensure all notification fields exist
+ * Handles tasks created before notification feature was added
+ * @param task - Task object from API
+ * @returns Normalized task with notification fields
+ */
+function normalizeTask(task: any): Task {
+  return {
+    ...task,
+    notificationEnabled: task.notificationEnabled ?? false,
+    notificationTimings: Array.isArray(task.notificationTimings) ? task.notificationTimings : [],
+    notificationsSent: Array.isArray(task.notificationsSent) ? task.notificationsSent : undefined,
+  };
+}
+
+/**
  * Build query string from task filters
  * @param filters - Task filter parameters
  * @returns Query string for URL
@@ -49,7 +64,10 @@ export const tasksRepository = {
    */
   async getAll(filters?: TaskFilters): Promise<Task[]> {
     const query = buildQueryString(filters);
-    return apiClient.get<Task[]>(`${API_ENDPOINTS.TASKS.BASE}${query}`);
+    const tasks = await apiClient.get<Task[]>(`${API_ENDPOINTS.TASKS.BASE}${query}`);
+    
+    // Ensure notification fields exist on all tasks
+    return tasks.map(task => normalizeTask(task));
   },
 
   /**
@@ -58,7 +76,8 @@ export const tasksRepository = {
    * @returns Promise resolving to task data
    */
   async getById(id: string): Promise<Task> {
-    return apiClient.get<Task>(API_ENDPOINTS.TASKS.BY_ID(id));
+    const task = await apiClient.get<Task>(API_ENDPOINTS.TASKS.BY_ID(id));
+    return normalizeTask(task);
   },
 
   /**
@@ -80,6 +99,8 @@ export const tasksRepository = {
         listId: data.listId,
         isCompleted: false,
         checklistItems: data.checklistItems || [],
+        notificationEnabled: data.notificationEnabled || false,
+        notificationTimings: data.notificationTimings || [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -90,13 +111,14 @@ export const tasksRepository = {
     }
 
     const task = await apiClient.post<Task>(API_ENDPOINTS.TASKS.BASE, data);
+    const normalizedTask = normalizeTask(task);
     
     // Save to offline storage as synced
     if (browser) {
-      await offlineStorage.saveTask(task, 'synced');
+      await offlineStorage.saveTask(normalizedTask, 'synced');
     }
     
-    return task;
+    return normalizedTask;
   },
 
   /**
@@ -127,13 +149,14 @@ export const tasksRepository = {
     }
 
     const task = await apiClient.put<Task>(API_ENDPOINTS.TASKS.BY_ID(id), data);
+    const normalizedTask = normalizeTask(task);
     
     // Update offline storage as synced
     if (browser) {
-      await offlineStorage.saveTask(task, 'synced');
+      await offlineStorage.saveTask(normalizedTask, 'synced');
     }
     
-    return task;
+    return normalizedTask;
   },
 
   /**
@@ -186,12 +209,13 @@ export const tasksRepository = {
     }
 
     const task = await apiClient.put<Task>(API_ENDPOINTS.TASKS.COMPLETE(id), { isCompleted });
+    const normalizedTask = normalizeTask(task);
     
     // Update offline storage as synced
     if (browser) {
-      await offlineStorage.saveTask(task, 'synced');
+      await offlineStorage.saveTask(normalizedTask, 'synced');
     }
     
-    return task;
+    return normalizedTask;
   }
 };

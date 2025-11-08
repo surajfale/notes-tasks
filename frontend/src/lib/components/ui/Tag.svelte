@@ -15,15 +15,23 @@
   }[size];
 </script>
 
-<span
-  class="inline-flex items-center rounded-md font-medium transition-all
-         {colors.bg} {colors.text} {sizeClasses}
-         {clickable ? 'cursor-pointer hover:opacity-80 hover:scale-105' : ''}
-         {selected ? `ring-2 ${colors.border}` : ''}"
-  on:click
-  role={clickable ? 'button' : undefined}
-  tabindex={clickable ? 0 : undefined}
-  on:keydown={clickable ? (e) => e.key === 'Enter' && e.currentTarget.click() : undefined}
->
-  #{tag}
-</span>
+{#if clickable}
+  <button
+    type="button"
+    class="inline-flex items-center rounded-md font-medium transition-all
+           {colors.bg} {colors.text} {sizeClasses}
+           cursor-pointer hover:opacity-80 hover:scale-105
+           {selected ? `ring-2 ${colors.border}` : ''}"
+    on:click
+  >
+    #{tag}
+  </button>
+{:else}
+  <span
+    class="inline-flex items-center rounded-md font-medium transition-all
+           {colors.bg} {colors.text} {sizeClasses}
+           {selected ? `ring-2 ${colors.border}` : ''}"
+  >
+    #{tag}
+  </span>
+{/if}

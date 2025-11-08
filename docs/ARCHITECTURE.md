@@ -740,18 +740,365 @@ OLLAMA_MODEL=gpt-oss:120b-cloud
 7. **Multi-language**: Support for non-English content
 8. **Offline Mode**: Local AI model for offline enhancement
 
+## Notifications & Automated Tasks
+
+### Overview
+
+The application includes a comprehensive notification system supporting both email and browser push notifications. Task reminders are sent at user-specified times using automated cron jobs.
+
+### Architecture
+
+```
+Backend Server (Node.js)
+    │
+    ├─► Cron Jobs (node-cron)
+    │   ├─► Notification Scheduler (Hourly)
+    │   └─► Cleanup Job (Weekly)
+    │
+    ├─► Notification Services
+    │   ├─► notificationScheduler.js
+    │   ├─► notificationProcessor.js
+    │   ├─► emailService.js (Resend API)
+    │   └─► pushNotificationService.js (Web Push API)
+    │
+    └─► Database (MongoDB)
+        ├─► NotificationPreference collection
+        │   ├─► Email preferences
+        │   ├─► Browser notification preferences
+        │   ├─► Push subscription data (VAPID)
+        │   ├─► Notification time & timezone
+        │   └─► Notification timing (same day, 1/2 days before)
+        ├─► NotificationLog collection
+        └─► Task collection
+```
+
+### Notification Channels
+
+#### 1. Email Notifications
+- Sends HTML-formatted emails via Resend API
+- Includes task details, priority, and deep links
+- Customizable notification time per user
+- Timezone-aware delivery
+
+#### 2. Browser Push Notifications (Web Push)
+- Uses Web Push API with VAPID protocol
+- Works even when browser/app is closed
+- Best experience when installed as PWA
+- Requires user permission grant
+- Subscription managed per device/browser
+
+### Cron Jobs
+
+#### 1. Notification Scheduler (Hourly)
+
+**Schedule**: `0 * * * *` (every hour at the top of the hour)
+
+**Purpose**: Sends email and browser push reminders for upcoming tasks at each user's preferred time
+
+**Process**:
+1. Runs every hour
+2. Queries all users with notification preferences
+3. For each user, checks if current time matches their preferred notification time (within 30-minute window)
+4. If match, calculates which notifications to send (same day, 1 day before, 2 days before)
+5. Sends notifications via configured channels:
+   - Email via Resend API (if email notifications enabled)
+   - Push notifications via Web Push API (if browser notifications enabled)
+6. Logs results and updates task records
+7. Prevents duplicate notifications using NotificationLog collection
+
+**Configuration**:
+```bash
+NOTIFICATION_CRON_SCHEDULE=0 * * * *  # Every hour
+NOTIFICATION_TIMEZONE=UTC              # Cron execution timezone
+```
+
+#### 2. Cleanup Job (Weekly)
+
+**Schedule**: `0 2 * * 0` (Sunday at 2 AM)
+
+**Purpose**: Removes old notification logs to prevent database bloat
+
+**Process**:
+1. Calculates cutoff date (default: 90 days ago)
+2. Deletes NotificationLog documents older than cutoff
+3. Logs number of deleted records
+
+**Configuration**:
+```bash
+NOTIFICATION_CLEANUP_CRON_SCHEDULE=0 2 * * 0  # Weekly Sunday 2 AM
+NOTIFICATION_LOGS_RETENTION_DAYS=90           # Keep 90 days of logs
+```
+
+### User Notification Settings
+
+Users can customize their notification preferences in Settings:
+
+**Available Settings**:
+- **Notification Channels**: Email, browser push, or both
+- **Notification Time**: Custom time picker in 24-hour format (HH:MM)
+- **Timezone**: Automatic detection with manual override option
+- **Notification Days**: Same day, 1 day before, 2 days before, or combinations
+- **Default time**: 09:00 (9 AM) - displayed as 12-hour format in UI (e.g., "4:00 PM")
+
+**How It Works**:
+```
+User sets notification preferences:
+- Time: 14:00 (2 PM)
+- Channels: Email + Browser Push
+- Days: 1 day before, Same day
+    │
+    ▼
+Saved in NotificationPreference:
+{
+  userId: "...",
+  notificationTime: "14:00",
+  timezone: "America/New_York",
+  emailNotificationsEnabled: true,
+  browserNotificationsEnabled: true,
+  pushSubscription: { endpoint: "...", keys: {...} },
+  notificationDays: ["1_day_before", "same_day"]
+}
+    │
+    ▼
+Every hour, cron job checks:
+- Is it 14:00 in user's timezone? (±30 min window)
+- YES → Send via enabled channels (email + push)
+- NO → Skip user (check again next hour)
+```
+
+**Time Checking Logic**:
+- Uses 30-minute window for flexibility (accounts for cron timing)
+- Uses Luxon library for accurate timezone handling
+- Compares current time with user's preferred time
+- Accounts for timezone differences and DST
+- Skips users if not their notification time
+
+**UI Time Display**:
+- Settings: 24-hour format (16:00)
+- Task creation/display: 12-hour format (4:00 PM)
+- Automatically syncs across all components using Svelte stores
+
+### Notification Types
+
+**Same Day**: Sent on the task's due date at user's chosen time
+- Example: Task due Dec 25 → notification sent Dec 25 at user's time
+
+**1 Day Before**: Sent one day before due date at user's chosen time
+- Example: Task due Dec 25 → notification sent Dec 24 at user's time
+
+**2 Days Before**: Sent two days before due date at user's chosen time
+- Example: Task due Dec 25 → notification sent Dec 23 at user's time
+
+### Duplicate Prevention
+
+The system prevents sending the same notification twice:
+
+1. **Task tracking**: Each task has `notificationsSent` array
+   ```javascript
+   {
+     _id: "task123",
+     notificationsSent: ["2_days_before", "1_day_before"]
+   }
+   ```
+
+2. **Notification logs**: All sent notifications logged in NotificationLog collection
+
+3. **Pre-send check**: Queries NotificationLog before sending
+
+### Notification Service Integration
+
+#### Email Service (Resend API)
+
+**Configuration**:
+```bash
+RESEND_API_KEY=your_api_key
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+RESEND_FROM_NAME=Notes & Tasks App
+FRONTEND_BASE_URL=https://your-app.netlify.app
+EMAIL_RETRY_ATTEMPTS=3
+EMAIL_RETRY_DELAY_MS=1000
+```
+
+**Features**:
+- HTML-formatted emails with task details
+- Deep links to tasks (click to open in app)
+- Professional templates with responsive design
+- Retry logic with exponential backoff
+- Circuit breaker pattern for fault tolerance
+- Rate limiting compliance
+
+#### Push Notification Service (Web Push API)
+
+**Configuration**:
+```bash
+# Generate using: node src/scripts/generateVapidKeys.js
+VAPID_PUBLIC_KEY=your_public_key
+VAPID_PRIVATE_KEY=your_private_key
+VAPID_SUBJECT=mailto:your-email@example.com
+PUSH_RETRY_ATTEMPTS=3
+PUSH_RETRY_DELAY_MS=1000
+```
+
+**Features**:
+- VAPID protocol for authentication
+- Push subscription management per device
+- Notification payload with title, body, icon, badge
+- Deep link support in notification data
+- Works even when browser/app is closed
+- Automatic subscription renewal handling
+- Circuit breaker pattern for fault tolerance
+
+**VAPID Key Generation**:
+```bash
+cd backend
+node src/scripts/generateVapidKeys.js
+```
+
+This generates a public/private key pair for VAPID authentication. The public key is shared with the frontend, while the private key remains secret on the backend.
+
+### Database Schema
+
+#### NotificationPreference
+```javascript
+{
+  userId: ObjectId,                              // Reference to User
+  emailNotificationsEnabled: Boolean,            // Enable email notifications
+  browserNotificationsEnabled: Boolean,          // Enable browser push notifications
+  pushSubscription: {                            // Web Push subscription object
+    endpoint: String,                            // Push service endpoint
+    expirationTime: Number,                      // Optional expiration
+    keys: {
+      p256dh: String,                            // Client public key
+      auth: String                               // Authentication secret
+    }
+  },
+  notificationDays: [String],                    // ['same_day', '1_day_before', '2_days_before']
+  timezone: String,                              // e.g., 'America/New_York'
+  notificationTime: String,                      // e.g., '09:00' (HH:MM 24-hour format)
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+#### NotificationLog
+```javascript
+{
+  userId: ObjectId,
+  taskId: ObjectId,
+  notificationType: String,      // 'same_day', '1_day_before', '2_days_before'
+  sentAt: Date,
+  status: String,                // 'sent', 'failed', 'partial' (one channel failed)
+  channel: String,               // 'email', 'push', or 'both'
+  emailSent: Boolean,            // true if email was sent successfully
+  pushSent: Boolean,             // true if push was sent successfully
+  emailProvider: String,         // 'resend'
+  pushProvider: String,          // 'web-push'
+  error: String,                 // Optional error message if failed
+  createdAt: Date
+}
+```
+
+### Performance Considerations
+
+**Hourly Execution**:
+- Cron runs 24 times per day (vs 1 time previously)
+- Most users skipped each hour (fast time comparison)
+- Only processes users at their notification time
+- Minimal CPU and memory usage
+
+**Optimization**:
+- Early return if not user's notification time
+- No database queries for skipped users
+- Efficient time comparison (simple arithmetic)
+- Batch processing for users at same time
+
+**Scalability**:
+- Current approach handles up to 10,000 users
+- For larger scale, consider:
+  - Database index on `notificationTime`
+  - Query only users with matching time
+  - Job queue (Bull, BullMQ) for distribution
+
+### Monitoring
+
+**Log Entries**:
+```
+[INFO] Notification cron job scheduled: 0 * * * * (UTC)
+[INFO] Starting scheduled notification processing...
+[INFO] Notification scheduler completed { successful: 10, failed: 0 }
+[INFO] Cleanup completed { deletedCount: 500 }
+```
+
+**Metrics Tracked**:
+- Total notifications sent
+- Success/failure rates
+- Execution duration
+- Users processed vs skipped
+- Cleanup records deleted
+
+### Error Handling
+
+**Scenarios**:
+- Database connection issues → Logged, retried next run
+- Email service failures → Logged, marked as failed
+- Invalid user data → Skipped, logged as warning
+- Network timeouts → Logged, retried next run
+
+**Resilience**:
+- Cron continues running even if one execution fails
+- Failed notifications don't block other users
+- Comprehensive error logging with Winston
+- Automatic retry on next cron run
+
+## Code Quality & Type Safety
+
+### TypeScript Implementation
+
+The frontend is fully typed with TypeScript 5.x:
+- **0 TypeScript errors**: All type issues resolved
+- **Strict mode enabled**: Maximum type safety
+- **Type inference**: Leverages Svelte's type inference
+- **Interface definitions**: Complete type definitions for all data models
+
+### Recent Improvements (2024)
+
+#### Type Safety Fixes
+1. **ApiError type**: Added `statusCode` property alias for backward compatibility
+2. **Task type**: Removed non-existent `tags` property references
+3. **Component props**: Fixed all prop type mismatches
+4. **Test mocks**: Corrected store mock implementations for Vitest
+
+#### Accessibility Improvements
+1. **Interactive elements**: Converted clickable divs to proper button elements
+2. **Form labels**: Added proper `for` attributes with unique IDs
+3. **ARIA roles**: Enhanced modal and calendar components with proper roles
+4. **Keyboard navigation**: Full keyboard support for all interactive elements
+
+#### Component Fixes
+1. **Card component**: Now uses button element when clickable, supports `class` prop
+2. **Tag component**: Converted to button when clickable for better accessibility
+3. **DueDatePicker**: Fixed calendar positioning and click handling
+4. **Modal**: Proper event handling with stopPropagation
+
+### Testing
+
+- **Unit tests**: Vitest for utility functions and components
+- **Type checking**: `npm run check` passes with 0 errors
+- **Linting**: ESLint configured for code quality
+- **Build verification**: Production builds tested and optimized
+
 ## Future Enhancements
 
 1. **Real-time Sync**: WebSocket connections for live updates
 2. **Collaboration**: Shared lists with permissions
-3. **Rich Text**: Markdown or WYSIWYG editor for notes
+3. **Rich Text**: Enhanced markdown or WYSIWYG editor for notes
 4. **File Attachments**: Image/file uploads to S3/GridFS
-5. **Email Reminders**: Scheduled jobs for task reminders
-6. **Push Notifications**: Task reminders via PWA notifications
-7. **Background Sync**: Sync even when app is closed
-8. **Share Target**: Share content to app from other apps
-9. **Search**: MongoDB Atlas Search for full-text search
-10. **Analytics**: Usage tracking and insights
+5. **Push Notifications**: Task reminders via PWA notifications
+6. **Background Sync**: Sync even when app is closed
+7. **Share Target**: Share content to app from other apps
+8. **Search**: MongoDB Atlas Search for full-text search
+9. **Analytics**: Usage tracking and insights
+10. **Multi-language**: Internationalization support
 
 
 ## Performance Optimization

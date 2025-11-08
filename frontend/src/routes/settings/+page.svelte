@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { authStore, currentUser } from '$lib/stores/auth';
   import { themeStore } from '$lib/stores/theme';
@@ -9,6 +10,20 @@
   import Modal from '$lib/components/ui/Modal.svelte';
   import { ErrorMessage, LoadingSpinner } from '$lib/components/ui';
   import { validatePasswordChangeForm } from '$lib/utils/validation';
+  import NotificationSettings from '$lib/components/settings/NotificationSettings.svelte';
+
+  // Track auth loading state
+  let isAuthLoading = true;
+
+  onMount(async () => {
+    // Ensure auth is initialized
+    await authStore.initialize();
+  });
+
+  // Subscribe to auth store to track loading state
+  authStore.subscribe(state => {
+    isAuthLoading = state.isLoading;
+  });
 
   // Theme state
   let theme = { mode: 'light' as 'light' | 'dark', accentColor: '#6750A4' };
@@ -126,8 +141,13 @@
 <div class="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
   <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 sm:mb-8">Settings</h1>
 
-  <!-- User Information Section -->
-  {#if $currentUser}
+  {#if isAuthLoading}
+    <!-- Loading State -->
+    <div class="flex items-center justify-center py-12">
+      <LoadingSpinner size="lg" />
+    </div>
+  {:else if $currentUser}
+    <!-- User Information Section -->
     <Card class="mb-6">
       <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
         Account Information
@@ -147,9 +167,8 @@
         </div>
       </div>
     </Card>
-  {/if}
 
-  <!-- Theme Settings Section -->
+    <!-- Theme Settings Section -->
   <Card class="mb-6">
     <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
       Theme Settings
@@ -157,6 +176,7 @@
     
     <!-- Theme Mode Toggle -->
     <div class="mb-6">
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         Theme Mode
       </label>
@@ -191,6 +211,7 @@
 
     <!-- Accent Color Picker -->
     <div>
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         Accent Color
       </label>
@@ -214,6 +235,9 @@
       </div>
     </div>
   </Card>
+
+  <!-- Notification Settings Section -->
+  <NotificationSettings />
 
   <!-- Password Change Section -->
   <Card class="mb-6">
@@ -295,59 +319,66 @@
       Delete Account
     </Button>
   </Card>
+
+  <!-- Account Deletion Confirmation Modal -->
+  <Modal
+    bind:open={showDeleteModal}
+    title="Delete Account"
+    onClose={closeDeleteModal}
+  >
+    <div class="space-y-4">
+      <p class="text-gray-700 dark:text-gray-300">
+        This action cannot be undone. This will permanently delete your account and all associated data.
+      </p>
+
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        Please type <strong class="text-red-600 dark:text-red-400">DELETE</strong> to confirm:
+      </p>
+
+      <Input
+        type="text"
+        bind:value={deleteConfirmation}
+        placeholder="Type DELETE to confirm"
+      />
+
+      {#if deleteError}
+        <ErrorMessage
+          title="Account Deletion Failed"
+          message={deleteError}
+          showRetry={false}
+        />
+      {/if}
+    </div>
+
+    <div slot="footer" class="flex justify-end space-x-3">
+      <Button
+        variant="secondary"
+        on:click={closeDeleteModal}
+        disabled={isDeletingAccount}
+      >
+        Cancel
+      </Button>
+      <Button
+        variant="danger"
+        on:click={handleAccountDeletion}
+        disabled={isDeletingAccount || deleteConfirmation !== 'DELETE'}
+      >
+        {#if isDeletingAccount}
+          <span class="flex items-center gap-2">
+            <LoadingSpinner size="sm" color="white" />
+            Deleting...
+          </span>
+        {:else}
+          Delete Account
+        {/if}
+      </Button>
+    </div>
+  </Modal>
+  {:else}
+    <!-- Not logged in -->
+    <div class="text-center py-12">
+      <p class="text-gray-600 dark:text-gray-400">Please log in to view settings.</p>
+    </div>
+  {/if}
 </div>
 
-<!-- Account Deletion Confirmation Modal -->
-<Modal
-  bind:open={showDeleteModal}
-  title="Delete Account"
-  onClose={closeDeleteModal}
->
-  <div class="space-y-4">
-    <p class="text-gray-700 dark:text-gray-300">
-      This action cannot be undone. This will permanently delete your account and all associated data.
-    </p>
-    
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-      Please type <strong class="text-red-600 dark:text-red-400">DELETE</strong> to confirm:
-    </p>
-
-    <Input
-      type="text"
-      bind:value={deleteConfirmation}
-      placeholder="Type DELETE to confirm"
-    />
-
-    {#if deleteError}
-      <ErrorMessage
-        title="Account Deletion Failed"
-        message={deleteError}
-        showRetry={false}
-      />
-    {/if}
-  </div>
-
-  <div slot="footer" class="flex justify-end space-x-3">
-    <Button
-      variant="secondary"
-      on:click={closeDeleteModal}
-      disabled={isDeletingAccount}
-    >
-      Cancel
-    </Button>
-    <Button
-      variant="danger"
-      on:click={handleAccountDeletion}
-      disabled={isDeletingAccount || deleteConfirmation !== 'DELETE'}
-    >
-      {#if isDeletingAccount}
-        <span class="flex items-center gap-2">
-          <LoadingSpinner size="sm" color="white" />
-          Deleting...
-        </span>
-      {:else}
-        Delete Account
-      {/if}
-    </Button>
-  </div>
-</Modal>

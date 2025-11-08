@@ -1,6 +1,8 @@
 // Error type definitions
 
 export class ApiError extends Error {
+  public statusCode: number; // Alias for compatibility
+  
   constructor(
     public status: number,
     public code: string,
@@ -9,6 +11,7 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.name = 'ApiError';
+    this.statusCode = status; // Set alias
   }
 
   /**

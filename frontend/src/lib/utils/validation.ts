@@ -316,6 +316,50 @@ export function validateTaskForm(data: {
 }
 
 /**
+ * Notification preferences validation
+ * Validates notification settings for tasks
+ */
+export function validateNotificationPreferences(
+  enabled: boolean,
+  selectedTimings: string[],
+  dueDate: Date | null
+): string | null {
+  if (!enabled) {
+    return null;
+  }
+
+  if (!dueDate) {
+    return 'Due date is required when notifications are enabled';
+  }
+
+  if (selectedTimings.length === 0) {
+    return 'Please select at least one notification timing';
+  }
+
+  // Validate that selected timings are available for the due date
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  
+  const dueDateCopy = new Date(dueDate);
+  dueDateCopy.setHours(0, 0, 0, 0);
+  
+  const daysUntilDue = Math.floor((dueDateCopy.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  
+  const availableTimings: string[] = [];
+  if (daysUntilDue >= 0) availableTimings.push('same_day');
+  if (daysUntilDue >= 1) availableTimings.push('1_day_before');
+  if (daysUntilDue >= 2) availableTimings.push('2_days_before');
+  
+  const invalidTimings = selectedTimings.filter(t => !availableTimings.includes(t));
+  
+  if (invalidTimings.length > 0) {
+    return 'Some selected notification timings are not available for this due date';
+  }
+
+  return null;
+}
+
+/**
  * List form validation
  * Validates list creation/edit form fields
  */

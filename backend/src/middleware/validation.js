@@ -81,6 +81,24 @@ const schemas = {
     reminderAt: Joi.date().iso().optional(),
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
+    notificationEnabled: Joi.boolean().optional(),
+    notificationTimings: Joi.array()
+      .items(Joi.string().valid('same_day', '1_day_before', '2_days_before'))
+      .max(3)
+      .unique()
+      .when('notificationEnabled', {
+        is: true,
+        then: Joi.array().min(1).required(),
+        otherwise: Joi.array().optional(),
+      }),
+  }).custom((value, helpers) => {
+    // Validate that dueAt is required when notifications are enabled
+    if (value.notificationEnabled && !value.dueAt) {
+      return helpers.error('any.custom', {
+        message: 'dueAt is required when notificationEnabled is true',
+      });
+    }
+    return value;
   }),
 
   updateTask: Joi.object({
@@ -91,13 +109,42 @@ const schemas = {
     reminderAt: Joi.date().iso().allow(null).optional(),
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
-  }).min(1),
+    notificationEnabled: Joi.boolean().optional(),
+    notificationTimings: Joi.array()
+      .items(Joi.string().valid('same_day', '1_day_before', '2_days_before'))
+      .max(3)
+      .unique()
+      .when('notificationEnabled', {
+        is: true,
+        then: Joi.array().min(1).required(),
+        otherwise: Joi.array().optional(),
+      }),
+  }).min(1).custom((value, helpers) => {
+    // Validate that dueAt is required when notifications are enabled
+    if (value.notificationEnabled && value.dueAt === null) {
+      return helpers.error('any.custom', {
+        message: 'Cannot enable notifications when dueAt is null',
+      });
+    }
+    return value;
+  }),
 
   enhanceContent: Joi.object({
     content: Joi.string().required().min(1).max(10000),
     contentType: Joi.string().valid('note', 'task').required(),
     tone: Joi.string().valid('concise', 'detailed', 'professional', 'casual').optional().default('casual'),
   }),
+
+  updateNotificationPreferences: Joi.object({
+    emailNotificationsEnabled: Joi.boolean().optional(),
+    notificationDays: Joi.array()
+      .items(Joi.string().valid('same_day', '1_day_before', '2_days_before'))
+      .min(1)
+      .max(3)
+      .unique()
+      .optional(),
+    timezone: Joi.string().max(50).optional(),
+  }).min(1),
 };
 
 module.exports = { validate, schemas };

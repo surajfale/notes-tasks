@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Push Notifications</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #log {
+      background: #f5f5f5;
+      padding: 15px;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .success { color: green; }
+    .error { color: red; }
+    .info { color: blue; }
+  </style>
+</head>
+<body>
+  <h1>Push Notification Test</h1>
+
+  <div>
+    <p><strong>Current Permission:</strong> <span id="permission">checking...</span></p>
+    <p><strong>Service Worker:</strong> <span id="sw-status">checking...</span></p>
+    <p><strong>Push Manager:</strong> <span id="pm-status">checking...</span></p>
+  </div>
+
+  <div>
+    <button onclick="checkStatus()">Check Status</button>
+    <button onclick="requestPermission()">Request Permission</button>
+    <button onclick="subscribeToPush()">Subscribe to Push</button>
+    <button onclick="testNotification()">Test Notification</button>
+    <button onclick="clearLog()">Clear Log</button>
+  </div>
+
+  <div id="log"></div>
+
+  <script>
+    const VAPID_PUBLIC_KEY = 'BEfdFz2cckdoAB6teM1spcH6M-VboUZ1_JZbeCgL3vZNBMOYZZ3BV1DVSCCGVF41Q0lxcdPlmItRXkiM2hta438';
+
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+      logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(`[${type}] ${message}`);
+    }
+
+    function clearLog() {
+      document.getElementById('log').innerHTML = '';
+    }
+
+    function updateStatus() {
+      document.getElementById('permission').textContent = Notification.permission;
+      document.getElementById('sw-status').textContent = 'serviceWorker' in navigator ? 'Supported' : 'Not supported';
+      document.getElementById('pm-status').textContent = 'PushManager' in window ? 'Supported' : 'Not supported';
+    }
+
+    async function checkStatus() {
+      log('Checking status...', 'info');
+      updateStatus();
+
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            log(`✓ Service Worker registered: ${registration.scope}`, 'success');
+
+            const subscription = await registration.pushManager.getSubscription();
+            if (subscription) {
+              log(`✓ Push subscription exists`, 'success');
+              log(`Endpoint: ${subscription.endpoint.substring(0, 60)}...`, 'info');
+            } else {
+              log('✗ No push subscription', 'error');
+            }
+          } else {
+            log('✗ Service Worker not registered', 'error');
+          }
+        } catch (error) {
+          log(`Error: ${error.message}`, 'error');
+        }
+      }
+    }
+
+    async function requestPermission() {
+      log('Requesting notification permission...', 'info');
+
+      if (!('Notification' in window)) {
+        log('✗ Notifications not supported', 'error');
+        return;
+      }
+
+      try {
+        const permission = await Notification.requestPermission();
+        log(`Permission result: ${permission}`, permission === 'granted' ? 'success' : 'error');
+        updateStatus();
+      } catch (error) {
+        log(`Error requesting permission: ${error.message}`, 'error');
+      }
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
+    async function subscribeToPush() {
+      log('Starting push subscription process...', 'info');
+
+      try {
+        // Check permission
+        if (Notification.permission === 'default') {
+          log('Requesting permission first...', 'info');
+          await requestPermission();
+          if (Notification.permission !== 'granted') {
+            log('✗ Permission not granted, cannot subscribe', 'error');
+            return;
+          }
+        }
+
+        if (Notification.permission !== 'granted') {
+          log('✗ Permission denied', 'error');
+          return;
+        }
+
+        // Get service worker registration
+        log('Waiting for service worker...', 'info');
+        const registration = await navigator.serviceWorker.ready;
+        log('✓ Service worker ready', 'success');
+
+        // Check if already subscribed
+        let subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+          log('Already subscribed, unsubscribing first...', 'info');
+          await subscription.unsubscribe();
+        }
+
+        // Subscribe to push
+        log('Creating push subscription...', 'info');
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        });
+
+        log('✓ Push subscription created!', 'success');
+        log(`Endpoint: ${subscription.endpoint.substring(0, 60)}...`, 'info');
+
+        // Convert to JSON
+        const subscriptionJSON = subscription.toJSON();
+        log('Subscription JSON:', 'info');
+        log(JSON.stringify(subscriptionJSON, null, 2), 'info');
+
+        log('✓ Complete! Now save this to the server via API', 'success');
+
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+        console.error(error);
+      }
+    }
+
+    async function testNotification() {
+      log('Testing notification...', 'info');
+
+      if (Notification.permission !== 'granted') {
+        log('✗ Permission not granted', 'error');
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification('Test Notification', {
+          body: 'This is a test notification!',
+          icon: '/icon-192x192.png',
+          badge: '/icon-192x192.png',
+        });
+        log('✓ Notification shown', 'success');
+      } catch (error) {
+        log(`✗ Error: ${error.message}`, 'error');
+      }
+    }
+
+    // Initial check
+    window.addEventListener('load', () => {
+      updateStatus();
+      log('Page loaded. Click "Check Status" to see current state.', 'info');
+    });
+  </script>
+</body>
+</html>

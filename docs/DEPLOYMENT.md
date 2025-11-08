@@ -40,9 +40,22 @@ This guide covers deploying the Notes & Tasks application to production.
    OLLAMA_API_URL=https://ollama.com/api/chat
    OLLAMA_API_KEY=your_ollama_api_key
    OLLAMA_MODEL=gpt-oss:120b-cloud
+   
+   # Email Notifications (Optional)
+   RESEND_API_KEY=your_resend_api_key
+   EMAIL_FROM=noreply@yourdomain.com
+   
+   # Cron Jobs Configuration
+   NOTIFICATION_CRON_SCHEDULE=0 * * * *
+   NOTIFICATION_TIMEZONE=UTC
+   NOTIFICATION_CLEANUP_CRON_SCHEDULE=0 2 * * 0
+   NOTIFICATION_LOGS_RETENTION_DAYS=90
    ```
    
-   **Note**: AI enhancement features are optional. If you don't set the Ollama API credentials, the app will work normally but the AI enhancement button will show an error when clicked.
+   **Note**: 
+   - AI enhancement features are optional. If you don't set the Ollama API credentials, the app will work normally but the AI enhancement button will show an error when clicked.
+   - Email notifications are optional. If you don't set the Resend API key, users won't receive email reminders but the app will work normally.
+   - Cron jobs run automatically when the backend starts. The notification cron runs every hour to check each user's preferred notification time.
 
 4. **Generate JWT Secret**
    ```bash

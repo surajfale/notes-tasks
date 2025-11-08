@@ -1,11 +1,14 @@
 import { render, screen } from '@testing-library/svelte';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { writable } from 'svelte/store';
 import OfflineIndicator from './OfflineIndicator.svelte';
 
+// Create writable store for mocking
+const mockIsOnline = writable(true);
+
 // Mock the sync store
 vi.mock('$lib/storage/sync', () => ({
-  isOnline: writable(true)
+  isOnline: mockIsOnline
 }));
 
 describe('OfflineIndicator', () => {
@@ -16,8 +19,7 @@ describe('OfflineIndicator', () => {
   });
 
   it('renders offline message when offline', async () => {
-    const { isOnline } = await import('$lib/storage/sync');
-    isOnline.set(false);
+    mockIsOnline.set(false);
     
     render(OfflineIndicator);
     const message = screen.getByText("You're offline");
@@ -25,8 +27,7 @@ describe('OfflineIndicator', () => {
   });
 
   it('displays sync information when offline', async () => {
-    const { isOnline } = await import('$lib/storage/sync');
-    isOnline.set(false);
+    mockIsOnline.set(false);
     
     render(OfflineIndicator);
     const syncInfo = screen.getByText(/Changes will sync when connection is restored/);

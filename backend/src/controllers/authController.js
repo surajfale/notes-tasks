@@ -54,6 +54,16 @@ const register = async (req, res, next) => {
     // Generate token
     const token = generateToken(user._id);
 
+    // Send welcome email (non-blocking, don't wait for it)
+    const emailService = require('../services/emailService');
+    emailService.sendWelcomeEmail({
+      email: user.email,
+      displayName: user.displayName
+    }).catch(error => {
+      // Log error but don't fail registration
+      console.error('Failed to send welcome email:', error.message);
+    });
+
     res.status(201).json({
       token,
       user: {

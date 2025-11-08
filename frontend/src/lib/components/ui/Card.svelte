@@ -1,4 +1,6 @@
 <script lang="ts">
+  let className = '';
+  export { className as class };
   export let padding: 'none' | 'small' | 'medium' | 'large' = 'medium';
   export let hover = false;
   export let clickable = false;
@@ -19,20 +21,20 @@
     ${paddingClasses[padding]}
     ${hover ? 'hover:shadow-lg hover:scale-[1.02]' : ''}
     ${clickable ? 'cursor-pointer' : ''}
+    ${className}
   `.trim().replace(/\s+/g, ' ');
 </script>
 
-<div
-  class={classes}
-  on:click
-  role={clickable ? 'button' : undefined}
-  tabindex={clickable ? 0 : undefined}
-  on:keydown={(e) => {
-    if (clickable && (e.key === 'Enter' || e.key === ' ')) {
-      e.preventDefault();
-      e.currentTarget.click();
-    }
-  }}
->
-  <slot />
-</div>
+{#if clickable}
+  <button
+    type="button"
+    class={classes}
+    on:click
+  >
+    <slot />
+  </button>
+{:else}
+  <div class={classes}>
+    <slot />
+  </div>
+{/if}

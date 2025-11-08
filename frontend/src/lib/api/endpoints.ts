@@ -36,5 +36,12 @@ export const API_ENDPOINTS = {
   // AI endpoints
   AI: {
     ENHANCE: '/api/ai/enhance'
+  },
+
+  // Notification endpoints
+  NOTIFICATIONS: {
+    PREFERENCES: '/api/notifications/preferences',
+    PUSH_SUBSCRIPTION: '/api/notifications/push-subscription',
+    VAPID_PUBLIC_KEY: '/api/notifications/vapid-public-key'
   }
 } as const;

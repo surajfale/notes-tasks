@@ -23,12 +23,12 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(global, 'localStorage', {
+Object.defineProperty(globalThis, 'localStorage', {
   value: localStorageMock
 });
 
 // Mock document
-Object.defineProperty(global, 'document', {
+Object.defineProperty(globalThis, 'document', {
   value: {
     documentElement: {
       classList: {
@@ -43,7 +43,7 @@ Object.defineProperty(global, 'document', {
 });
 
 // Mock window.matchMedia
-Object.defineProperty(global, 'window', {
+Object.defineProperty(globalThis, 'window', {
   value: {
     matchMedia: vi.fn().mockReturnValue({
       matches: false,

@@ -14,12 +14,61 @@ const listsRoutes = require('./routes/listsRoutes');
 const notesRoutes = require('./routes/notesRoutes');
 const tasksRoutes = require('./routes/tasksRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const notificationsRoutes = require('./routes/notificationsRoutes');
+const deepLinkRoutes = require('./routes/deepLinkRoutes');
+const notificationAdminRoutes = require('./routes/notificationAdminRoutes');
 
 // Initialize express app
 const app = express();
 
 // Connect to MongoDB
 connectDB();
+
+// Initialize notification cron jobs
+if (process.env.NODE_ENV !== 'test') {
+  const cron = require('node-cron');
+  const { startNotificationScheduler } = require('./services/notificationScheduler');
+  const { cleanupOldNotificationLogs } = require('./services/notificationCleanupJob');
+  
+  // Start notification cron job
+  // Run every hour to check each user's preferred notification time
+  const cronSchedule = process.env.NOTIFICATION_CRON_SCHEDULE || '0 * * * *'; // Default: Every hour
+  const timezone = process.env.NOTIFICATION_TIMEZONE || 'UTC';
+  
+  cron.schedule(cronSchedule, async () => {
+    logger.info('Starting scheduled notification processing...');
+    try {
+      await startNotificationScheduler();
+      logger.info('Scheduled notification processing completed successfully');
+    } catch (error) {
+      logger.error('Error in scheduled notification processing:', error);
+    }
+  }, {
+    scheduled: true,
+    timezone: timezone
+  });
+  
+  logger.info(`Notification cron job scheduled: ${cronSchedule} (${timezone}) - checks hourly for user-specific times`);
+  
+  // Start cleanup cron job (weekly on Sunday at 2 AM)
+  const cleanupSchedule = process.env.NOTIFICATION_CLEANUP_CRON_SCHEDULE || '0 2 * * 0';
+  const cleanupDaysToKeep = parseInt(process.env.NOTIFICATION_LOGS_RETENTION_DAYS) || 90;
+  
+  cron.schedule(cleanupSchedule, async () => {
+    logger.info('Starting scheduled notification logs cleanup...');
+    try {
+      await cleanupOldNotificationLogs(cleanupDaysToKeep);
+      logger.info('Scheduled notification logs cleanup completed successfully');
+    } catch (error) {
+      logger.error('Error in scheduled notification logs cleanup:', error);
+    }
+  }, {
+    scheduled: true,
+    timezone: timezone
+  });
+  
+  logger.info(`Notification cleanup job scheduled: ${cleanupSchedule} (${timezone}), keeping ${cleanupDaysToKeep} days`);
+}
 
 // Security middleware
 app.use(helmet());
@@ -96,6 +145,9 @@ app.use('/api/lists', listsRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/tasks', deepLinkRoutes);
+app.use('/api/admin/notifications', notificationAdminRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -109,6 +161,8 @@ app.get('/', (req, res) => {
       notes: '/api/notes',
       tasks: '/api/tasks',
       ai: '/api/ai',
+      notifications: '/api/notifications',
+      deepLinks: '/api/tasks/link/:token',
     },
   });
 });

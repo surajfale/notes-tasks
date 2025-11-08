@@ -36,6 +36,9 @@ describe('TaskCard', () => {
     description: 'This is a test task description',
     priority: 2,
     isCompleted: false,
+    checklistItems: [],
+    notificationEnabled: false,
+    notificationTimings: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };

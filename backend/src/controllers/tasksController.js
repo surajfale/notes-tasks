@@ -53,7 +53,19 @@ const getTask = async (req, res, next) => {
 // @access  Private
 const createTask = async (req, res, next) => {
   try {
-    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags, checklistItems } = req.body;
+    const { 
+      listId, 
+      title, 
+      description, 
+      dueAt, 
+      reminderAt, 
+      isCompleted, 
+      priority, 
+      tags, 
+      checklistItems,
+      notificationEnabled,
+      notificationTimings
+    } = req.body;
 
     const task = await Task.create({
       userId: req.user._id,
@@ -66,6 +78,8 @@ const createTask = async (req, res, next) => {
       priority,
       tags,
       checklistItems: checklistItems || [],
+      notificationEnabled: notificationEnabled || false,
+      notificationTimings: notificationTimings || [],
     });
 
     res.status(201).json(task);
@@ -93,16 +107,34 @@ const updateTask = async (req, res, next) => {
       });
     }
 
-    const { listId, title, description, dueAt, reminderAt, isCompleted, priority, tags, checklistItems } = req.body;
+    const { 
+      listId, 
+      title, 
+      description, 
+      dueAt, 
+      reminderAt, 
+      isCompleted, 
+      priority, 
+      tags, 
+      checklistItems,
+      notificationEnabled,
+      notificationTimings
+    } = req.body;
 
     if (listId !== undefined) task.listId = listId;
     if (title !== undefined) task.title = title;
     if (description !== undefined) task.description = description;
+    // Note: When dueAt changes, the Task model's pre-save middleware
+    // automatically resets lastNotificationSent and notificationsSent
     if (dueAt !== undefined) task.dueAt = dueAt;
     if (reminderAt !== undefined) task.reminderAt = reminderAt;
+    // Note: Completed tasks are excluded from notification processing
+    // by the notification scheduler, so no need to reset notification fields
     if (isCompleted !== undefined) task.isCompleted = isCompleted;
     if (priority !== undefined) task.priority = priority;
     if (tags !== undefined) task.tags = tags;
+    if (notificationEnabled !== undefined) task.notificationEnabled = notificationEnabled;
+    if (notificationTimings !== undefined) task.notificationTimings = notificationTimings;
     if (checklistItems !== undefined) {
       task.checklistItems = checklistItems;
       

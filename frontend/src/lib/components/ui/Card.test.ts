@@ -4,7 +4,7 @@ import Card from './Card.svelte';
 
 describe('Card', () => {
   it('renders with default props', () => {
-    const { container } = render(Card, { props: { children: 'Card content' } });
+    const { container } = render(Card);
     const card = container.querySelector('div');
     expect(card).toBeTruthy();
     expect(card?.className).toContain('bg-white');

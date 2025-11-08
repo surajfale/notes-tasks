@@ -14,6 +14,10 @@
  */
 
 import { syncService } from '$lib/storage/sync';
+import { authStore } from '$lib/stores/auth';
+
+// Initialize auth store to restore user session from token
+authStore.initialize();
 
 // Initialize sync service when the app loads
 syncService.initialize();

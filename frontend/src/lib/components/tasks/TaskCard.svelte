@@ -12,13 +12,8 @@
 
   export let task: Task;
   
-  // Get color based on first tag (or default if no tags)
-  $: cardColor = task.tags && task.tags.length > 0 
-    ? (() => {
-        const color = getTagColor(task.tags[0]);
-        return { bg: color.cardBg || color.bg, border: color.border };
-      })()
-    : { bg: 'bg-white dark:bg-gray-900', border: 'border-gray-200 dark:border-gray-700' };
+  // Default card color (tasks don't have tags)
+  $: cardColor = { bg: 'bg-white dark:bg-gray-900', border: 'border-gray-200 dark:border-gray-700' };
   
   // Check if this task has pending changes
   $: hasPendingChanges = isTaskPending(task._id);
@@ -46,6 +41,27 @@
   // Format due date using utility function
   $: dueDateText = task.dueAt ? formatDueDate(task.dueAt) : '';
   $: isOverdue = task.dueAt && isPastDate(task.dueAt) && !task.isCompleted;
+
+  // Notification display logic
+  $: hasNotifications = task.notificationEnabled && task.notificationTimings && task.notificationTimings.length > 0;
+  
+  // Format notification timings for display
+  function formatNotificationTiming(timing: string): string {
+    switch (timing) {
+      case 'same_day':
+        return 'Same day';
+      case '1_day_before':
+        return '1 day before';
+      case '2_days_before':
+        return '2 days before';
+      default:
+        return timing;
+    }
+  }
+  
+  $: notificationTimingsText = hasNotifications 
+    ? task.notificationTimings.map(formatNotificationTiming).join(', ')
+    : '';
 
   async function handleToggleComplete(e: Event) {
     e.stopPropagation();
@@ -129,6 +145,18 @@
           <div class="flex items-center gap-2 flex-shrink-0">
             <!-- Pending badge -->
             <PendingBadge show={$hasPendingChanges} size="sm" />
+            <!-- Notification indicator -->
+            {#if hasNotifications}
+              <span 
+                class="px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                title="Notifications: {notificationTimingsText}"
+              >
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span class="hidden sm:inline">{task.notificationTimings.length}</span>
+              </span>
+            {/if}
             <!-- Priority indicator -->
             <span 
               class="px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap {priorityInfo.bg} {priorityInfo.color}"
@@ -178,13 +206,25 @@
           </div>
         {/if}
 
-        <!-- Due date -->
-        {#if task.dueAt}
-          <div class="flex items-center gap-1 text-sm {isOverdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-gray-600 dark:text-gray-400'}">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>{dueDateText}</span>
+        <!-- Due date and notifications -->
+        {#if task.dueAt || hasNotifications}
+          <div class="flex flex-col gap-2">
+            {#if task.dueAt}
+              <div class="flex items-center gap-1 text-sm {isOverdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-gray-600 dark:text-gray-400'}">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>{dueDateText}</span>
+              </div>
+            {/if}
+            {#if hasNotifications}
+              <div class="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span>Reminders: {notificationTimingsText}</span>
+              </div>
+            {/if}
           </div>
         {/if}
 

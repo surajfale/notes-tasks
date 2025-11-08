@@ -11,3 +11,5 @@ export { default as MarkdownEditor } from './MarkdownEditor.svelte';
 export { default as MarkdownRenderer } from './MarkdownRenderer.svelte';
 export { default as Tag } from './Tag.svelte';
 export { default as LightningButton } from './LightningButton.svelte';
+export { default as DueDatePicker } from './DueDatePicker.svelte';
+export { default as Tooltip } from './Tooltip.svelte';

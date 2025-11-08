@@ -15,10 +15,12 @@
     const target = event.target as HTMLSelectElement;
     value = target.value || undefined;
   }
+
+  const selectId = `list-selector-${Math.random().toString(36).substr(2, 9)}`;
 </script>
 
 <div class="w-full">
-  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+  <label for={selectId} class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
     {label}
     {#if required}
       <span class="text-error-500">*</span>
@@ -27,6 +29,7 @@
 
   <div class="relative">
     <select
+      id={selectId}
       bind:value
       on:change={handleChange}
       {disabled}

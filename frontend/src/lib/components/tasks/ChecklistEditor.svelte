@@ -142,6 +142,7 @@
 
 <div class="space-y-4">
   <div class="flex items-center justify-between">
+    <!-- svelte-ignore a11y-label-has-associated-control -->
     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
       Checklist Items
     </label>

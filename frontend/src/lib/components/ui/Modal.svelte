@@ -27,6 +27,8 @@
 <svelte:window on:keydown={handleKeydown} />
 
 {#if open}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm"
     on:click={handleBackdropClick}
@@ -34,9 +36,12 @@
     aria-modal="true"
     aria-labelledby={title ? 'modal-title' : undefined}
   >
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
       class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200"
       on:click|stopPropagation
+      role="document"
     >
       {#if title}
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
