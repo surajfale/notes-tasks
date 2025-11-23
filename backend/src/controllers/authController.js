@@ -19,6 +19,19 @@ const register = async (req, res, next) => {
   try {
     const { username, email, password, displayName } = req.body;
 
+    // Check account limit
+    const maxAccounts = parseInt(process.env.MAX_ACCOUNTS) || 10;
+    const userCount = await User.countDocuments();
+    
+    if (userCount >= maxAccounts) {
+      return res.status(403).json({
+        error: {
+          code: 'ACCOUNT_LIMIT_REACHED',
+          message: 'Maximum number of accounts reached. No new registrations are allowed at this time.',
+        },
+      });
+    }
+
     // Check if user exists
     const userExists = await User.findOne({ $or: [{ username }, { email }] });
 
