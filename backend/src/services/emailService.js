@@ -760,8 +760,7 @@ class EmailService {
         html: emailContent.html,
         text: emailContent.text,
         tags: [
-          { name: 'type', value: 'welcome' },
-          { name: 'user-email', value: userData.email }
+          { name: 'type', value: 'welcome' }
         ]
       };
 
@@ -827,8 +826,7 @@ class EmailService {
         html: emailContent.html,
         text: emailContent.text,
         tags: [
-          { name: 'type', value: 'password-reset' },
-          { name: 'user-email', value: userData.email }
+          { name: 'type', value: 'password-reset' }
         ]
       };
 
