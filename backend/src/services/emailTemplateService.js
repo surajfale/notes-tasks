@@ -471,3 +471,6 @@ Notes & Tasks. All rights reserved.
     }
   }
 }
+
+// Export singleton instance
+module.exports = new EmailTemplateService();
