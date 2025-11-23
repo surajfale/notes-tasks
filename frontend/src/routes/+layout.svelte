@@ -10,7 +10,7 @@
   import OfflineIndicator from '$lib/components/sync/OfflineIndicator.svelte';
   import SyncStatusIndicator from '$lib/components/sync/SyncStatusIndicator.svelte';
   import ThemeColorManager from '$lib/components/ThemeColorManager.svelte';
-  import { ErrorBoundary } from '$lib/components/ui';
+  import { ErrorBoundary, DisclaimerBanner } from '$lib/components/ui';
   
   // Reactive state
   let sidebarOpen = false;
@@ -122,6 +122,9 @@
   
   <!-- Theme Color Manager (updates meta theme-color dynamically) -->
   <ThemeColorManager />
+  
+  <!-- Disclaimer Banner (shown to all users) -->
+  <DisclaimerBanner />
   
   <!-- Offline Indicator (shown globally when offline) -->
   <OfflineIndicator />

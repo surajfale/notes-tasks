@@ -13,3 +13,4 @@ export { default as Tag } from './Tag.svelte';
 export { default as LightningButton } from './LightningButton.svelte';
 export { default as DueDatePicker } from './DueDatePicker.svelte';
 export { default as Tooltip } from './Tooltip.svelte';
+export { default as DisclaimerBanner } from './DisclaimerBanner.svelte';

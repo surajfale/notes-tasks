@@ -45,6 +45,15 @@ const schemas = {
     newPassword: Joi.string().min(8).max(128).required(),
   }),
 
+  forgotPassword: Joi.object({
+    email: Joi.string().email().required(),
+  }),
+
+  resetPassword: Joi.object({
+    token: Joi.string().required(),
+    newPassword: Joi.string().min(8).max(128).required(),
+  }),
+
   createList: Joi.object({
     title: Joi.string().max(100).required(),
     color: Joi.string().pattern(/^#[0-9A-F]{6}$/i).optional(),

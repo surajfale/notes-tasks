@@ -145,6 +145,14 @@
             </p>
           {/if}
         </div>
+        
+        <div class="flex items-center justify-end">
+          <div class="text-sm">
+            <a href="/forgot-password" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+              Forgot your password?
+            </a>
+          </div>
+        </div>
       </div>
 
       <!-- Error Message from Auth Store -->

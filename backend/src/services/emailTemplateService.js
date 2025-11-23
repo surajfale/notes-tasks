@@ -406,7 +406,68 @@ If you didn't create this account, please contact us at ${supportEmail}
       throw new Error(`Failed to generate email: ${error.message}`);
     }
   }
-}
+  /**
+   * Generate password reset email
+   * @param {Object} data - Data for email
+   * @param {string} data.email - User email
+   * @param {string} data.displayName - User display name
+   * @param {string} data.resetUrl - Reset URL with token
+   * @returns {Promise<{subject: string, html: string, text: string}>}
+   */
+  async generatePasswordResetEmail(data) {
+    const { email, displayName, resetUrl } = data;
 
-// Export singleton instance
-module.exports = new EmailTemplateService();
+    try {
+      // Load reset password email template
+      const templatePath = path.join(__dirname, '../templates/resetPasswordEmail.html');
+      const template = await fs.readFile(templatePath, 'utf-8');
+
+      logger.debug('Loaded email template: resetPasswordEmail');
+
+      // Prepare template data
+      const supportEmail = process.env.SUPPORT_EMAIL || 'support@yourdomain.com';
+
+      // Replace template variables
+      let html = template
+        .replace(/{{displayName}}/g, displayName || 'there')
+        .replace(/{{resetUrl}}/g, resetUrl)
+        .replace(/{{supportEmail}}/g, supportEmail);
+
+      // Generate plain text version
+      const text = `
+Reset Your Password
+
+Hi ${displayName || 'there'},
+
+You requested a password reset for your Notes & Tasks account.
+
+Click the link below to reset your password. This link is valid for 1 hour.
+
+${resetUrl}
+
+If you didn't request this, you can safely ignore this email. Your password will not change.
+
+Need help? Contact ${supportEmail}
+
+Notes & Tasks. All rights reserved.
+      `.trim();
+
+      const subject = 'Reset your Notes & Tasks password';
+
+      logger.debug('Generated password reset email', {
+        email,
+        subject
+      });
+
+      return {
+        subject,
+        html,
+        text
+      };
+
+    } catch (error) {
+      logger.error('Failed to generate password reset email:', error);
+      throw new Error(`Failed to generate email: ${error.message}`);
+    }
+  }
+}

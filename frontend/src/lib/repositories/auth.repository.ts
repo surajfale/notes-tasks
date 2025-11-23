@@ -7,7 +7,9 @@ import type {
   LoginCredentials,
   RegisterData,
   User,
-  ChangePasswordData
+  ChangePasswordData,
+  ForgotPasswordData,
+  ResetPasswordData
 } from '$lib/types/user';
 
 /**
@@ -63,5 +65,31 @@ export const authRepository = {
    */
   async deleteAccount(): Promise<void> {
     return apiClient.delete<void>(API_ENDPOINTS.AUTH.ACCOUNT);
+  },
+
+  /**
+   * Request password reset email
+   * @param data - Email address
+   * @returns Promise resolving when request is processed
+   */
+  async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
+    return apiClient.post<{ message: string }>(
+      API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      data,
+      { requiresAuth: false }
+    );
+  },
+
+  /**
+   * Reset password with token
+   * @param data - Token and new password
+   * @returns Promise resolving when password is reset
+   */
+  async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
+    return apiClient.post<{ message: string }>(
+      API_ENDPOINTS.AUTH.RESET_PASSWORD,
+      data,
+      { requiresAuth: false }
+    );
   }
 };

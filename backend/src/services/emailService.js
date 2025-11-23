@@ -794,6 +794,73 @@ class EmailService {
   }
 
   /**
+   * Send password reset email
+   * @param {Object} userData - User data
+   * @param {string} userData.email - User email
+   * @param {string} userData.displayName - User display name
+   * @param {string} userData.resetToken - Reset token
+   * @returns {Promise<{success: boolean, emailId?: string, error?: string}>}
+   */
+  async sendPasswordResetEmail(userData) {
+    if (!this.isAvailable()) {
+      logger.warn('Email service not available, skipping password reset email', {
+        email: userData.email
+      });
+      return { success: false, error: 'Email service not available' };
+    }
+
+    try {
+      const emailTemplateService = require('./emailTemplateService');
+      const frontendBaseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:5173';
+      
+      // Generate email content
+      const emailContent = await emailTemplateService.generatePasswordResetEmail({
+        email: userData.email,
+        displayName: userData.displayName,
+        resetUrl: `${frontendBaseUrl}/reset-password/${userData.resetToken}`
+      });
+
+      // Send the email
+      const emailOptions = {
+        to: userData.email,
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
+        tags: [
+          { name: 'type', value: 'password-reset' },
+          { name: 'user-email', value: userData.email }
+        ]
+      };
+
+      const result = await this.sendEmail(emailOptions);
+
+      if (result.success) {
+        logger.info('Password reset email sent successfully', {
+          email: userData.email,
+          emailId: result.emailId
+        });
+      } else {
+        logger.error('Failed to send password reset email', {
+          email: userData.email,
+          error: result.error
+        });
+      }
+
+      return result;
+
+    } catch (error) {
+      logger.error('Error sending password reset email:', {
+        error: error.message,
+        email: userData.email
+      });
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
    * Get comprehensive service health status
    * @returns {Object}
    */

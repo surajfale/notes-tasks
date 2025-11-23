@@ -9,11 +9,12 @@ const {
 } = require('../controllers/notificationsController');
 const { protect } = require('../middleware/auth');
 const { validate, schemas } = require('../middleware/validation');
+const { publicLimiter } = require('../middleware/rateLimiters');
 
 // Public routes (no authentication required)
 router
   .route('/vapid-public-key')
-  .get(getVapidPublicKey);
+  .get(publicLimiter, getVapidPublicKey);
 
 // Protected routes (authentication required)
 router.use(protect);
