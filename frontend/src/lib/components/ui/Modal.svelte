@@ -2,6 +2,14 @@
   export let open = false;
   export let title = '';
   export let onClose: (() => void) | undefined = undefined;
+  export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
+  
+  $: maxWidthClass = {
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-2xl',
+    xl: 'max-w-4xl'
+  }[size];
 
   function handleClose() {
     if (onClose) {
@@ -39,7 +47,7 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
-      class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200"
+      class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl {maxWidthClass} w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200"
       on:click|stopPropagation
       role="document"
     >

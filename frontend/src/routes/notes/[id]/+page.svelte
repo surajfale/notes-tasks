@@ -7,6 +7,7 @@
   import Modal from '$lib/components/ui/Modal.svelte';
   import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
+  import ShareModal from '$lib/components/ui/ShareModal.svelte';
 
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
@@ -32,6 +33,7 @@
   let errors: { title?: string; body?: string } = {};
   let copySuccess = false;
   let copyTimeout: ReturnType<typeof setTimeout>;
+  let showShareModal = false;
 
   $: lists = Array.isArray($listsStore.items) ? $listsStore.items : [];
 
@@ -198,6 +200,14 @@
       enhanceError = '';
     }
   }
+
+  function openShareModal() {
+    showShareModal = true;
+  }
+
+  function closeShareModal() {
+    showShareModal = false;
+  }
 </script>
 
 <div class="max-w-4xl mx-auto p-6">
@@ -212,28 +222,44 @@
         </div>
       </div>
       
-      <!-- Copy Button -->
-      <button
-        type="button"
-        on:click={handleCopyNote}
-        class="flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all
-               {copySuccess 
-                 ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' 
-                 : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-primary-500 dark:hover:border-primary-400'}"
-        title="Copy note content"
-      >
-        {#if copySuccess}
+      <div class="flex items-center gap-2">
+        <!-- Share Button -->
+        <button
+          type="button"
+          on:click={openShareModal}
+          class="flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all
+                 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-primary-500 dark:hover:border-primary-400"
+          title="Share note"
+        >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
           </svg>
-          <span class="hidden sm:inline">Copied!</span>
-        {:else}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <span class="hidden sm:inline">Copy</span>
-        {/if}
-      </button>
+          <span class="hidden sm:inline">Share</span>
+        </button>
+        
+        <!-- Copy Button -->
+        <button
+          type="button"
+          on:click={handleCopyNote}
+          class="flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all
+                 {copySuccess 
+                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' 
+                   : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-primary-500 dark:hover:border-primary-400'}"
+          title="Copy note content"
+        >
+          {#if copySuccess}
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="hidden sm:inline">Copied!</span>
+          {:else}
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="hidden sm:inline">Copy</span>
+          {/if}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -370,3 +396,10 @@
     </div>
   </svelte:fragment>
 </Modal>
+
+<!-- Share Modal -->
+<ShareModal
+  bind:open={showShareModal}
+  note={data.note}
+  onClose={closeShareModal}
+/>

@@ -8,6 +8,7 @@ A production-ready web application for managing notes and tasks with offline cap
 - **AI-Powered Content Enhancement**: Intelligent content improvement with customizable tone styles
 - **Email Notifications**: Automated task reminders with configurable timing
 - **Notes Management**: Rich text notes with tags, search, and archive
+- **WhatsApp Sharing**: Share notes via WhatsApp as formatted text or beautiful PNG images
 - **Tasks Management**: Task tracking with due dates, priorities, and completion status
 - **Lists Organization**: Organize notes and tasks into colored lists
 - **Progressive Web App**: Install on mobile devices for native app experience
@@ -23,6 +24,14 @@ A production-ready web application for managing notes and tasks with offline cap
 - ✅ **Task Breakdown**: Convert task descriptions into actionable checklist items
 - 🔄 **Revert Option**: Easily undo AI changes if needed
 - 🚀 **Powered by Ollama Cloud**: Uses advanced language models for intelligent suggestions
+
+### Sharing Features
+- 📱 **WhatsApp Integration**: Share notes directly via WhatsApp
+- 📄 **Text Sharing**: Share as formatted plain text with proper structure (no raw markdown)
+- 🖼️ **Image Sharing**: Generate beautiful PNG cards of your notes
+- 🎨 **Theme-Aware Images**: Generated images respect light/dark mode
+- 📲 **Smart Sharing**: Uses Web Share API on mobile, direct links on desktop
+- 🔒 **Privacy-First**: All processing happens client-side, no server uploads
 
 ### Notification Features
 - 📧 **Email Notifications**: Automated task reminders sent to your registered email
@@ -58,6 +67,7 @@ A production-ready web application for managing notes and tasks with offline cap
 - TypeScript
 - Tailwind CSS
 - IndexedDB (Offline Storage)
+- html-to-image (Image Generation)
 - Vite (Build Tool)
 
 ## Quick Start

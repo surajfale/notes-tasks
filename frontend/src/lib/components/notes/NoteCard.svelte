@@ -5,6 +5,7 @@
   import PendingBadge from '$lib/components/sync/PendingBadge.svelte';
   import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
   import Tag from '$lib/components/ui/Tag.svelte';
+  import ShareModal from '$lib/components/ui/ShareModal.svelte';
   import { notesStore } from '$lib/stores/notes';
   import { listsStore } from '$lib/stores/lists';
   import { isNotePending } from '$lib/stores/syncStatus';
@@ -27,6 +28,7 @@
 
   let isDeleting = false;
   let showDeleteConfirm = false;
+  let showShareModal = false;
 
   // Get list info if note has a listId
   $: list = note.listId 
@@ -68,6 +70,15 @@
   function cancelDelete(e: Event) {
     e.stopPropagation();
     showDeleteConfirm = false;
+  }
+
+  function handleShare(e: Event) {
+    e.stopPropagation();
+    showShareModal = true;
+  }
+
+  function closeShareModal() {
+    showShareModal = false;
   }
 </script>
 
@@ -128,6 +139,13 @@
     <div class="flex items-center gap-2 sm:gap-3 pt-2 border-t border-gray-200 dark:border-gray-700">
       {#if !showDeleteConfirm}
         <button
+          on:click={handleShare}
+          class="text-sm sm:text-base py-1 px-2 min-h-[36px] text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          title="Share note"
+        >
+          Share
+        </button>
+        <button
           on:click={handleArchiveToggle}
           class="text-sm sm:text-base py-1 px-2 min-h-[36px] text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
         >
@@ -166,3 +184,10 @@
     </div>
   </div>
 </div>
+
+<!-- Share Modal -->
+<ShareModal
+  bind:open={showShareModal}
+  {note}
+  onClose={closeShareModal}
+/>

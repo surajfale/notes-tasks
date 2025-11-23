@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### 2025-11-23 - [UNRELEASED]
+
+feat(sharing): add WhatsApp sharing functionality for notes
+
+- Implement share notes as formatted text or PNG images
+- Add ShareModal component with preview and share options
+- Create NotePreview component for generating shareable cards
+- Add share utilities for text formatting and image generation
+- Support Web Share API on mobile with fallback to direct links
+- Add share buttons to note detail page and note cards
+- Add size prop support to Modal component (sm/md/lg/xl)
+- Install html-to-image library for client-side image generation
+- Update documentation with comprehensive sharing guide
+- Theme-aware image generation respecting light/dark mode
+- Privacy-first approach with all processing happening client-side
+
 ### 2025-11-05 23:48:32 - 01670a3 [PUSHED]
 
 feat(ai): add AI content enhancement feature for notes and tasks

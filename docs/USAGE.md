@@ -6,6 +6,7 @@ Complete guide for using the Notes & Tasks application.
 - [Getting Started](#getting-started)
 - [Authentication](#authentication)
 - [AI Content Enhancement](#ai-content-enhancement)
+- [Sharing Notes](#sharing-notes)
 - [Managing Notes](#managing-notes)
 - [Managing Tasks](#managing-tasks)
 - [Organizing with Lists](#organizing-with-lists)
@@ -263,6 +264,271 @@ Plan team building event
 - **No Storage**: AI doesn't store your content after processing
 - **Secure Transmission**: All requests use HTTPS encryption
 - **User Isolation**: Your content is never shared with other users
+
+## Sharing Notes
+
+### Overview
+
+Share your notes with others via WhatsApp in two formats: formatted text or beautiful PNG images. All processing happens in your browser - no uploads to external servers.
+
+### How to Share
+
+#### From Note Detail Page
+
+1. **Open a Note**
+   - Click on any note to view/edit it
+   - Look for the "Share" button next to the "Copy" button
+
+2. **Click Share Button**
+   - Opens the share modal with preview and options
+   - Shows how your note will appear
+
+3. **Choose Share Format**
+   - **Share as Text**: Opens WhatsApp with formatted plain text
+   - **Share as Image**: Generates a PNG card and opens share dialog
+
+#### From Note Card
+
+1. **Find Your Note**
+   - On the Notes page, locate the note you want to share
+
+2. **Click Share**
+   - Click the "Share" button in the note card's action row
+   - Share modal opens with preview
+
+3. **Select Format**
+   - Choose between text or image sharing
+
+### Share as Text
+
+#### What Happens
+
+- **Markdown Conversion**: Your note's markdown is converted to WhatsApp-friendly format
+- **Formatting Preserved**: Uses WhatsApp's native formatting
+  - Bold: `*text*` (single asterisk)
+  - Italic: `_text_` (underscore)
+  - Bullet points: • (bullet character)
+  - Headers: Capitalized with spacing
+- **Title & Tags**: Includes formatted title and tags
+- **Structure**: Proper line breaks and spacing maintained
+
+#### Example
+
+**Original Note (Markdown):**
+```markdown
+# Meeting Notes
+
+## Action Items
+- Review **budget proposal**
+- Schedule *follow-up meeting*
+- Contact [John](mailto:john@example.com)
+
+Tags: work, important
+```
+
+**Shared as Text:**
+```
+*Meeting Notes*
+─────────────
+
+ACTION ITEMS
+
+• Review *budget proposal*
+• Schedule _follow-up meeting_
+• Contact John (mailto:john@example.com)
+
+🏷️ work, important
+```
+
+#### On Mobile
+
+1. Click "Share as Text"
+2. Web Share dialog appears
+3. Choose WhatsApp or another app
+4. Text pre-filled in the app
+5. Select recipient and send
+
+#### On Desktop
+
+1. Click "Share as Text"
+2. Opens WhatsApp Web in new tab
+3. Text pre-filled in message box
+4. Select recipient and send
+
+### Share as Image
+
+#### What Happens
+
+- **PNG Generation**: Creates a beautiful image card of your note
+- **Professional Layout**: Title, content, tags, and timestamp
+- **Theme-Aware**: Respects your current light/dark mode
+- **High Quality**: 1200px wide, 2x pixel ratio for sharpness
+- **Markdown Rendered**: Full markdown formatting visible
+
+#### Image Features
+
+- **Title**: Bold, large text with decorative underline
+- **Content**: Fully rendered markdown (headers, lists, bold, italic, code)
+- **Tags**: Color-coded tag badges
+- **Timestamp**: Shows when note was last updated
+- **Branding**: "Notes & Tasks" app name on image
+- **Styling**: Professional borders, shadows, and spacing
+
+#### On Mobile
+
+1. Click "Share as Image"
+2. Wait 2-3 seconds for generation
+3. Web Share dialog appears
+4. Choose WhatsApp or another app
+5. Image attached automatically
+6. Select recipient and send
+
+#### On Desktop
+
+1. Click "Share as Image"
+2. Wait 2-3 seconds for generation
+3. Image downloads to your computer
+4. Open WhatsApp Web manually
+5. Click attachment icon
+6. Select the downloaded image
+7. Send to recipient
+
+### Share Modal Features
+
+#### Preview Section
+
+- Shows how your note will appear when shared
+- Scrollable if note is long
+- Matches the exported image layout
+
+#### Text Preview (Collapsible)
+
+- Click "View Text Format" to expand
+- Shows exactly what will be sent as text
+- Monospace font for accuracy
+- Collapsible to save space
+
+#### Help Information
+
+- Tips for mobile vs desktop sharing
+- Clear instructions displayed in modal
+- Error messages if something goes wrong
+
+### Supported Platforms
+
+#### Mobile
+
+- **Android (Chrome)**: Full Web Share API support
+- **iOS (Safari)**: Full Web Share API support
+- **Other Browsers**: Falls back to WhatsApp direct link or download
+
+#### Desktop
+
+- **Chrome/Edge**: WhatsApp Web link for text, download for images
+- **Firefox**: WhatsApp Web link for text, download for images
+- **Safari**: WhatsApp Web link for text, download for images
+
+### Tips for Best Results
+
+#### For Text Sharing
+
+1. **Keep Markdown Simple**: Basic formatting works best in WhatsApp
+2. **Avoid Complex Tables**: They don't translate well to text
+3. **Short Notes**: Easier to read in chat apps
+4. **Use Bullet Points**: More readable than long paragraphs
+
+#### For Image Sharing
+
+1. **Consider Length**: Very long notes may result in large images
+2. **Check Theme**: Choose light/dark based on recipient's preference
+3. **Test First**: Share to yourself first to see how it looks
+4. **Tags Matter**: They appear prominently in the image
+5. **Mobile Viewing**: Images are optimized for mobile screens
+
+### Privacy & Security
+
+#### Client-Side Processing
+
+- **No Server Upload**: Images generated entirely in your browser
+- **No Tracking**: No analytics on what you share
+- **No Storage**: Images not saved on any server
+- **Local Only**: All processing uses local browser APIs
+
+#### What Gets Shared
+
+- **Text Format**: Title, body content, and tags only
+- **Image Format**: Visual representation of your note
+- **Not Included**: User info, timestamps (except in image), metadata
+
+#### Your Control
+
+- **You Choose**: Select recipient and timing
+- **Preview First**: See exactly what will be shared
+- **Cancel Anytime**: Close modal to cancel
+- **No Auto-Send**: You control when to send
+
+### Troubleshooting
+
+#### "Failed to generate image"
+
+- **Try Again**: Click "Share as Image" again
+- **Simplify Note**: Very complex notes may fail
+- **Check Browser**: Ensure modern browser with Canvas support
+- **Clear Cache**: Clear browser cache and retry
+
+#### "Share cancelled"
+
+- **User Action**: You cancelled the share dialog (not an error)
+- **Try Again**: Click share button again if desired
+
+#### Image Quality Issues
+
+- **Resolution**: Images generated at 2x resolution for sharpness
+- **Theme**: Switch theme in Settings if colors don't look right
+- **Browser**: Use Chrome/Edge for best image quality
+
+#### WhatsApp Doesn't Open
+
+- **Check Installation**: Ensure WhatsApp is installed on mobile
+- **Desktop**: WhatsApp Web requires logged-in WhatsApp
+- **Popup Blocked**: Allow popups for the site
+- **Alternative**: Use text sharing instead
+
+#### Text Formatting Lost
+
+- **WhatsApp Limitation**: Some formatting may not display in all versions
+- **Basic Formatting**: Bold and italic usually work
+- **Try Image**: Use image sharing for guaranteed formatting
+
+### Limitations
+
+#### Technical
+
+- **Browser Support**: Requires modern browser (Chrome 89+, Safari 14+, Firefox 88+)
+- **File Size**: Very long notes may produce large images (1-3 MB)
+- **Processing Time**: Image generation takes 2-5 seconds
+- **Canvas Required**: Image sharing needs HTML5 Canvas support
+
+#### Platform
+
+- **WhatsApp Only**: Currently optimized for WhatsApp sharing
+- **Web Share API**: Full features require Web Share API support
+- **Desktop Limits**: Desktop browsers have limited Web Share support
+
+#### Content
+
+- **No Videos/Audio**: Cannot embed media in images
+- **Static Images**: Images don't support interactivity
+- **Text Only**: Only text content is shared (no attachments)
+
+### Alternative Methods
+
+#### If Sharing Fails
+
+1. **Copy Button**: Use the "Copy" button to copy formatted text
+2. **Manual Screenshot**: Take a screenshot of the note
+3. **Export**: Copy content and paste into any app
+4. **Download Image**: Image automatically downloads on desktop
 
 ## Managing Notes
 
