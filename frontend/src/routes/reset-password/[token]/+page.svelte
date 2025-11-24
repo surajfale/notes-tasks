@@ -14,7 +14,12 @@
 
   async function handleSubmit(event: Event) {
     event.preventDefault();
-    
+
+    if (!token) {
+      error = 'Invalid reset link';
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       error = 'Passwords do not match';
       return;
@@ -24,7 +29,7 @@
         error = 'Password must be at least 8 characters long';
         return;
     }
-    
+
     isSubmitting = true;
     error = null;
 

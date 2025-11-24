@@ -49,11 +49,11 @@
 
     sharingImage = true;
     error = '';
-    
+
     try {
       const theme = getCurrentTheme();
       const backgroundColor = getThemeBackgroundColor(theme);
-      
+
       // Generate image from preview element
       const blob = await elementToBlob(previewElement, {
         backgroundColor,
@@ -63,17 +63,30 @@
       });
 
       const filename = generateNoteImageFilename(note.title);
-      
+
       // Share or download the image
       await shareImage(blob, filename, note.title);
-      
+
       // Close modal after successful share
       setTimeout(() => {
         onClose();
       }, 500);
     } catch (err: any) {
-      error = err.message || 'Failed to generate or share image';
-      console.error('Share image error:', err);
+      const message = err.message || 'Failed to generate or share image';
+
+      // Don't treat download/clipboard instructions as errors
+      if (message.includes('downloaded') || message.includes('copied to clipboard') || message.includes('Share cancelled')) {
+        error = message;
+        // Auto-close modal after showing success message
+        if (message.includes('downloaded') || message.includes('copied to clipboard')) {
+          setTimeout(() => {
+            onClose();
+          }, 3000);
+        }
+      } else {
+        error = message;
+        console.error('Share image error:', err);
+      }
     } finally {
       sharingImage = false;
     }
@@ -161,11 +174,17 @@
       <pre class="mt-3 text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words font-mono bg-white dark:bg-gray-900 p-3 rounded border border-gray-200 dark:border-gray-700">{formattedText}</pre>
     </details>
 
-    <!-- Error Message -->
+    <!-- Error/Info Message -->
     {#if error}
-      <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-        <p class="text-sm text-red-800 dark:text-red-200">{error}</p>
-      </div>
+      {#if error.includes('downloaded') || error.includes('copied to clipboard') || error.includes('Share cancelled')}
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <p class="text-sm text-blue-800 dark:text-blue-200">✓ {error}</p>
+        </div>
+      {:else}
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <p class="text-sm text-red-800 dark:text-red-200">{error}</p>
+        </div>
+      {/if}
     {/if}
 
     <!-- Help Text -->
