@@ -63,7 +63,8 @@ export function markdownToWhatsAppText(markdown: string): string {
   let text = markdown;
 
   // Convert tables first (before other processing)
-  text = text.replace(/(\|.+\|[\r\n]+)+/g, (match) => {
+  // Match tables with proper newline handling
+  text = text.replace(/(\|[^\n]+\|[\r\n]+)+/g, (match) => {
     return '\n' + convertMarkdownTable(match) + '\n';
   });
 
@@ -183,35 +184,36 @@ async function copyImageToClipboard(blob: Blob): Promise<boolean> {
 export async function shareImage(blob: Blob, filename: string, title?: string): Promise<void> {
   const isMobile = isMobileDevice();
 
-  // Try Web Share API with file support
+  // Try Web Share API with file support (primary method on mobile)
   if (isWebShareSupported()) {
-    const file = new File([blob], filename, { type: 'image/png' });
+    try {
+      const file = new File([blob], filename, { type: 'image/png' });
 
-    // Check if browser supports sharing files
-    const canShareFiles = navigator.canShare && navigator.canShare({ files: [file] });
-
-    if (canShareFiles) {
-      try {
+      // Check if browser supports sharing files
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           title: title || 'Share Note',
           files: [file]
         });
+        // Success - return without error
         return;
-      } catch (error: any) {
-        // User cancelled - don't fallback
-        if (error.name === 'AbortError') {
-          throw new Error('Share cancelled');
-        }
-        console.error('Web Share API error:', error);
-        // Continue to fallback methods
       }
+    } catch (error: any) {
+      // User cancelled - don't fallback, just notify
+      if (error.name === 'AbortError') {
+        throw new Error('Share cancelled');
+      }
+      console.error('Web Share API error:', error);
+      // Continue to fallback methods for other errors
     }
   }
 
-  // Try copying to clipboard (works well on modern mobile browsers)
-  const copiedToClipboard = await copyImageToClipboard(blob);
-  if (copiedToClipboard) {
-    throw new Error('Image copied to clipboard! You can now paste it in WhatsApp.');
+  // On mobile, try clipboard as second option (works on modern mobile browsers)
+  if (isMobile) {
+    const copiedToClipboard = await copyImageToClipboard(blob);
+    if (copiedToClipboard) {
+      throw new Error('Image copied to clipboard! You can now paste it in WhatsApp.');
+    }
   }
 
   // Final fallback: download the image
@@ -220,6 +222,11 @@ export async function shareImage(blob: Blob, filename: string, title?: string): 
   if (isMobile) {
     throw new Error('Image downloaded! Please open it from your downloads and share to WhatsApp.');
   } else {
+    // On desktop, try clipboard after download
+    const copiedToClipboard = await copyImageToClipboard(blob);
+    if (copiedToClipboard) {
+      throw new Error('Image downloaded and copied to clipboard! You can paste it in WhatsApp Web or use the downloaded file.');
+    }
     throw new Error('Image downloaded! You can now drag and drop it to WhatsApp Web.');
   }
 }

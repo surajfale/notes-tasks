@@ -3,6 +3,49 @@
   export let maxLength: number = 0; // 0 means no truncation
   export let className: string = '';
 
+  // Convert markdown table to HTML
+  function convertTableToHtml(tableMarkdown: string): string {
+    const lines = tableMarkdown.trim().split('\n');
+    if (lines.length < 2) return tableMarkdown;
+
+    // Parse table rows
+    const rows = lines.map(line =>
+      line.split('|')
+        .map(cell => cell.trim())
+        .filter(cell => cell.length > 0)
+    );
+
+    // Check if second line is separator
+    const hasHeaderSeparator = lines[1] && lines[1].includes('---');
+
+    if (!hasHeaderSeparator || rows.length < 2) {
+      return tableMarkdown; // Not a valid table
+    }
+
+    // Build HTML table
+    let tableHtml = '<table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 my-4">';
+
+    // Header row
+    tableHtml += '<thead class="bg-gray-100 dark:bg-gray-800"><tr>';
+    rows[0].forEach(cell => {
+      tableHtml += `<th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">${cell}</th>`;
+    });
+    tableHtml += '</tr></thead>';
+
+    // Body rows (skip header and separator)
+    tableHtml += '<tbody>';
+    for (let i = 2; i < rows.length; i++) {
+      tableHtml += '<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">';
+      rows[i].forEach(cell => {
+        tableHtml += `<td class="border border-gray-300 dark:border-gray-600 px-4 py-2">${cell}</td>`;
+      });
+      tableHtml += '</tr>';
+    }
+    tableHtml += '</tbody></table>';
+
+    return tableHtml;
+  }
+
   // Simple markdown to HTML converter
   function markdownToHtml(markdown: string): string {
     if (!markdown) return '';
@@ -13,6 +56,14 @@
     if (maxLength > 0 && html.length > maxLength) {
       html = html.substring(0, maxLength) + '...';
     }
+
+    // Process tables BEFORE escaping HTML (so we can inject HTML tags)
+    const tableParts: string[] = [];
+    html = html.replace(/(\|.+\|[\r\n]+)+/g, (match) => {
+      const placeholder = `__TABLE_${tableParts.length}__`;
+      tableParts.push(convertTableToHtml(match));
+      return placeholder;
+    });
 
     // Escape HTML
     html = html.replace(/&/g, '&amp;')
@@ -97,8 +148,13 @@
     if (inOrderedList) {
       processedLines.push('</ol>');
     }
-    
+
     html = processedLines.join('<br>');
+
+    // Restore tables from placeholders
+    tableParts.forEach((tableHtml, index) => {
+      html = html.replace(`__TABLE_${index}__`, tableHtml);
+    });
 
     return html;
   }
@@ -116,8 +172,21 @@
   .markdown-content :global(a) {
     word-break: break-word;
   }
-  
+
   .markdown-content :global(code) {
     word-break: break-word;
+  }
+
+  .markdown-content :global(table) {
+    width: 100%;
+    border-spacing: 0;
+    overflow: auto;
+    display: table;
+  }
+
+  .markdown-content :global(table th),
+  .markdown-content :global(table td) {
+    word-break: break-word;
+    max-width: 300px;
   }
 </style>
