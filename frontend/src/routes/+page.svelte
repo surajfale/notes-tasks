@@ -45,6 +45,22 @@
 				Manage your tasks with priorities and due dates
 			</p>
 		</a>
+
+		<!-- Links card -->
+		<a 
+			href="/links"
+			class="block p-5 sm:p-6 bg-surface-light dark:bg-surface-dark rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-colors min-h-[120px] sm:min-h-[140px]"
+		>
+			<div class="flex items-center space-x-3 mb-3">
+				<svg class="w-7 h-7 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+				</svg>
+				<h2 class="text-lg sm:text-xl font-semibold">Links</h2>
+			</div>
+			<p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+				Save and organize your favorite links
+			</p>
+		</a>
 		
 		<!-- Lists card -->
 		<a 

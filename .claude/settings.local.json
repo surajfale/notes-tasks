@@ -3,7 +3,15 @@
     "allow": [
       "Bash(npm install:*)",
       "Bash(curl:*)",
-      "Bash(npx tsc --noEmit)"
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run check:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(claude mcp:*)",
+      "Bash(git-commit-mcp:*)",
+      "mcp__git-commit",
+      "mcp__Context7"
     ],
     "deny": [],
     "ask": []

@@ -17,6 +17,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const notificationsRoutes = require('./routes/notificationsRoutes');
 const deepLinkRoutes = require('./routes/deepLinkRoutes');
 const notificationAdminRoutes = require('./routes/notificationAdminRoutes');
+const linksRoutes = require('./routes/linksRoutes');
 
 // Initialize express app
 const app = express();
@@ -29,12 +30,12 @@ if (process.env.NODE_ENV !== 'test') {
   const cron = require('node-cron');
   const { startNotificationScheduler } = require('./services/notificationScheduler');
   const { cleanupOldNotificationLogs } = require('./services/notificationCleanupJob');
-  
+
   // Start notification cron job
   // Run every hour to check each user's preferred notification time
   const cronSchedule = process.env.NOTIFICATION_CRON_SCHEDULE || '0 * * * *'; // Default: Every hour
   const timezone = process.env.NOTIFICATION_TIMEZONE || 'UTC';
-  
+
   cron.schedule(cronSchedule, async () => {
     logger.info('Starting scheduled notification processing...');
     try {
@@ -47,13 +48,13 @@ if (process.env.NODE_ENV !== 'test') {
     scheduled: true,
     timezone: timezone
   });
-  
+
   logger.info(`Notification cron job scheduled: ${cronSchedule} (${timezone}) - checks hourly for user-specific times`);
-  
+
   // Start cleanup cron job (weekly on Sunday at 2 AM)
   const cleanupSchedule = process.env.NOTIFICATION_CLEANUP_CRON_SCHEDULE || '0 2 * * 0';
   const cleanupDaysToKeep = parseInt(process.env.NOTIFICATION_LOGS_RETENTION_DAYS) || 90;
-  
+
   cron.schedule(cleanupSchedule, async () => {
     logger.info('Starting scheduled notification logs cleanup...');
     try {
@@ -66,7 +67,7 @@ if (process.env.NODE_ENV !== 'test') {
     scheduled: true,
     timezone: timezone
   });
-  
+
   logger.info(`Notification cleanup job scheduled: ${cleanupSchedule} (${timezone}), keeping ${cleanupDaysToKeep} days`);
 }
 
@@ -78,20 +79,20 @@ const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
+
     // In development, allow all localhost origins
     if (process.env.NODE_ENV === 'development') {
       if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
         return callback(null, true);
       }
     }
-    
+
     // In production, check allowed origins
     const allowedOrigins = process.env.CORS_ORIGINS?.split(',') || [];
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -147,6 +148,7 @@ app.use('/api/tasks', tasksRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/tasks', deepLinkRoutes);
+app.use('/api/links', linksRoutes);
 app.use('/api/admin/notifications', notificationAdminRoutes);
 
 // Root endpoint
@@ -163,6 +165,7 @@ app.get('/', (req, res) => {
       ai: '/api/ai',
       notifications: '/api/notifications',
       deepLinks: '/api/tasks/link/:token',
+      links: '/api/links',
     },
   });
 });

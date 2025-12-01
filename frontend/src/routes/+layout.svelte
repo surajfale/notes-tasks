@@ -223,6 +223,19 @@
               </svg>
               <span>Tasks</span>
             </a>
+
+            <!-- Links -->
+            <a
+              href="/links"
+              data-sveltekit-preload-data="hover"
+              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/links') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              on:click={closeSidebar}
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              <span>Links</span>
+            </a>
             
             <!-- Lists section -->
             {#if Array.isArray(lists) && lists.length > 0}
@@ -274,6 +287,18 @@
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                          </svg>
+                        </button>
+                        <button
+                          on:click|stopPropagation={() => {
+                            goto(`/links?listId=${list._id}`);
+                            closeSidebar();
+                          }}
+                          class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                          title="Filter links"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                           </svg>
                         </button>
                       </div>

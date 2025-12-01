@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let type: 'text' | 'email' | 'password' | 'number' | 'date' | 'search' = 'text';
+  export let type: 'text' | 'email' | 'password' | 'number' | 'date' | 'search' | 'url' = 'text';
   export let value = '';
   export let label = '';
   export let placeholder = '';
@@ -115,6 +115,21 @@
   {:else if type === 'search'}
     <input
       type="search"
+      {name}
+      {placeholder}
+      {required}
+      {disabled}
+      id={inputId}
+      bind:value
+      class={inputClasses}
+      on:input
+      on:change
+      on:blur
+      on:focus
+    />
+  {:else if type === 'url'}
+    <input
+      type="url"
       {name}
       {placeholder}
       {required}
