@@ -12,9 +12,6 @@
 
   export let task: Task;
   
-  // Default card color (tasks don't have tags)
-  $: cardColor = { bg: 'bg-white dark:bg-gray-900', border: 'border-gray-200 dark:border-gray-700' };
-  
   // Check if this task has pending changes
   $: hasPendingChanges = isTaskPending(task._id);
 
@@ -104,12 +101,12 @@
   }
 </script>
 
-<div 
-  class="relative rounded-xl border-2 transition-all duration-200 cursor-pointer
-         {cardColor.border} {cardColor.bg}
-         hover:shadow-lg hover:scale-[1.02]"
+<div
+  class="group relative rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900
+         transition-colors duration-150 cursor-pointer
+         hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50/60 dark:hover:bg-gray-800/40"
   on:click={handleClick}
-  on:keydown={(e) => e.key === 'Enter' && handleClick()}
+  on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
   role="button"
   tabindex="0"
 >
@@ -228,43 +225,44 @@
           </div>
         {/if}
 
-        <!-- Actions -->
-        <div class="flex items-center gap-2 sm:gap-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+        <!-- Actions: full-opacity on touch devices, hover/focus-revealed on pointer devices -->
+        <div class="flex items-center gap-1 pt-2 -mx-2 border-t border-gray-100 dark:border-gray-800
+                    opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
           {#if !showDeleteConfirm}
             <button
               on:click={handleToggleComplete}
               disabled={isTogglingComplete}
-              class="text-sm sm:text-base py-1 px-2 min-h-[36px] text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors disabled:opacity-50"
+              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               <span class="hidden sm:inline">{task.isCompleted ? 'Mark Incomplete' : 'Mark Complete'}</span>
               <span class="sm:hidden">{task.isCompleted ? 'Incomplete' : 'Complete'}</span>
             </button>
             <button
               on:click={handleDelete}
-              class="text-sm sm:text-base py-1 px-2 min-h-[36px] text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
               disabled={isDeleting}
             >
               Delete
             </button>
           {:else}
-            <span class="text-sm sm:text-base text-gray-700 dark:text-gray-300">Delete this task?</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 px-2">Delete this task?</span>
             <button
               on:click={handleDelete}
-              class="text-sm sm:text-base py-1 px-2 min-h-[36px] text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors"
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Confirm'}
+              {isDeleting ? 'Deleting…' : 'Confirm'}
             </button>
             <button
               on:click={cancelDelete}
-              class="text-sm sm:text-base py-1 px-2 min-h-[36px] text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
           {/if}
-          
+
           {#if task.isCompleted}
-            <span class="ml-auto text-xs sm:text-sm text-gray-500 dark:text-gray-500">
+            <span class="ml-auto text-xs text-gray-400 dark:text-gray-500 px-2">
               Completed
             </span>
           {/if}

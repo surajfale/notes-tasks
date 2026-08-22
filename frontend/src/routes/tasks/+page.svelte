@@ -6,7 +6,7 @@
   import { listsStore } from '$lib/stores/lists';
   import TaskList from '$lib/components/tasks/TaskList.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { LoadingOverlay, ErrorMessage } from '$lib/components/ui';
+  import { LoadingOverlay, ErrorMessage, PageHeader, EmptyState } from '$lib/components/ui';
   import type { TaskFilters, TaskPriority } from '$lib/types/task';
 
   // Filter state
@@ -103,25 +103,23 @@
 </svelte:head>
 
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-    <div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Tasks</h1>
-      <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
-        {totalTasks} {totalTasks === 1 ? 'task' : 'tasks'}
-        {#if completionFilter === 'all'}
-          <span class="hidden sm:inline">· {activeTasks} active · {completedTasks} completed</span>
-        {/if}
-      </p>
-    </div>
-    <Button variant="primary" on:click={handleCreateTask} fullWidth={false}>
-      <span class="hidden sm:inline">Create Task</span>
-      <span class="sm:hidden">+ New</span>
-    </Button>
-  </div>
+  <PageHeader title="Tasks">
+    <svelte:fragment slot="description">
+      {totalTasks} {totalTasks === 1 ? 'task' : 'tasks'}
+      {#if completionFilter === 'all'}
+        <span class="hidden sm:inline">· {activeTasks} active · {completedTasks} completed</span>
+      {/if}
+    </svelte:fragment>
+    <svelte:fragment slot="actions">
+      <Button variant="primary" on:click={handleCreateTask} fullWidth={false}>
+        <span class="hidden sm:inline">Create Task</span>
+        <span class="sm:hidden">+ New</span>
+      </Button>
+    </svelte:fragment>
+  </PageHeader>
 
   <!-- Filters -->
-  <div class="bg-white dark:bg-gray-950 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
+  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
       <!-- Filter controls row -->
       <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-stretch sm:items-end">
@@ -199,13 +197,6 @@
     </div>
   </div>
 
-  <!-- Error message -->
-  {#if $tasksStore.error}
-    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-      <p class="text-red-800 dark:text-red-200">{$tasksStore.error}</p>
-    </div>
-  {/if}
-
   <!-- Error state -->
   {#if $tasksStore.error}
     <ErrorMessage
@@ -217,33 +208,26 @@
   {:else if $tasksStore.isLoading}
     <LoadingOverlay text="Loading tasks..." />
   {:else if $tasksStore.items.length === 0}
-    <!-- Empty state -->
-    <div class="text-center py-12">
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-        />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No tasks found</h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {hasActiveFilters ? 'Try adjusting your filters' : 'Get started by creating a new task'}
-      </p>
+    <EmptyState
+      title="No tasks found"
+      description={hasActiveFilters ? 'Try adjusting your filters' : 'Get started by creating a new task'}
+    >
+      <svelte:fragment slot="icon">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+          />
+        </svg>
+      </svelte:fragment>
       {#if !hasActiveFilters}
-        <div class="mt-6">
-          <Button variant="primary" on:click={handleCreateTask}>
-            Create Task
-          </Button>
-        </div>
+        <Button variant="primary" on:click={handleCreateTask}>
+          Create Task
+        </Button>
       {/if}
-    </div>
+    </EmptyState>
   {:else}
     <!-- Tasks list -->
     <TaskList 

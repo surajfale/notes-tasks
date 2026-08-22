@@ -8,7 +8,7 @@
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Tag from '$lib/components/ui/Tag.svelte';
-  import { LoadingOverlay, ErrorMessage } from '$lib/components/ui';
+  import { LoadingOverlay, ErrorMessage, PageHeader, EmptyState } from '$lib/components/ui';
   import type { NoteFilters } from '$lib/types/note';
 
   // Filter state
@@ -124,22 +124,20 @@
 </svelte:head>
 
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-    <div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Notes</h1>
-      <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
-        {$notesStore.items.length} {$notesStore.items.length === 1 ? 'note' : 'notes'}
-      </p>
-    </div>
-    <Button variant="primary" on:click={handleCreateNote} fullWidth={false}>
-      <span class="hidden sm:inline">Create Note</span>
-      <span class="sm:hidden">+ New</span>
-    </Button>
-  </div>
+  <PageHeader
+    title="Notes"
+    description="{$notesStore.items.length} {$notesStore.items.length === 1 ? 'note' : 'notes'}"
+  >
+    <svelte:fragment slot="actions">
+      <Button variant="primary" on:click={handleCreateNote} fullWidth={false}>
+        <span class="hidden sm:inline">Create Note</span>
+        <span class="sm:hidden">+ New</span>
+      </Button>
+    </svelte:fragment>
+  </PageHeader>
 
   <!-- Filters -->
-  <div class="bg-white dark:bg-gray-950 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
+  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
       <!-- Search -->
       <div class="w-full">
@@ -234,13 +232,6 @@
     </div>
   </div>
 
-  <!-- Error message -->
-  {#if $notesStore.error}
-    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-      <p class="text-red-800 dark:text-red-200">{$notesStore.error}</p>
-    </div>
-  {/if}
-
   <!-- Error state -->
   {#if $notesStore.error}
     <ErrorMessage
@@ -252,33 +243,26 @@
   {:else if $notesStore.isLoading}
     <LoadingOverlay text="Loading notes..." />
   {:else if $notesStore.items.length === 0}
-    <!-- Empty state -->
-    <div class="text-center py-12">
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-        />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No notes found</h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {hasActiveFilters ? 'Try adjusting your filters' : 'Get started by creating a new note'}
-      </p>
+    <EmptyState
+      title="No notes found"
+      description={hasActiveFilters ? 'Try adjusting your filters' : 'Get started by creating a new note'}
+    >
+      <svelte:fragment slot="icon">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+      </svelte:fragment>
       {#if !hasActiveFilters}
-        <div class="mt-6">
-          <Button variant="primary" on:click={handleCreateNote}>
-            Create Note
-          </Button>
-        </div>
+        <Button variant="primary" on:click={handleCreateNote}>
+          Create Note
+        </Button>
       {/if}
-    </div>
+    </EmptyState>
   {:else}
     <!-- Notes grid - single column on mobile, 2 on tablet, 3 on desktop -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

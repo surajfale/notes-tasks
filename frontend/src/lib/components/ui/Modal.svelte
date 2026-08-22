@@ -1,9 +1,25 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
+
   export let open = false;
   export let title = '';
   export let onClose: (() => void) | undefined = undefined;
   export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
-  
+
+  // Move keyboard focus into the dialog when it opens (WCAG 2.4.3 focus order)
+  // and back to whatever triggered it when it closes.
+  let dialogEl: HTMLDivElement | undefined;
+  let triggerEl: Element | null = null;
+
+  $: if (browser && open) {
+    triggerEl = document.activeElement;
+    // Wait for the dialog to render before moving focus into it.
+    queueMicrotask(() => dialogEl?.focus());
+  } else if (browser && !open && triggerEl instanceof HTMLElement) {
+    triggerEl.focus();
+    triggerEl = null;
+  }
+
   $: maxWidthClass = {
     sm: 'max-w-sm',
     md: 'max-w-md',
@@ -43,13 +59,17 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby={title ? 'modal-title' : undefined}
+    tabindex="-1"
   >
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
     <div
+      bind:this={dialogEl}
       class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl {maxWidthClass} w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200"
       on:click|stopPropagation
       role="document"
+      tabindex="-1"
     >
       {#if title}
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">

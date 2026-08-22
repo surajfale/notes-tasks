@@ -396,6 +396,7 @@
         role="dialog"
         aria-label="Select due date"
         aria-modal="true"
+        tabindex="-1"
         on:keydown={handleCalendarKeydown}
       >
         <!-- Calendar Header -->

@@ -227,8 +227,8 @@
         <button
           type="button"
           on:click={openShareModal}
-          class="flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all
-                 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-primary-500 dark:hover:border-primary-400"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors
+                 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50"
           title="Share note"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,10 +241,10 @@
         <button
           type="button"
           on:click={handleCopyNote}
-          class="flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all
-                 {copySuccess 
-                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' 
-                   : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-primary-500 dark:hover:border-primary-400'}"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors
+                 {copySuccess
+                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                   : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50'}"
           title="Copy note content"
         >
           {#if copySuccess}
@@ -264,7 +264,7 @@
   </div>
 
   <form on:submit={handleSubmit} class="space-y-6">
-    <div class="bg-white dark:bg-black rounded-lg shadow-md p-6 space-y-6">
+    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 space-y-6">
       <Input
         type="text"
         label="Title"

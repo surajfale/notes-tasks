@@ -8,7 +8,7 @@
   import Input from '$lib/components/ui/Input.svelte';
   import Card from '$lib/components/ui/Card.svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
-  import { ErrorMessage, LoadingSpinner } from '$lib/components/ui';
+  import { ErrorMessage, LoadingSpinner, PageHeader } from '$lib/components/ui';
   import { validatePasswordChangeForm } from '$lib/utils/validation';
   import NotificationSettings from '$lib/components/settings/NotificationSettings.svelte';
 
@@ -139,7 +139,7 @@
 </script>
 
 <div class="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
-  <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 sm:mb-8">Settings</h1>
+  <PageHeader title="Settings" />
 
   {#if isAuthLoading}
     <!-- Loading State -->
@@ -184,22 +184,22 @@
         <button
           type="button"
           on:click={toggleTheme}
-          class="flex items-center space-x-2 px-4 py-2 rounded-lg border-2 transition-all duration-200 {theme.mode === 'light' 
-            ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20' 
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}"
+          class="flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors duration-150 {theme.mode === 'light'
+            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+            : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'}"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
           <span class="text-gray-900 dark:text-gray-100">Light</span>
         </button>
-        
+
         <button
           type="button"
           on:click={toggleTheme}
-          class="flex items-center space-x-2 px-4 py-2 rounded-lg border-2 transition-all duration-200 {theme.mode === 'dark' 
-            ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20' 
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}"
+          class="flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors duration-150 {theme.mode === 'dark'
+            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+            : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'}"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -285,19 +285,8 @@
         </div>
       {/if}
 
-      <Button
-        type="submit"
-        variant="primary"
-        disabled={isChangingPassword}
-      >
-        {#if isChangingPassword}
-          <span class="flex items-center gap-2">
-            <LoadingSpinner size="sm" color="white" />
-            Changing Password...
-          </span>
-        {:else}
-          Change Password
-        {/if}
+      <Button type="submit" variant="primary" loading={isChangingPassword}>
+        {isChangingPassword ? 'Changing Password...' : 'Change Password'}
       </Button>
     </form>
   </Card>
@@ -361,16 +350,10 @@
       <Button
         variant="danger"
         on:click={handleAccountDeletion}
-        disabled={isDeletingAccount || deleteConfirmation !== 'DELETE'}
+        disabled={deleteConfirmation !== 'DELETE'}
+        loading={isDeletingAccount}
       >
-        {#if isDeletingAccount}
-          <span class="flex items-center gap-2">
-            <LoadingSpinner size="sm" color="white" />
-            Deleting...
-          </span>
-        {:else}
-          Delete Account
-        {/if}
+        {isDeletingAccount ? 'Deleting...' : 'Delete Account'}
       </Button>
     </div>
   </Modal>

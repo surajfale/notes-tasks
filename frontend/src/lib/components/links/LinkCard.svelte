@@ -40,8 +40,8 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div 
-  class="group relative bg-white dark:bg-gray-950 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-4 sm:p-5 hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full"
+<div
+  class="group relative bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-5 transition-colors duration-150 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 cursor-pointer flex flex-col h-full"
   on:click={handleCardClick}
 >
   <!-- Header -->

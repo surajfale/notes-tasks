@@ -14,3 +14,5 @@ export { default as LightningButton } from './LightningButton.svelte';
 export { default as DueDatePicker } from './DueDatePicker.svelte';
 export { default as Tooltip } from './Tooltip.svelte';
 export { default as DisclaimerBanner } from './DisclaimerBanner.svelte';
+export { default as PageHeader } from './PageHeader.svelte';
+export { default as EmptyState } from './EmptyState.svelte';

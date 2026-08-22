@@ -3,6 +3,7 @@
   import { tasksStore } from '$lib/stores/tasks';
   import { listsStore } from '$lib/stores/lists';
   import TaskEditor from '$lib/components/tasks/TaskEditor.svelte';
+  import { PageHeader } from '$lib/components/ui';
   import { onMount } from 'svelte';
   import type { CreateTaskData, UpdateTaskData } from '$lib/types/task';
   import { ApiError } from '$lib/types/error';
@@ -63,12 +64,9 @@
 </script>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-  <div class="mb-6">
-    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Create Task</h1>
-    <p class="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">Add a new task to your list</p>
-  </div>
+  <PageHeader title="Create Task" description="Add a new task to your list" />
 
-  <div class="bg-white dark:bg-black rounded-lg shadow-md p-4 sm:p-6">
+  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6">
     <TaskEditor
       on:submit={handleSubmit}
       on:cancel={handleCancel}

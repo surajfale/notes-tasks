@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import type { RegisterData } from '$lib/types/user';
   import { validateRegisterForm } from '$lib/utils/validation';
-  import { ErrorMessage } from '$lib/components/ui';
+  import { ErrorMessage, Button } from '$lib/components/ui';
 
   // Form state
   let username = '';
@@ -96,7 +96,7 @@
   }
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-8 sm:py-12">
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4 sm:px-6 py-8 sm:py-12">
   <div class="max-w-md w-full space-y-6 sm:space-y-8">
     <!-- Header -->
     <div>
@@ -109,7 +109,10 @@
     </div>
 
     <!-- Registration Form -->
-    <form on:submit={handleSubmit} class="mt-8 space-y-6">
+    <form
+      on:submit={handleSubmit}
+      class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 sm:p-8 space-y-6"
+    >
       <div class="space-y-4">
         <!-- Username Field -->
         <div>
@@ -272,30 +275,9 @@
       {/if}
 
       <!-- Submit Button -->
-      <div>
-        <button
-          type="submit"
-          disabled={isSubmitting || authLoading}
-          class="group relative w-full flex justify-center py-3 px-4 min-h-[44px] border border-transparent
-                 text-base font-medium rounded-lg text-white
-                 bg-primary-600 hover:bg-primary-700
-                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500
-                 disabled:opacity-50 disabled:cursor-not-allowed
-                 transition-colors duration-200"
-        >
-          {#if isSubmitting || authLoading}
-            <span class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Creating account...
-            </span>
-          {:else}
-            Create Account
-          {/if}
-        </button>
-      </div>
+      <Button type="submit" variant="primary" fullWidth loading={isSubmitting || authLoading}>
+        {isSubmitting || authLoading ? 'Creating account...' : 'Create Account'}
+      </Button>
 
       <!-- Login Link -->
       <div class="text-center">

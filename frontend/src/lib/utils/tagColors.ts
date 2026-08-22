@@ -5,77 +5,89 @@
 
 // Predefined color palette for tags and cards
 const TAG_COLORS = [
-  { 
-    bg: 'bg-blue-100 dark:bg-blue-900/30', 
-    text: 'text-blue-700 dark:text-blue-300', 
+  {
+    bg: 'bg-blue-100 dark:bg-blue-900/30',
+    text: 'text-blue-700 dark:text-blue-300',
     border: 'border-blue-300 dark:border-blue-700',
-    cardBg: 'bg-blue-50/50 dark:bg-blue-950/20'
+    cardBg: 'bg-blue-50/50 dark:bg-blue-950/20',
+    dot: 'bg-blue-500 dark:bg-blue-400'
   },
-  { 
-    bg: 'bg-green-100 dark:bg-green-900/30', 
-    text: 'text-green-700 dark:text-green-300', 
+  {
+    bg: 'bg-green-100 dark:bg-green-900/30',
+    text: 'text-green-700 dark:text-green-300',
     border: 'border-green-300 dark:border-green-700',
-    cardBg: 'bg-green-50/50 dark:bg-green-950/20'
+    cardBg: 'bg-green-50/50 dark:bg-green-950/20',
+    dot: 'bg-green-500 dark:bg-green-400'
   },
-  { 
-    bg: 'bg-purple-100 dark:bg-purple-900/30', 
-    text: 'text-purple-700 dark:text-purple-300', 
+  {
+    bg: 'bg-purple-100 dark:bg-purple-900/30',
+    text: 'text-purple-700 dark:text-purple-300',
     border: 'border-purple-300 dark:border-purple-700',
-    cardBg: 'bg-purple-50/50 dark:bg-purple-950/20'
+    cardBg: 'bg-purple-50/50 dark:bg-purple-950/20',
+    dot: 'bg-purple-500 dark:bg-purple-400'
   },
-  { 
-    bg: 'bg-pink-100 dark:bg-pink-900/30', 
-    text: 'text-pink-700 dark:text-pink-300', 
+  {
+    bg: 'bg-pink-100 dark:bg-pink-900/30',
+    text: 'text-pink-700 dark:text-pink-300',
     border: 'border-pink-300 dark:border-pink-700',
-    cardBg: 'bg-pink-50/50 dark:bg-pink-950/20'
+    cardBg: 'bg-pink-50/50 dark:bg-pink-950/20',
+    dot: 'bg-pink-500 dark:bg-pink-400'
   },
-  { 
-    bg: 'bg-yellow-100 dark:bg-yellow-900/30', 
-    text: 'text-yellow-700 dark:text-yellow-300', 
+  {
+    bg: 'bg-yellow-100 dark:bg-yellow-900/30',
+    text: 'text-yellow-700 dark:text-yellow-300',
     border: 'border-yellow-300 dark:border-yellow-700',
-    cardBg: 'bg-yellow-50/50 dark:bg-yellow-950/20'
+    cardBg: 'bg-yellow-50/50 dark:bg-yellow-950/20',
+    dot: 'bg-yellow-500 dark:bg-yellow-400'
   },
-  { 
-    bg: 'bg-orange-100 dark:bg-orange-900/30', 
-    text: 'text-orange-700 dark:text-orange-300', 
+  {
+    bg: 'bg-orange-100 dark:bg-orange-900/30',
+    text: 'text-orange-700 dark:text-orange-300',
     border: 'border-orange-300 dark:border-orange-700',
-    cardBg: 'bg-orange-50/50 dark:bg-orange-950/20'
+    cardBg: 'bg-orange-50/50 dark:bg-orange-950/20',
+    dot: 'bg-orange-500 dark:bg-orange-400'
   },
-  { 
-    bg: 'bg-red-100 dark:bg-red-900/30', 
-    text: 'text-red-700 dark:text-red-300', 
+  {
+    bg: 'bg-red-100 dark:bg-red-900/30',
+    text: 'text-red-700 dark:text-red-300',
     border: 'border-red-300 dark:border-red-700',
-    cardBg: 'bg-red-50/50 dark:bg-red-950/20'
+    cardBg: 'bg-red-50/50 dark:bg-red-950/20',
+    dot: 'bg-red-500 dark:bg-red-400'
   },
-  { 
-    bg: 'bg-indigo-100 dark:bg-indigo-900/30', 
-    text: 'text-indigo-700 dark:text-indigo-300', 
+  {
+    bg: 'bg-indigo-100 dark:bg-indigo-900/30',
+    text: 'text-indigo-700 dark:text-indigo-300',
     border: 'border-indigo-300 dark:border-indigo-700',
-    cardBg: 'bg-indigo-50/50 dark:bg-indigo-950/20'
+    cardBg: 'bg-indigo-50/50 dark:bg-indigo-950/20',
+    dot: 'bg-indigo-500 dark:bg-indigo-400'
   },
-  { 
-    bg: 'bg-teal-100 dark:bg-teal-900/30', 
-    text: 'text-teal-700 dark:text-teal-300', 
+  {
+    bg: 'bg-teal-100 dark:bg-teal-900/30',
+    text: 'text-teal-700 dark:text-teal-300',
     border: 'border-teal-300 dark:border-teal-700',
-    cardBg: 'bg-teal-50/50 dark:bg-teal-950/20'
+    cardBg: 'bg-teal-50/50 dark:bg-teal-950/20',
+    dot: 'bg-teal-500 dark:bg-teal-400'
   },
-  { 
-    bg: 'bg-cyan-100 dark:bg-cyan-900/30', 
-    text: 'text-cyan-700 dark:text-cyan-300', 
+  {
+    bg: 'bg-cyan-100 dark:bg-cyan-900/30',
+    text: 'text-cyan-700 dark:text-cyan-300',
     border: 'border-cyan-300 dark:border-cyan-700',
-    cardBg: 'bg-cyan-50/50 dark:bg-cyan-950/20'
+    cardBg: 'bg-cyan-50/50 dark:bg-cyan-950/20',
+    dot: 'bg-cyan-500 dark:bg-cyan-400'
   },
-  { 
-    bg: 'bg-lime-100 dark:bg-lime-900/30', 
-    text: 'text-lime-700 dark:text-lime-300', 
+  {
+    bg: 'bg-lime-100 dark:bg-lime-900/30',
+    text: 'text-lime-700 dark:text-lime-300',
     border: 'border-lime-300 dark:border-lime-700',
-    cardBg: 'bg-lime-50/50 dark:bg-lime-950/20'
+    cardBg: 'bg-lime-50/50 dark:bg-lime-950/20',
+    dot: 'bg-lime-500 dark:bg-lime-400'
   },
-  { 
-    bg: 'bg-amber-100 dark:bg-amber-900/30', 
-    text: 'text-amber-700 dark:text-amber-300', 
+  {
+    bg: 'bg-amber-100 dark:bg-amber-900/30',
+    text: 'text-amber-700 dark:text-amber-300',
     border: 'border-amber-300 dark:border-amber-700',
-    cardBg: 'bg-amber-50/50 dark:bg-amber-950/20'
+    cardBg: 'bg-amber-50/50 dark:bg-amber-950/20',
+    dot: 'bg-amber-500 dark:bg-amber-400'
   },
 ];
 
@@ -97,9 +109,9 @@ function hashString(str: string): number {
 /**
  * Get consistent color classes for a tag based on its name
  * @param tagName - Name of the tag
- * @returns Object with background, text, border, and card background color classes
+ * @returns Object with background, text, border, dot, and card background color classes
  */
-export function getTagColor(tagName: string): { bg: string; text: string; border: string; cardBg?: string } {
+export function getTagColor(tagName: string): { bg: string; text: string; border: string; cardBg?: string; dot: string } {
   const hash = hashString(tagName.toLowerCase());
   const colorIndex = hash % TAG_COLORS.length;
   return TAG_COLORS[colorIndex];
@@ -112,7 +124,7 @@ export function getTagColor(tagName: string): { bg: string; text: string; border
  */
 export function getUniqueTags(items: Array<{ tags?: string[] }>): string[] {
   const tagSet = new Set<string>();
-  
+
   items.forEach(item => {
     if (item.tags && Array.isArray(item.tags)) {
       item.tags.forEach(tag => {
@@ -122,7 +134,7 @@ export function getUniqueTags(items: Array<{ tags?: string[] }>): string[] {
       });
     }
   });
-  
+
   return Array.from(tagSet).sort();
 }
 
@@ -147,7 +159,7 @@ export function getTagColorStyle(tagName: string): { backgroundColor: string; co
     { backgroundColor: '#ECFCCB', color: '#3F6212', borderColor: '#BEF264' }, // lime
     { backgroundColor: '#FEF3C7', color: '#78350F', borderColor: '#FCD34D' }, // amber
   ];
-  
+
   const hash = hashString(tagName.toLowerCase());
   const colorIndex = hash % COLORS.length;
   return COLORS[colorIndex];
