@@ -214,10 +214,10 @@
   <div class="mb-6">
     <div class="flex items-start justify-between gap-4">
       <div class="flex-1">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Edit Note</h1>
-        <div class="mt-2 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+        <h1 class="font-serif text-3xl font-bold text-stone-900 dark:text-stone-100">Edit Note</h1>
+        <div class="mt-2 flex items-center gap-4 text-sm text-stone-600 dark:text-stone-400">
           <span>Last updated {formatRelativeDate(data.note.updatedAt)}</span>
-          <span class="text-gray-400 dark:text-gray-600">•</span>
+          <span class="text-stone-400 dark:text-stone-600">•</span>
           <span title={formatAbsoluteDateTime(data.note.createdAt)}>Created {formatRelativeDate(data.note.createdAt)}</span>
         </div>
       </div>
@@ -228,7 +228,7 @@
           type="button"
           on:click={openShareModal}
           class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors
-                 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                 border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50"
           title="Share note"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,7 +244,7 @@
           class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors
                  {copySuccess
                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
-                   : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50'}"
+                   : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50'}"
           title="Copy note content"
         >
           {#if copySuccess}
@@ -264,7 +264,7 @@
   </div>
 
   <form on:submit={handleSubmit} class="space-y-6">
-    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 space-y-6">
+    <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 space-y-6">
       <Input
         type="text"
         label="Title"
@@ -304,18 +304,18 @@
         disabled={isSubmitting}
       />
 
-      <div class="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-2 pt-4 border-t border-stone-200 dark:border-stone-700">
         <input
           type="checkbox"
           id="isArchived"
           checked={isArchived}
           disabled={isSubmitting}
-          class="w-5 h-5 text-primary-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500 focus:ring-2"
+          class="w-5 h-5 text-primary-600 bg-stone-50 dark:bg-stone-700 border-stone-300 dark:border-stone-600 rounded focus:ring-primary-500 focus:ring-2"
           on:change={handleToggleArchive}
         />
         <label
           for="isArchived"
-          class="text-sm font-medium text-gray-700 dark:text-gray-300"
+          class="text-sm font-medium text-stone-700 dark:text-stone-300"
         >
           Archived
         </label>
@@ -371,7 +371,7 @@
   title="Delete Note"
   onClose={closeDeleteModal}
 >
-  <p class="text-gray-700 dark:text-gray-300">
+  <p class="text-stone-700 dark:text-stone-300">
     Are you sure you want to delete this note? This action cannot be undone.
   </p>
   

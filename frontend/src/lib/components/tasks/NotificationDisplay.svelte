@@ -45,10 +45,10 @@
   $: hasSentNotifications = sentNotifications && sentNotifications.length > 0;
 </script>
 
-<div class="bg-gray-50 dark:bg-gray-900 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+<div class="bg-stone-50 dark:bg-stone-900 rounded-xl border-2 border-stone-200 dark:border-stone-700 p-4 sm:p-6">
   <div class="flex items-start gap-3">
     <svg 
-      class="w-6 h-6 flex-shrink-0 mt-0.5 {hasNotifications ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-600'}" 
+      class="w-6 h-6 flex-shrink-0 mt-0.5 {hasNotifications ? 'text-blue-600 dark:text-blue-400' : 'text-stone-400 dark:text-stone-600'}" 
       fill="none" 
       viewBox="0 0 24 24" 
       stroke="currentColor"
@@ -57,25 +57,25 @@
     </svg>
     
     <div class="flex-1 space-y-3">
-      <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <h3 class="text-base sm:text-lg font-semibold text-stone-900 dark:text-stone-100">
         Email Notifications
       </h3>
       
       {#if !enabled}
-        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+        <p class="text-sm sm:text-base text-stone-600 dark:text-stone-400">
           Notifications are disabled for this task.
         </p>
       {:else if !dueDate}
-        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+        <p class="text-sm sm:text-base text-stone-600 dark:text-stone-400">
           This task has no due date. Notifications require a due date.
         </p>
       {:else if !hasNotifications}
-        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+        <p class="text-sm sm:text-base text-stone-600 dark:text-stone-400">
           Notifications are enabled but no timing options are selected.
         </p>
       {:else}
         <div class="space-y-2">
-          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium">
+          <p class="text-sm sm:text-base text-stone-700 dark:text-stone-300 font-medium">
             You will receive email reminders:
           </p>
           <ul class="space-y-2">
@@ -93,8 +93,8 @@
                   <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="text-gray-700 dark:text-gray-300">
-                    {formatTiming(timing)} <span class="text-gray-500 dark:text-gray-500">(Scheduled)</span>
+                  <span class="text-stone-700 dark:text-stone-300">
+                    {formatTiming(timing)} <span class="text-stone-500 dark:text-stone-500">(Scheduled)</span>
                   </span>
                 {/if}
               </li>
@@ -103,8 +103,8 @@
         </div>
         
         {#if hasSentNotifications}
-          <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-500">
+          <div class="mt-4 pt-4 border-t border-stone-200 dark:border-stone-700">
+            <p class="text-xs sm:text-sm text-stone-500 dark:text-stone-500">
               {sentNotifications.length} of {timings.length} notification{timings.length === 1 ? '' : 's'} sent
             </p>
           </div>

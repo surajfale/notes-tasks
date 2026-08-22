@@ -23,21 +23,21 @@
     }
 
     // Build HTML table
-    let tableHtml = '<table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 my-4">';
+    let tableHtml = '<table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
 
     // Header row
-    tableHtml += '<thead class="bg-gray-100 dark:bg-gray-800"><tr>';
+    tableHtml += '<thead class="bg-stone-100 dark:bg-stone-800"><tr>';
     rows[0].forEach(cell => {
-      tableHtml += `<th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">${cell}</th>`;
+      tableHtml += `<th class="border border-stone-300 dark:border-stone-600 px-4 py-2 text-left font-semibold">${cell}</th>`;
     });
     tableHtml += '</tr></thead>';
 
     // Body rows (skip header and separator)
     tableHtml += '<tbody>';
     for (let i = 2; i < rows.length; i++) {
-      tableHtml += '<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">';
+      tableHtml += '<tr class="hover:bg-stone-50 dark:hover:bg-stone-800">';
       rows[i].forEach(cell => {
-        tableHtml += `<td class="border border-gray-300 dark:border-gray-600 px-4 py-2">${cell}</td>`;
+        tableHtml += `<td class="border border-stone-300 dark:border-stone-600 px-4 py-2">${cell}</td>`;
       });
       tableHtml += '</tr>';
     }
@@ -82,7 +82,7 @@
     html = html.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>');
 
     // Inline code
-    html = html.replace(/`(.+?)`/g, '<code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs font-mono">$1</code>');
+    html = html.replace(/`(.+?)`/g, '<code class="bg-stone-100 dark:bg-stone-700 px-1 py-0.5 rounded text-xs font-mono">$1</code>');
 
     // Links
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');

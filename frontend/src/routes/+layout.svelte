@@ -120,7 +120,7 @@
 </script>
 
 <!-- Main app container with theme classes -->
-<div class="min-h-screen bg-background-light dark:bg-black text-gray-900 dark:text-gray-100">
+<div class="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100 paper-grain">
   
   <!-- Theme Color Manager (updates meta theme-color dynamically) -->
   <ThemeColorManager />
@@ -154,17 +154,17 @@
       
       <!-- Sidebar -->
       <aside
-        class="fixed md:static top-0 bottom-[calc(56px+env(safe-area-inset-bottom,0px))] md:bottom-0 left-0 z-50 w-64 bg-gray-50/80 dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800/80 transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0"
+        class="fixed md:static top-0 bottom-[calc(56px+env(safe-area-inset-bottom,0px))] md:bottom-0 left-0 z-50 w-64 bg-stone-50/80 dark:bg-stone-950 border-r border-stone-200 dark:border-stone-800/80 transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0"
       >
         <div class="flex flex-col h-full">
 
           <!-- Workspace header: app identity + user, Notion-style compact switcher -->
-          <div class="p-3 border-b border-gray-200 dark:border-gray-800/80">
+          <div class="p-3 border-b border-stone-200 dark:border-stone-800/80">
             <div class="flex items-center gap-2 px-2 py-1.5 mb-1">
               <div class="w-6 h-6 rounded-md bg-primary-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                 N
               </div>
-              <h1 class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+              <h1 class="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">
                 Notes &amp; Tasks
               </h1>
             </div>
@@ -174,10 +174,10 @@
                   {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.username ? user.username.charAt(0).toUpperCase() : '?'}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                  <p class="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
                     {user.displayName || user.username || 'User'}
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  <p class="text-xs text-stone-500 dark:text-stone-400 truncate">
                     {user.username || ''}
                   </p>
                 </div>
@@ -199,7 +199,7 @@
             <a
               href="/"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,7 +211,7 @@
             <a
               href="/notes"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/notes') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/notes') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,7 +223,7 @@
             <a
               href="/tasks"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/tasks') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/tasks') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,7 +235,7 @@
             <a
               href="/links"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/links') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/links') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,7 +247,7 @@
             <!-- Lists section -->
             {#if Array.isArray(lists) && lists.length > 0}
               <div class="pt-4">
-                <h3 class="px-2.5 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">
+                <h3 class="px-2.5 text-xs font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-1">
                   Lists
                 </h3>
                 {#each lists as list}
@@ -258,7 +258,7 @@
                         goto(`/notes?listId=${list._id}`);
                         closeSidebar();
                       }}
-                      class="w-full flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors text-left {$page.url.searchParams.get('listId') === list._id ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+                      class="w-full flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors text-left {$page.url.searchParams.get('listId') === list._id ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
                     >
                       <span 
                         class="w-5 h-5 rounded flex items-center justify-center text-sm flex-shrink-0"
@@ -277,7 +277,7 @@
                             goto(`/notes?listId=${list._id}`);
                             closeSidebar();
                           }}
-                          class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                          class="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-700"
                           title="Filter notes"
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,7 +289,7 @@
                             goto(`/tasks?listId=${list._id}`);
                             closeSidebar();
                           }}
-                          class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                          class="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-700"
                           title="Filter tasks"
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,7 +301,7 @@
                             goto(`/links?listId=${list._id}`);
                             closeSidebar();
                           }}
-                          class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                          class="p-1 rounded hover:bg-stone-200 dark:hover:bg-stone-700"
                           title="Filter links"
                         >
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,7 +319,7 @@
             <a
               href="/lists"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/lists') && !$page.url.pathname.includes('/lists/') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/lists') && !$page.url.pathname.includes('/lists/') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,7 +332,7 @@
             <a
               href="/settings"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/settings') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/settings') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -345,7 +345,7 @@
           </nav>
           
           <!-- Logout button -->
-          <div class="p-3 border-t border-gray-200 dark:border-gray-800/80">
+          <div class="p-3 border-t border-stone-200 dark:border-stone-800/80">
             <button
               on:click={handleLogout}
               class="w-full flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/20 transition-colors"
@@ -361,7 +361,7 @@
       </aside>
       
       <!-- Main content area -->
-      <div class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
+      <div class="flex-1 flex flex-col overflow-hidden bg-stone-50 dark:bg-stone-900">
 
         <!-- Page content. Bottom padding on mobile clears the fixed bottom nav, the floating
              create button that sits above it, and the safe area. -->

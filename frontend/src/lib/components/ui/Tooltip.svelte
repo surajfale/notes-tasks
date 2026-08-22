@@ -58,15 +58,15 @@
   $: arrowClasses = (() => {
     switch (position) {
       case 'top':
-        return 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-900 dark:border-t-gray-700';
+        return 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-stone-900 dark:border-t-stone-700';
       case 'bottom':
-        return 'bottom-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-gray-900 dark:border-b-gray-700';
+        return 'bottom-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-stone-900 dark:border-b-stone-700';
       case 'left':
-        return 'left-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-gray-900 dark:border-l-gray-700';
+        return 'left-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-stone-900 dark:border-l-stone-700';
       case 'right':
-        return 'right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-gray-900 dark:border-r-gray-700';
+        return 'right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-stone-900 dark:border-r-stone-700';
       default:
-        return 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-900 dark:border-t-gray-700';
+        return 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-stone-900 dark:border-t-stone-700';
     }
   })();
 </script>
@@ -87,7 +87,7 @@
   {#if showTooltip && text}
     <div
       bind:this={tooltipElement}
-      class="absolute z-50 px-3 py-2 text-xs sm:text-sm font-medium text-white bg-gray-900 dark:bg-gray-700 rounded-lg shadow-lg whitespace-nowrap pointer-events-none {positionClasses}"
+      class="absolute z-50 px-3 py-2 text-xs sm:text-sm font-medium text-white bg-stone-900 dark:bg-stone-700 rounded-lg shadow-lg whitespace-nowrap pointer-events-none {positionClasses}"
       role="tooltip"
       aria-hidden={!showTooltip}
     >

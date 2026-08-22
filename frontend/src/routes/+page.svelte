@@ -42,7 +42,7 @@
 		{#each shortcuts as item}
 			<a
 				href={item.href}
-				class="group block p-5 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 transition-colors duration-150 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50/60 dark:hover:bg-gray-800/40"
+				class="group block p-5 bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 transition-colors duration-150 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50/60 dark:hover:bg-stone-800/40"
 			>
 				<div
 					class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-3"
@@ -51,8 +51,8 @@
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.path} />
 					</svg>
 				</div>
-				<h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">{item.label}</h2>
-				<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+				<h2 class="text-base font-semibold text-stone-900 dark:text-stone-100">{item.label}</h2>
+				<p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
 					{item.description}
 				</p>
 			</a>

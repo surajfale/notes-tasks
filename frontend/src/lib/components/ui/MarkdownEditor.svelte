@@ -153,7 +153,7 @@
   function convertTableToHtml(tableRows: string[]): string {
     if (tableRows.length < 2) return tableRows.join('\n');
     
-    let html = '<table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 my-4">';
+    let html = '<table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
     
     for (let i = 0; i < tableRows.length; i++) {
       const row = tableRows[i];
@@ -169,15 +169,15 @@
       
       // First row is header
       if (i === 0) {
-        html += '<thead class="bg-gray-100 dark:bg-gray-800"><tr>';
+        html += '<thead class="bg-stone-100 dark:bg-stone-800"><tr>';
         cells.forEach(cell => {
-          html += `<th class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold">${cell}</th>`;
+          html += `<th class="border border-stone-300 dark:border-stone-600 px-4 py-2 text-left font-semibold">${cell}</th>`;
         });
         html += '</tr></thead><tbody>';
       } else {
-        html += '<tr class="hover:bg-gray-50 dark:hover:bg-gray-900">';
+        html += '<tr class="hover:bg-stone-50 dark:hover:bg-stone-900">';
         cells.forEach(cell => {
-          html += `<td class="border border-gray-300 dark:border-gray-600 px-4 py-2">${cell}</td>`;
+          html += `<td class="border border-stone-300 dark:border-stone-600 px-4 py-2">${cell}</td>`;
         });
         html += '</tr>';
       }
@@ -236,7 +236,7 @@
     html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-4 mb-2">$1</h1>');
 
     // Strikethrough (must be before bold)
-    html = html.replace(/~~(.+?)~~/g, '<del class="line-through text-gray-500 dark:text-gray-400">$1</del>');
+    html = html.replace(/~~(.+?)~~/g, '<del class="line-through text-stone-500 dark:text-stone-400">$1</del>');
 
     // Bold
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
@@ -245,7 +245,7 @@
     html = html.replace(/\*(.+?)\*/g, '<em class="italic">$1</em>');
 
     // Inline code
-    html = html.replace(/`(.+?)`/g, '<code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm font-mono">$1</code>');
+    html = html.replace(/`(.+?)`/g, '<code class="bg-stone-100 dark:bg-stone-700 px-1 py-0.5 rounded text-sm font-mono">$1</code>');
 
     // Links
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
@@ -336,21 +336,21 @@
 
 <div class="space-y-2">
   {#if label}
-    <label for={textareaId} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label for={textareaId} class="block text-sm font-medium text-stone-700 dark:text-stone-300">
       {label}
     </label>
   {/if}
 
   <!-- Toolbar -->
-  <div class="border border-gray-300 dark:border-gray-600 rounded-t-lg bg-gray-50 dark:bg-gray-900 p-2">
+  <div class="border border-stone-300 dark:border-stone-600 rounded-t-lg bg-stone-50 dark:bg-stone-900 p-2">
     <div class="flex items-center gap-1 flex-wrap">
       <!-- Tab switcher -->
-      <div class="flex gap-1 mr-2 border-r border-gray-300 dark:border-gray-600 pr-2">
+      <div class="flex gap-1 mr-2 border-r border-stone-300 dark:border-stone-600 pr-2">
         <button
           type="button"
           on:click={() => activeTab = 'write'}
           disabled={disabled}
-          class="px-3 py-1 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'write' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
+          class="px-3 py-1 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'write' ? 'bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-medium' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'}"
         >
           Write
         </button>
@@ -358,7 +358,7 @@
           type="button"
           on:click={() => activeTab = 'preview'}
           disabled={disabled}
-          class="px-3 py-1 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'preview' ? 'bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
+          class="px-3 py-1 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'preview' ? 'bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-medium' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'}"
         >
           Preview
         </button>
@@ -372,7 +372,7 @@
               type="button"
               on:click={onRevert}
               disabled={disabled}
-              class="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2 py-1 text-xs rounded border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Revert to original"
             >
               ↶ Revert
@@ -382,7 +382,7 @@
           <select
             bind:value={selectedTone}
             disabled={disabled || enhancing}
-            class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="text-xs px-2 py-1 rounded border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <option value="casual">Casual</option>
             <option value="professional">Professional</option>
@@ -411,7 +411,7 @@
             </button>
           {/if}
           
-          <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+          <div class="w-px h-6 bg-stone-300 dark:bg-stone-600 mx-1"></div>
         {/if}
 
         <!-- Formatting buttons -->
@@ -419,7 +419,7 @@
           type="button"
           on:click={makeBold}
           disabled={disabled}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-2 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Bold (Ctrl+B)"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -431,7 +431,7 @@
           type="button"
           on:click={makeItalic}
           disabled={disabled}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-2 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Italic (Ctrl+I)"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -439,13 +439,13 @@
           </svg>
         </button>
 
-        <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+        <div class="w-px h-6 bg-stone-300 dark:bg-stone-600 mx-1"></div>
 
         <button
           type="button"
           on:click={() => makeHeading(1)}
           disabled={disabled}
-          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-2 py-1 text-sm font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Heading 1"
         >
           H1
@@ -455,7 +455,7 @@
           type="button"
           on:click={() => makeHeading(2)}
           disabled={disabled}
-          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-2 py-1 text-sm font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Heading 2"
         >
           H2
@@ -465,19 +465,19 @@
           type="button"
           on:click={() => makeHeading(3)}
           disabled={disabled}
-          class="px-2 py-1 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-2 py-1 text-sm font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Heading 3"
         >
           H3
         </button>
 
-        <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+        <div class="w-px h-6 bg-stone-300 dark:bg-stone-600 mx-1"></div>
 
         <button
           type="button"
           on:click={makeBulletList}
           disabled={disabled}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-2 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Bullet List"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -489,7 +489,7 @@
           type="button"
           on:click={makeNumberedList}
           disabled={disabled}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-2 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Numbered List"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -497,13 +497,13 @@
           </svg>
         </button>
 
-        <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+        <div class="w-px h-6 bg-stone-300 dark:bg-stone-600 mx-1"></div>
 
         <button
           type="button"
           on:click={makeLink}
           disabled={disabled}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-2 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Link"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -515,7 +515,7 @@
           type="button"
           on:click={makeCode}
           disabled={disabled}
-          class="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-2 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Inline Code"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -537,13 +537,13 @@
         {rows}
         {disabled}
         maxlength={maxLength}
-        class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-gray-300 dark:border-gray-600 transition-colors
+        class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-stone-300 dark:border-stone-600 transition-colors
                {error 
                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
                  : 'focus:border-primary-500 focus:ring-primary-500'}
-               bg-white dark:bg-black 
-               text-gray-900 dark:text-gray-100
-               placeholder-gray-400 dark:placeholder-gray-500
+               bg-stone-50 dark:bg-stone-950 
+               text-stone-900 dark:text-stone-100
+               placeholder-stone-400 dark:placeholder-stone-500
                focus:outline-none focus:ring-2 focus:ring-offset-0
                disabled:opacity-50 disabled:cursor-not-allowed
                font-mono text-sm"
@@ -551,13 +551,13 @@
         on:keydown={handleKeyDown}
       />
     {:else}
-      <div class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-black min-h-[200px]">
+      <div class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-950 min-h-[200px]">
         {#if value.trim()}
-          <div class="prose prose-sm dark:prose-invert max-w-none text-gray-900 dark:text-gray-100">
+          <div class="prose prose-sm dark:prose-invert max-w-none text-stone-900 dark:text-stone-100">
             {@html previewHtml}
           </div>
         {:else}
-          <p class="text-gray-400 dark:text-gray-500 italic">Nothing to preview</p>
+          <p class="text-stone-400 dark:text-stone-500 italic">Nothing to preview</p>
         {/if}
       </div>
     {/if}
@@ -569,14 +569,14 @@
 
   <!-- Character count -->
   {#if showCharCount && maxLength !== undefined}
-    <div class="text-xs text-right" class:text-red-600={isOverLimit} class:dark:text-red-400={isOverLimit} class:text-gray-500={!isOverLimit} class:dark:text-gray-400={!isOverLimit}>
+    <div class="text-xs text-right" class:text-red-600={isOverLimit} class:dark:text-red-400={isOverLimit} class:text-stone-500={!isOverLimit} class:dark:text-stone-400={!isOverLimit}>
       {charCount} / {maxLength} characters
     </div>
   {/if}
 
   <!-- Help text -->
   {#if activeTab === 'write'}
-    <p class="text-xs text-gray-500 dark:text-gray-400">
+    <p class="text-xs text-stone-500 dark:text-stone-400">
       Supports Markdown: **bold**, *italic*, ~~strikethrough~~, # heading, - list, 1. numbered, [link](url), `code`, | table |
     </p>
   {/if}

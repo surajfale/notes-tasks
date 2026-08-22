@@ -108,28 +108,28 @@
 
 <div class="max-w-4xl mx-auto p-6">
   <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Edit Task</h1>
-    <div class="mt-2 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+    <h1 class="font-serif text-3xl font-bold text-stone-900 dark:text-stone-100">Edit Task</h1>
+    <div class="mt-2 flex items-center gap-4 text-sm text-stone-600 dark:text-stone-400">
       <span>Last updated {formatRelativeDate(data.task.updatedAt)}</span>
-      <span class="text-gray-400 dark:text-gray-600">•</span>
+      <span class="text-stone-400 dark:text-stone-600">•</span>
       <span title={formatAbsoluteDateTime(data.task.createdAt)}>Created {formatRelativeDate(data.task.createdAt)}</span>
     </div>
   </div>
 
-  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 space-y-6">
+  <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 space-y-6">
     <!-- Completion Checkbox at the top -->
-    <div class="flex items-center gap-3 pb-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex items-center gap-3 pb-4 border-b border-stone-200 dark:border-stone-700">
       <input
         type="checkbox"
         id="isCompleted"
         checked={isCompleted}
         disabled={isSubmitting}
-        class="w-6 h-6 text-primary-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500 focus:ring-2"
+        class="w-6 h-6 text-primary-600 bg-stone-50 dark:bg-stone-700 border-stone-300 dark:border-stone-600 rounded focus:ring-primary-500 focus:ring-2"
         on:change={handleToggleComplete}
       />
       <label
         for="isCompleted"
-        class="text-base font-medium text-gray-700 dark:text-gray-300"
+        class="text-base font-medium text-stone-700 dark:text-stone-300"
       >
         Mark as {isCompleted ? 'incomplete' : 'complete'}
       </label>
@@ -153,7 +153,7 @@
     />
 
     <!-- Delete button -->
-    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="pt-4 border-t border-stone-200 dark:border-stone-700">
       <Button
         type="button"
         variant="danger"
@@ -172,7 +172,7 @@
   title="Delete Task"
   onClose={closeDeleteModal}
 >
-  <p class="text-gray-700 dark:text-gray-300">
+  <p class="text-stone-700 dark:text-stone-300">
     Are you sure you want to delete this task? This action cannot be undone.
   </p>
   

@@ -161,7 +161,7 @@
       class="flex items-center gap-2 px-4 min-h-[44px] rounded-lg border text-sm font-medium transition-colors flex-shrink-0
              {showFilters || activeFilterCount > 0
                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
-               : 'border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}"
+               : 'border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/50'}"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -176,21 +176,21 @@
   </div>
 
   {#if showFilters}
-  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
+  <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
       <!-- Filter controls row -->
       <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-stretch sm:items-center">
         <!-- List filter -->
         <div class="flex-1 min-w-full sm:min-w-[200px]">
-          <label for="list-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label for="list-filter" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             Filter by List
           </label>
           <select
             id="list-filter"
             bind:value={selectedListId}
             on:change={handleListFilterChange}
-            class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-gray-300 dark:border-gray-600 
-                   bg-white dark:bg-black text-gray-900 dark:text-gray-100
+            class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-stone-300 dark:border-stone-600 
+                   bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All Lists</option>
@@ -209,9 +209,9 @@
               type="checkbox"
               checked={showArchived}
               on:change={handleArchiveFilterChange}
-              class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              class="w-5 h-5 text-primary-600 border-stone-300 rounded focus:ring-primary-500"
             />
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span class="text-sm font-medium text-stone-700 dark:text-stone-300">
               Show Archived
             </span>
           </label>
@@ -233,13 +233,13 @@
         <div>
           <div class="flex items-center justify-between mb-2">
             <!-- svelte-ignore a11y-label-has-associated-control -->
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="block text-sm font-medium text-stone-700 dark:text-stone-300">
               Filter by Tags
             </label>
             {#if selectedTags.length > 0}
               <button
                 on:click={clearTagFilters}
-                class="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                class="text-xs text-stone-600 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
               >
                 Clear tags
               </button>

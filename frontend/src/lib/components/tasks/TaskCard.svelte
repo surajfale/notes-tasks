@@ -102,9 +102,9 @@
 </script>
 
 <div
-  class="group relative rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900
+  class="group relative rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900
          transition-colors duration-150 cursor-pointer
-         hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50/60 dark:hover:bg-gray-800/40"
+         hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50/60 dark:hover:bg-stone-800/40"
   on:click={handleClick}
   on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
   role="button"
@@ -120,7 +120,7 @@
         class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all
                {task.isCompleted 
                  ? 'bg-primary-600 border-primary-600' 
-                 : 'border-gray-300 dark:border-gray-600 hover:border-primary-500'}"
+                 : 'border-stone-300 dark:border-stone-600 hover:border-primary-500'}"
         aria-label={task.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
       >
         {#if task.isCompleted}
@@ -136,7 +136,7 @@
       <div class="flex flex-col gap-3">
         <!-- Header with title, priority, and badges -->
         <div class="flex items-start justify-between gap-2">
-          <h3 class="text-lg font-semibold flex-1 line-clamp-2 {task.isCompleted ? 'line-through text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-gray-100'}">
+          <h3 class="font-serif text-lg font-semibold flex-1 line-clamp-2 {task.isCompleted ? 'line-through text-stone-500 dark:text-stone-500' : 'text-stone-900 dark:text-stone-100'}">
             {task.title}
           </h3>
           <div class="flex items-center gap-2 flex-shrink-0">
@@ -181,13 +181,13 @@
           {@const totalCount = task.checklistItems.length}
           {@const progress = (completedCount / totalCount) * 100}
           <div class="space-y-2">
-            <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <div class="flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
               <span>{completedCount} / {totalCount} items completed</span>
             </div>
-            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div class="w-full bg-stone-200 dark:bg-stone-700 rounded-full h-2">
               <div
                 class="bg-primary-500 h-2 rounded-full transition-all duration-300"
                 style="width: {progress}%"
@@ -198,7 +198,7 @@
 
         <!-- Description preview with markdown rendering -->
         {#if task.description}
-          <div class="text-sm line-clamp-2 {task.isCompleted ? 'text-gray-500 dark:text-gray-500' : 'text-gray-600 dark:text-gray-400'}">
+          <div class="text-sm line-clamp-2 {task.isCompleted ? 'text-stone-500 dark:text-stone-500' : 'text-stone-600 dark:text-stone-400'}">
             <MarkdownRenderer content={task.description} maxLength={150} />
           </div>
         {/if}
@@ -207,7 +207,7 @@
         {#if task.dueAt || hasNotifications}
           <div class="flex flex-col gap-2">
             {#if task.dueAt}
-              <div class="flex items-center gap-1 text-sm {isOverdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-gray-600 dark:text-gray-400'}">
+              <div class="flex items-center gap-1 text-sm {isOverdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-stone-600 dark:text-stone-400'}">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -226,13 +226,13 @@
         {/if}
 
         <!-- Actions: full-opacity on touch devices, hover/focus-revealed on pointer devices -->
-        <div class="flex items-center gap-1 pt-2 -mx-2 border-t border-gray-100 dark:border-gray-800
+        <div class="flex items-center gap-1 pt-2 -mx-2 border-t border-stone-100 dark:border-stone-800
                     opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
           {#if !showDeleteConfirm}
             <button
               on:click={handleToggleComplete}
               disabled={isTogglingComplete}
-              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
+              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-50"
             >
               <span class="hidden sm:inline">{task.isCompleted ? 'Mark Incomplete' : 'Mark Complete'}</span>
               <span class="sm:hidden">{task.isCompleted ? 'Incomplete' : 'Complete'}</span>
@@ -245,7 +245,7 @@
               Delete
             </button>
           {:else}
-            <span class="text-sm text-gray-700 dark:text-gray-300 px-2">Delete this task?</span>
+            <span class="text-sm text-stone-700 dark:text-stone-300 px-2">Delete this task?</span>
             <button
               on:click={handleDelete}
               class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors"
@@ -255,14 +255,14 @@
             </button>
             <button
               on:click={cancelDelete}
-              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
             >
               Cancel
             </button>
           {/if}
 
           {#if task.isCompleted}
-            <span class="ml-auto text-xs text-gray-400 dark:text-gray-500 px-2">
+            <span class="ml-auto text-xs text-stone-400 dark:text-stone-500 px-2">
               Completed
             </span>
           {/if}

@@ -36,11 +36,11 @@
     class="fixed right-4 z-40 max-w-md bottom-[calc(9rem+env(safe-area-inset-bottom,0px))] md:bottom-4"
     transition:fade={{ duration: 200 }}
   >
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+    <div class="bg-stone-50 dark:bg-stone-800 rounded-lg shadow-lg border border-stone-200 dark:border-stone-700">
       <!-- Main Status Bar -->
       <button
         on:click={toggleDetails}
-        class="w-full px-4 py-3 flex items-center justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors rounded-t-lg"
+        class="w-full px-4 py-3 flex items-center justify-between gap-3 hover:bg-stone-50 dark:hover:bg-stone-750 transition-colors rounded-t-lg"
         class:rounded-b-lg={!showDetails}
       >
         <div class="flex items-center gap-3">
@@ -67,8 +67,8 @@
               />
             </svg>
             <div class="text-left">
-              <div class="font-medium text-gray-900 dark:text-white">Syncing...</div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">
+              <div class="font-medium text-stone-900 dark:text-white">Syncing...</div>
+              <div class="text-sm text-stone-500 dark:text-stone-400">
                 {$pendingCount} {$pendingCount === 1 ? 'change' : 'changes'} pending
               </div>
             </div>
@@ -90,7 +90,7 @@
             </svg>
             <div class="text-left">
               <div class="font-medium text-red-600 dark:text-red-400">Sync Failed</div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">
+              <div class="text-sm text-stone-500 dark:text-stone-400">
                 {$syncErrors.length} {$syncErrors.length === 1 ? 'error' : 'errors'}
               </div>
             </div>
@@ -111,8 +111,8 @@
               />
             </svg>
             <div class="text-left">
-              <div class="font-medium text-gray-900 dark:text-white">Pending Changes</div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">
+              <div class="font-medium text-stone-900 dark:text-white">Pending Changes</div>
+              <div class="text-sm text-stone-500 dark:text-stone-400">
                 {$pendingCount} {$pendingCount === 1 ? 'change' : 'changes'} waiting to sync
               </div>
             </div>
@@ -121,7 +121,7 @@
 
         <!-- Expand/Collapse Icon -->
         <svg
-          class="h-5 w-5 text-gray-400 transition-transform"
+          class="h-5 w-5 text-stone-400 transition-transform"
           class:rotate-180={showDetails}
           fill="none"
           stroke="currentColor"
@@ -139,12 +139,12 @@
 
       <!-- Details Panel -->
       {#if showDetails}
-        <div class="border-t border-gray-200 dark:border-gray-700" transition:slide={{ duration: 200 }}>
+        <div class="border-t border-stone-200 dark:border-stone-700" transition:slide={{ duration: 200 }}>
           <div class="px-4 py-3 space-y-3">
             <!-- Error Messages -->
             {#if $syncErrors.length > 0}
               <div class="space-y-2">
-                <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div class="text-sm font-medium text-stone-700 dark:text-stone-300">
                   Sync Errors:
                 </div>
                 <div class="space-y-1 max-h-40 overflow-y-auto">
@@ -158,7 +158,7 @@
             {/if}
 
             <!-- Sync Status Info -->
-            <div class="text-sm text-gray-600 dark:text-gray-400">
+            <div class="text-sm text-stone-600 dark:text-stone-400">
               {#if !$isOnline}
                 <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                   <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,14 +211,14 @@
               {#if $pendingCount > 0 && $isOnline && !$isSyncing}
                 <button
                   on:click={() => syncService.sync()}
-                  class="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-md transition-colors"
+                  class="flex-1 px-3 py-2 bg-stone-100 hover:bg-stone-200 dark:bg-stone-700 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-200 text-sm font-medium rounded-md transition-colors"
                 >
                   Sync Now
                 </button>
               {/if}
               <button
                 on:click={toggleDetails}
-                class="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-md transition-colors"
+                class="px-3 py-2 bg-stone-100 hover:bg-stone-200 dark:bg-stone-700 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-200 text-sm font-medium rounded-md transition-colors"
               >
                 Close
               </button>

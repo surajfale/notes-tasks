@@ -7,7 +7,7 @@ describe('Card', () => {
     const { container } = render(Card);
     const card = container.querySelector('div');
     expect(card).toBeTruthy();
-    expect(card?.className).toContain('bg-white');
+    expect(card?.className).toContain('bg-stone-50');
     expect(card?.className).toContain('rounded-lg');
   });
 
@@ -38,7 +38,7 @@ describe('Card', () => {
   it('applies hover effect when hover prop is true', () => {
     const { container } = render(Card, { props: { hover: true } });
     const card = container.querySelector('div');
-    expect(card?.className).toContain('hover:border-gray-300');
+    expect(card?.className).toContain('hover:border-stone-300');
   });
 
   it('is clickable when clickable prop is true', () => {

@@ -126,25 +126,25 @@
     <!-- Emoji Selector -->
     <div>
       <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
         Emoji (optional)
       </label>
       <div class="flex items-center gap-2 mb-3">
         <div 
-          class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl border-2 border-gray-300 dark:border-gray-600"
+          class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl border-2 border-stone-300 dark:border-stone-600"
           style="background-color: {color}20"
         >
           {#if emoji}
             {emoji}
           {:else}
-            <span class="text-gray-400">?</span>
+            <span class="text-stone-400">?</span>
           {/if}
         </div>
         {#if emoji}
           <button
             type="button"
             on:click={clearEmoji}
-            class="text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+            class="text-sm text-stone-600 dark:text-stone-400 hover:text-red-600 dark:hover:text-red-400"
           >
             Clear
           </button>
@@ -155,7 +155,7 @@
           <button
             type="button"
             on:click={() => selectEmoji(emojiOption)}
-            class="w-10 h-10 rounded-lg flex items-center justify-center text-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors {emoji === emojiOption ? 'bg-gray-200 dark:bg-gray-600 ring-2 ring-primary-500' : ''}"
+            class="w-10 h-10 rounded-lg flex items-center justify-center text-xl hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors {emoji === emojiOption ? 'bg-stone-200 dark:bg-stone-600 ring-2 ring-primary-500' : ''}"
           >
             {emojiOption}
           </button>
@@ -166,7 +166,7 @@
     <!-- Color Picker -->
     <div>
       <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
         Color
       </label>
       <div class="grid grid-cols-9 gap-2">
@@ -174,7 +174,7 @@
           <button
             type="button"
             on:click={() => selectColor(colorOption)}
-            class="w-10 h-10 rounded-lg transition-all {color === colorOption ? 'ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100 scale-110' : 'hover:scale-105'}"
+            class="w-10 h-10 rounded-lg transition-all {color === colorOption ? 'ring-2 ring-offset-2 ring-stone-900 dark:ring-stone-100 scale-110' : 'hover:scale-105'}"
             style="background-color: {colorOption}"
             aria-label="Select color {colorOption}"
           />

@@ -41,12 +41,12 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-  class="group relative bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-5 transition-colors duration-150 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 cursor-pointer flex flex-col h-full"
+  class="group relative bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-4 sm:p-5 transition-colors duration-150 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50/60 dark:hover:bg-stone-800/40 cursor-pointer flex flex-col h-full"
   on:click={handleCardClick}
 >
   <!-- Header -->
   <div class="flex justify-between items-start mb-2">
-    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors flex items-center gap-2">
+    <h3 class="font-serif text-lg font-semibold text-stone-900 dark:text-stone-100 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors flex items-center gap-2">
       <img src={faviconUrl} alt="" class="w-4 h-4 flex-shrink-0" />
       {link.title}
     </h3>
@@ -56,7 +56,7 @@
       <div class="flex items-center gap-1">
         <button
           on:click|stopPropagation={handleEdit}
-          class="p-1.5 text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          class="p-1.5 text-stone-500 hover:text-primary-600 dark:text-stone-400 dark:hover:text-primary-400 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           title="Edit"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@
         </button>
         <button
           on:click|stopPropagation={toggleArchive}
-          class="p-1.5 text-gray-500 hover:text-yellow-600 dark:text-gray-400 dark:hover:text-yellow-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          class="p-1.5 text-stone-500 hover:text-yellow-600 dark:text-stone-400 dark:hover:text-yellow-400 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           title={link.isArchived ? "Unarchive" : "Archive"}
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +78,7 @@
         </button>
         <button
           on:click|stopPropagation={handleDelete}
-          class="p-1.5 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          class="p-1.5 text-stone-500 hover:text-red-600 dark:text-stone-400 dark:hover:text-red-400 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           title="Delete"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,12 +106,12 @@
   {#if link.description || link.image}
     <div class="mb-4">
       {#if link.image}
-        <div class="mb-3 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-900 aspect-video">
+        <div class="mb-3 rounded-lg overflow-hidden bg-stone-100 dark:bg-stone-900 aspect-video">
           <img src={link.image} alt={link.title} class="w-full h-full object-cover" />
         </div>
       {/if}
       {#if link.description}
-        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-2">
+        <p class="text-sm text-stone-600 dark:text-stone-400 line-clamp-3 mb-2">
           {link.description}
         </p>
       {/if}

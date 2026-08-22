@@ -76,7 +76,7 @@
 
   $: summaryClass = (() => {
     if (!enabled) {
-      return 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400';
+      return 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400';
     }
     if (!dueDate || selectedTimings.length === 0) {
       return 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-200';
@@ -85,7 +85,7 @@
   })();
 
   $: iconColor = (() => {
-    if (!enabled) return 'text-gray-500 dark:text-gray-400';
+    if (!enabled) return 'text-stone-500 dark:text-stone-400';
     if (!dueDate || selectedTimings.length === 0) return 'text-blue-600 dark:text-blue-400';
     return 'text-green-600 dark:text-green-400';
   })();

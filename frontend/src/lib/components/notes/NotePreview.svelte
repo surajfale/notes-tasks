@@ -12,20 +12,20 @@
 </script>
 
 <div
-  class="note-preview-card bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-200 dark:border-gray-700"
+  class="note-preview-card bg-stone-50 dark:bg-stone-900 rounded-2xl shadow-2xl border-2 border-stone-200 dark:border-stone-700"
   style={exportStyle}
 >
   <div class="space-y-6">
     <!-- Title -->
     <div class="border-b-4 border-primary-500 dark:border-primary-400 pb-4">
-      <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 break-words">
+      <h1 class="font-serif text-4xl font-bold text-stone-900 dark:text-stone-100 break-words">
         {note.title}
       </h1>
     </div>
 
     <!-- Body with markdown rendering -->
     {#if note.body}
-      <div class="text-lg text-gray-700 dark:text-gray-300 prose prose-lg dark:prose-invert max-w-none">
+      <div class="text-lg text-stone-700 dark:text-stone-300 prose prose-lg dark:prose-invert max-w-none">
         <MarkdownRenderer content={note.body} />
       </div>
     {/if}
@@ -40,8 +40,8 @@
     {/if}
 
     <!-- Footer with date -->
-    <div class="pt-6 border-t-2 border-gray-200 dark:border-gray-700">
-      <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+    <div class="pt-6 border-t-2 border-stone-200 dark:border-stone-700">
+      <div class="flex items-center justify-between text-sm text-stone-500 dark:text-stone-400">
         <span class="flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

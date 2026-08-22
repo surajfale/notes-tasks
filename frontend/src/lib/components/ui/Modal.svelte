@@ -66,19 +66,19 @@
     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
     <div
       bind:this={dialogEl}
-      class="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-2xl shadow-2xl {maxWidthClass} w-full max-h-[85vh] sm:max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in slide-in duration-200"
+      class="bg-stone-50 dark:bg-stone-800 rounded-t-2xl sm:rounded-2xl shadow-2xl {maxWidthClass} w-full max-h-[85vh] sm:max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in slide-in duration-200"
       on:click|stopPropagation
       role="document"
       tabindex="-1"
     >
       {#if title}
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 id="modal-title" class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-stone-700">
+          <h2 id="modal-title" class="font-serif text-xl font-semibold text-stone-900 dark:text-stone-100">
             {title}
           </h2>
           <button
             type="button"
-            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
             on:click={handleClose}
             aria-label="Close modal"
           >
@@ -94,7 +94,7 @@
       </div>
 
       {#if $$slots.footer}
-        <div class="px-6 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <div class="px-6 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] border-t border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900">
           <slot name="footer" />
         </div>
       {/if}

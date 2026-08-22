@@ -20,7 +20,7 @@
 </script>
 
 <div class="w-full">
-  <label for={selectId} class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+  <label for={selectId} class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
     {label}
     {#if required}
       <span class="text-error-500">*</span>
@@ -36,7 +36,7 @@
       {required}
       class="w-full px-4 py-2.5 pr-10 rounded-lg border {error
         ? 'border-error-500 focus:ring-error-500 focus:border-error-500'
-        : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500'} bg-white dark:bg-black text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
+        : 'border-stone-300 dark:border-stone-600 focus:ring-primary-500 focus:border-primary-500'} bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
     >
       <option value="">{placeholder}</option>
       {#each lists as list (list._id)}
@@ -49,7 +49,7 @@
     <!-- Custom dropdown arrow -->
     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
       <svg
-        class="w-5 h-5 text-gray-400"
+        class="w-5 h-5 text-stone-400"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -75,7 +75,7 @@
         >
           {selectedList.emoji || '📋'}
         </span>
-        <span class="text-gray-600 dark:text-gray-400">
+        <span class="text-stone-600 dark:text-stone-400">
           {selectedList.title}
         </span>
       </div>

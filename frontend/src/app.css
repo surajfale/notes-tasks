@@ -13,6 +13,28 @@ body {
 	padding: 0;
 }
 
+/* Subtle paper-grain texture layered over the stone background. Kept to a
+   near-invisible opacity so it reads as paper fiber, not visual noise, and
+   never interferes with text contrast. Dark mode gets a lighter-value grain
+   so it still shows on the near-black paper tone. */
+.paper-grain {
+	position: relative;
+}
+
+.paper-grain::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	opacity: 0.035;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark .paper-grain::before {
+	opacity: 0.06;
+}
+
 * {
 	box-sizing: border-box;
 }

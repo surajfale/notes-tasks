@@ -143,11 +143,11 @@
 <div class="space-y-4">
   <div class="flex items-center justify-between">
     <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label class="block text-sm font-medium text-stone-700 dark:text-stone-300">
       Checklist Items
     </label>
     {#if totalCount > 0}
-      <span class="text-sm text-gray-500 dark:text-gray-400">
+      <span class="text-sm text-stone-500 dark:text-stone-400">
         {completedCount} / {totalCount} completed
       </span>
     {/if}
@@ -155,7 +155,7 @@
 
   <!-- Progress bar -->
   {#if totalCount > 0}
-    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+    <div class="w-full bg-stone-200 dark:bg-stone-700 rounded-full h-2">
       <div
         class="bg-primary-500 h-2 rounded-full transition-all duration-300"
         style="width: {progress}%"
@@ -172,10 +172,10 @@
       placeholder="Add checklist item (max 255 chars)"
       maxlength="255"
       {disabled}
-      class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-             bg-white dark:bg-black 
-             text-gray-900 dark:text-gray-100
-             placeholder-gray-400 dark:placeholder-gray-500
+      class="flex-1 px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600
+             bg-stone-50 dark:bg-stone-950 
+             text-stone-900 dark:text-stone-100
+             placeholder-stone-400 dark:placeholder-stone-500
              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
              disabled:opacity-50 disabled:cursor-not-allowed"
     />
@@ -190,14 +190,14 @@
   </div>
 
   {#if newItemText.length > 0}
-    <p class="text-xs text-gray-500 dark:text-gray-400">
+    <p class="text-xs text-stone-500 dark:text-stone-400">
       {newItemText.length} / 255 characters
     </p>
   {/if}
 
   <!-- Checklist items -->
   {#if items.length > 0}
-    <div class="space-y-2 border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+    <div class="space-y-2 border border-stone-300 dark:border-stone-600 rounded-lg p-4">
       {#each items as item, index (item.order)}
         <div class="flex items-start gap-2 group">
           <!-- Checkbox -->
@@ -206,7 +206,7 @@
             checked={item.isCompleted}
             on:change={() => toggleItem(index)}
             {disabled}
-            class="mt-1 w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded
+            class="mt-1 w-4 h-4 text-primary-600 border-stone-300 dark:border-stone-600 rounded
                    focus:ring-primary-500 focus:ring-2
                    disabled:opacity-50 disabled:cursor-not-allowed"
           />
@@ -214,8 +214,8 @@
           <!-- Text -->
           <span
             class="flex-1 text-sm {item.isCompleted
-              ? 'line-through text-gray-500 dark:text-gray-400'
-              : 'text-gray-900 dark:text-gray-100'}"
+              ? 'line-through text-stone-500 dark:text-stone-400'
+              : 'text-stone-900 dark:text-stone-100'}"
           >
             {item.text}
           </span>
@@ -226,7 +226,7 @@
               type="button"
               on:click={() => moveUp(index)}
               disabled={disabled || index === 0}
-              class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200
+              class="p-1 text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200
                      disabled:opacity-30 disabled:cursor-not-allowed"
               title="Move up"
             >
@@ -238,7 +238,7 @@
               type="button"
               on:click={() => moveDown(index)}
               disabled={disabled || index === items.length - 1}
-              class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200
+              class="p-1 text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200
                      disabled:opacity-30 disabled:cursor-not-allowed"
               title="Move down"
             >
@@ -263,7 +263,7 @@
       {/each}
     </div>
   {:else}
-    <p class="text-sm text-gray-500 dark:text-gray-400 italic text-center py-4">
+    <p class="text-sm text-stone-500 dark:text-stone-400 italic text-center py-4">
       No checklist items yet. Add items above or use AI to generate them.
     </p>
   {/if}

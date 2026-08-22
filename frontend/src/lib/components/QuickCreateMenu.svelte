@@ -99,7 +99,7 @@
       bind:this={menuEl}
       role="menu"
       class="absolute z-40 w-56
-             bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-lg
+             bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 shadow-lg
              py-1
              {variant === 'fab' ? 'bottom-16 right-0' : 'left-0 right-0 sm:right-auto mt-1.5'}"
     >
@@ -108,10 +108,10 @@
           type="button"
           role="menuitem"
           on:click={() => select(item.href)}
-          class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left text-gray-700 dark:text-gray-300
-                 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left text-stone-700 dark:text-stone-300
+                 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
-          <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-stone-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.path} />
           </svg>
           {item.label}
