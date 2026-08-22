@@ -19,7 +19,7 @@ describe('Button', () => {
   it('renders secondary variant', () => {
     const { container } = render(Button, { props: { variant: 'secondary' } });
     const button = container.querySelector('button');
-    expect(button?.className).toContain('bg-gray-200');
+    expect(button?.className).toContain('bg-stone-200');
   });
 
   it('renders danger variant', () => {

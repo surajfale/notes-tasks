@@ -115,13 +115,13 @@
   />
   
   <div>
-    <label for="list" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+    <label for="list" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
       List (Optional)
     </label>
     <select
       id="list"
       bind:value={listId}
-      class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      class="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
     >
       <option value="">No List</option>
       {#each Array.isArray($listsStore.items) ? $listsStore.items : [] as list}

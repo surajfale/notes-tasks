@@ -13,12 +13,12 @@
   };
 
   $: classes = `
-    bg-white dark:bg-gray-900
+    bg-stone-50 dark:bg-stone-900
     rounded-lg
-    border border-gray-200 dark:border-gray-800
+    border border-stone-200 dark:border-stone-800
     transition-colors duration-150
     ${paddingClasses[padding]}
-    ${hover ? 'hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50' : ''}
+    ${hover ? 'hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50' : ''}
     ${clickable ? 'cursor-pointer' : ''}
     ${className}
   `.trim().replace(/\s+/g, ' ');

@@ -21,6 +21,14 @@ export default {
 					'Open Sans',
 					'Helvetica Neue',
 					'sans-serif'
+				],
+				serif: [
+					'Lora',
+					'Georgia',
+					'Cambria',
+					'Times New Roman',
+					'Times',
+					'serif'
 				]
 			},
 			colors: {

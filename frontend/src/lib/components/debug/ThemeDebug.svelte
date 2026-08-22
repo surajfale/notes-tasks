@@ -37,14 +37,14 @@
     showDebug = !showDebug;
     if (showDebug) getCSSVariables();
   }}
-  class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 shadow-lg hover:scale-110 transition-transform"
+  class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-stone-800 dark:bg-stone-200 text-white dark:text-stone-900 shadow-lg hover:scale-110 transition-transform"
   title="Toggle theme debug"
 >
   🎨
 </button>
 
 {#if showDebug}
-  <div class="fixed bottom-20 right-4 z-50 w-80 max-h-96 overflow-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl p-4">
+  <div class="fixed bottom-20 right-4 z-50 w-80 max-h-96 overflow-auto bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg shadow-xl p-4">
     <h3 class="text-lg font-bold mb-2">Theme Debug</h3>
     
     <div class="mb-4">
@@ -58,12 +58,12 @@
       <div class="space-y-1 text-xs font-mono">
         {#each Object.entries(cssVars) as [key, value]}
           <div class="flex items-center gap-2">
-            <span class="text-gray-600 dark:text-gray-400">{key}:</span>
+            <span class="text-stone-600 dark:text-stone-400">{key}:</span>
             <span class="flex-1">{value || '(not set)'}</span>
             {#if key !== '--accent-color' && value}
-              <div class="w-6 h-6 rounded border border-gray-300" style="background-color: rgb({value})"></div>
+              <div class="w-6 h-6 rounded border border-stone-300" style="background-color: rgb({value})"></div>
             {:else if key === '--accent-color' && value}
-              <div class="w-6 h-6 rounded border border-gray-300" style="background-color: {value}"></div>
+              <div class="w-6 h-6 rounded border border-stone-300" style="background-color: {value}"></div>
             {/if}
           </div>
         {/each}
@@ -88,7 +88,7 @@
     
     <button
       on:click={() => showDebug = false}
-      class="mt-4 w-full px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+      class="mt-4 w-full px-3 py-2 bg-stone-200 dark:bg-stone-700 rounded hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
     >
       Close
     </button>

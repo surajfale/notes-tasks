@@ -110,7 +110,7 @@
   <PageHeader title="Create Note" description="Add a new note to your collection" />
 
   <form on:submit={handleSubmit} class="space-y-6">
-    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 space-y-6">
+    <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-4 sm:p-6 space-y-6">
       <Input
         type="text"
         label="Title"

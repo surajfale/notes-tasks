@@ -149,35 +149,35 @@
   {:else if $currentUser}
     <!-- User Information Section -->
     <Card class="mb-6">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-4">
         Account Information
       </h2>
       <div class="space-y-3">
         <div>
-          <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Username:</span>
-          <span class="ml-2 text-gray-900 dark:text-gray-100">{$currentUser.username}</span>
+          <span class="text-sm font-medium text-stone-600 dark:text-stone-400">Username:</span>
+          <span class="ml-2 text-stone-900 dark:text-stone-100">{$currentUser.username}</span>
         </div>
         <div>
-          <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Email:</span>
-          <span class="ml-2 text-gray-900 dark:text-gray-100">{$currentUser.email}</span>
+          <span class="text-sm font-medium text-stone-600 dark:text-stone-400">Email:</span>
+          <span class="ml-2 text-stone-900 dark:text-stone-100">{$currentUser.email}</span>
         </div>
         <div>
-          <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Display Name:</span>
-          <span class="ml-2 text-gray-900 dark:text-gray-100">{$currentUser.displayName}</span>
+          <span class="text-sm font-medium text-stone-600 dark:text-stone-400">Display Name:</span>
+          <span class="ml-2 text-stone-900 dark:text-stone-100">{$currentUser.displayName}</span>
         </div>
       </div>
     </Card>
 
     <!-- Theme Settings Section -->
   <Card class="mb-6">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+    <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-4">
       Theme Settings
     </h2>
     
     <!-- Theme Mode Toggle -->
     <div class="mb-6">
       <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
         Theme Mode
       </label>
       <div class="flex items-center space-x-4">
@@ -186,12 +186,12 @@
           on:click={toggleTheme}
           class="flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors duration-150 {theme.mode === 'light'
             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-            : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'}"
+            : 'border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'}"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          <span class="text-gray-900 dark:text-gray-100">Light</span>
+          <span class="text-stone-900 dark:text-stone-100">Light</span>
         </button>
 
         <button
@@ -199,12 +199,12 @@
           on:click={toggleTheme}
           class="flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors duration-150 {theme.mode === 'dark'
             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-            : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'}"
+            : 'border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'}"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
           </svg>
-          <span class="text-gray-900 dark:text-gray-100">Dark</span>
+          <span class="text-stone-900 dark:text-stone-100">Dark</span>
         </button>
       </div>
     </div>
@@ -212,7 +212,7 @@
     <!-- Accent Color Picker -->
     <div>
       <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
         Accent Color
       </label>
       <div class="grid grid-cols-4 sm:grid-cols-8 gap-3">
@@ -220,7 +220,7 @@
           <button
             type="button"
             on:click={() => selectAccentColor(color.value)}
-            class="w-12 h-12 rounded-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 {theme.accentColor === color.value ? 'ring-2 ring-offset-2 ring-gray-900 dark:ring-gray-100' : ''}"
+            class="w-12 h-12 rounded-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-400 {theme.accentColor === color.value ? 'ring-2 ring-offset-2 ring-stone-900 dark:ring-stone-100' : ''}"
             style="background-color: {color.value}"
             title={color.name}
             aria-label={`Select ${color.name} accent color`}
@@ -241,7 +241,7 @@
 
   <!-- Password Change Section -->
   <Card class="mb-6">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+    <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-4">
       Change Password
     </h2>
     
@@ -297,7 +297,7 @@
       Danger Zone
     </h2>
     
-    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    <p class="text-sm text-stone-600 dark:text-stone-400 mb-4">
       Once you delete your account, there is no going back. This will permanently delete your account and all associated data including notes, tasks, and lists.
     </p>
 
@@ -316,11 +316,11 @@
     onClose={closeDeleteModal}
   >
     <div class="space-y-4">
-      <p class="text-gray-700 dark:text-gray-300">
+      <p class="text-stone-700 dark:text-stone-300">
         This action cannot be undone. This will permanently delete your account and all associated data.
       </p>
 
-      <p class="text-sm text-gray-600 dark:text-gray-400">
+      <p class="text-sm text-stone-600 dark:text-stone-400">
         Please type <strong class="text-red-600 dark:text-red-400">DELETE</strong> to confirm:
       </p>
 
@@ -360,7 +360,7 @@
   {:else}
     <!-- Not logged in -->
     <div class="text-center py-12">
-      <p class="text-gray-600 dark:text-gray-400">Please log in to view settings.</p>
+      <p class="text-stone-600 dark:text-stone-400">Please log in to view settings.</p>
     </div>
   {/if}
 </div>

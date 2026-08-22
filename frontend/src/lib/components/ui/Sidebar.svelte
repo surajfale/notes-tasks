@@ -35,15 +35,15 @@
 
 <!-- Sidebar -->
 <aside
-  class="fixed top-0 left-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-50 transition-transform duration-300 ease-in-out
+  class="fixed top-0 left-0 h-full bg-stone-50 dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 z-50 transition-transform duration-300 ease-in-out
          {open ? 'translate-x-0' : '-translate-x-full'}
          w-64 md:translate-x-0"
 >
   <div class="flex flex-col h-full">
     <!-- Header -->
-    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-stone-800">
       <slot name="header">
-        <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 class="text-xl font-bold text-stone-900 dark:text-stone-100">
           Notes & Tasks
         </h1>
       </slot>
@@ -51,7 +51,7 @@
       {#if onClose}
         <button
           type="button"
-          class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          class="md:hidden text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
           on:click={onClose}
           aria-label="Close sidebar"
         >
@@ -72,7 +72,7 @@
               class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200
                      {isActive(item.href)
                        ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 font-medium'
-                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
+                       : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
               on:click={handleNavClick}
             >
               <span class="text-xl">{item.icon}</span>
@@ -91,7 +91,7 @@
 
     <!-- Footer -->
     {#if $$slots.footer}
-      <div class="px-4 py-4 border-t border-gray-200 dark:border-gray-800">
+      <div class="px-4 py-4 border-t border-stone-200 dark:border-stone-800">
         <slot name="footer" />
       </div>
     {/if}

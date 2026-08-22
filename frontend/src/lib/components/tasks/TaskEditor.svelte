@@ -357,16 +357,16 @@
 
     <!-- Priority -->
     <div>
-      <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label for="priority" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
         Priority
       </label>
       <select
         id="priority"
         bind:value={priority}
         disabled={enhancing}
-        class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
-               bg-white dark:bg-black 
-               text-gray-900 dark:text-gray-100
+        class="w-full px-4 py-3 rounded-lg border border-stone-300 dark:border-stone-600
+               bg-stone-50 dark:bg-stone-950 
+               text-stone-900 dark:text-stone-100
                focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
                disabled:opacity-50 disabled:cursor-not-allowed"
       >

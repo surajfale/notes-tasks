@@ -173,7 +173,7 @@
 
 <div class="space-y-3">
   <!-- Compact Notification Toggle -->
-  <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
+  <div class="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-800/50 rounded-lg border border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 transition-colors">
     <div class="flex items-center gap-2 flex-1 min-w-0">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -181,14 +181,14 @@
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Email Notifications</span>
+          <span class="text-sm font-medium text-stone-900 dark:text-stone-100">Email Notifications</span>
           {#if enabled && selectedTimings.length > 0}
             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
               {selectedTimings.length}
             </span>
           {/if}
         </div>
-        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+        <p class="text-xs text-stone-500 dark:text-stone-400 truncate">
           {#if !dueDate}
             Set due date to enable
           {:else if enabled && selectedTimings.length > 0}
@@ -203,7 +203,7 @@
         type="button"
         on:click={toggleExpanded}
         disabled={!dueDate}
-        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
+        class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors disabled:opacity-50"
         aria-label={isExpanded ? 'Collapse' : 'Expand'}
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform {isExpanded ? 'rotate-180' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,11 +221,11 @@
       on:click={handleToggle}
       on:keydown={handleToggleKeydown}
       tabindex="0"
-      class="relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed
-             {enabled ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'}"
+      class="relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-stone-800 disabled:opacity-50 disabled:cursor-not-allowed
+             {enabled ? 'bg-primary-600' : 'bg-stone-300 dark:bg-stone-600'}"
     >
       <span
-        class="inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-200
+        class="inline-block h-4 w-4 transform rounded-full bg-stone-50 shadow-md transition-transform duration-200
                {enabled ? 'translate-x-6' : 'translate-x-1'}"
       />
     </button>
@@ -233,14 +233,14 @@
 
   <!-- Expanded Settings -->
   {#if isExpanded && dueDate}
-    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+    <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-700 p-4">
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-stone-500 dark:text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p id="notification-timings-label" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <p id="notification-timings-label" class="text-sm font-medium text-stone-700 dark:text-stone-300">
               When to remind?
             </p>
           </div>
@@ -266,8 +266,8 @@
                      {available
                        ? selected
                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                         : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50'
-                       : 'border-gray-100 dark:border-gray-800 opacity-50 cursor-not-allowed'}"
+                         : 'border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50'
+                       : 'border-stone-100 dark:border-stone-800 opacity-50 cursor-not-allowed'}"
             >
               <input
                 type="checkbox"
@@ -275,10 +275,10 @@
                 disabled={!available}
                 on:change={(e) => handleTimingChange(option.value, e.currentTarget.checked)}
                 on:keydown={(e) => handleCheckboxKeydown(e, option.value, available)}
-                class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 disabled:cursor-not-allowed"
+                class="h-4 w-4 rounded border-stone-300 dark:border-stone-600 text-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 disabled:cursor-not-allowed"
                 aria-label={option.label}
               />
-              <span class="text-sm text-gray-900 dark:text-gray-100">
+              <span class="text-sm text-stone-900 dark:text-stone-100">
                 {option.label}
               </span>
             </label>

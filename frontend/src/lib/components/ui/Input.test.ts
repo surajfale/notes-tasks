@@ -33,7 +33,7 @@ describe('Input', () => {
     render(Input, { props: { hint: 'Enter your email address', value: '' } });
     const hint = screen.getByText('Enter your email address');
     expect(hint).toBeTruthy();
-    expect(hint.className).toContain('text-gray-500');
+    expect(hint.className).toContain('text-stone-500');
   });
 
   it('renders email input type', () => {

@@ -61,13 +61,13 @@
       </div>
 
       <div class="flex-1 min-w-0">
-        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+        <h3 class="font-serif text-base font-semibold text-stone-900 dark:text-stone-100 truncate">
           {list.title}
         </h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        <p class="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
           {totalItems} {totalItems === 1 ? 'item' : 'items'}
           {#if noteCount > 0 || taskCount > 0}
-            <span class="text-gray-400 dark:text-gray-500">
+            <span class="text-stone-400 dark:text-stone-500">
               ({noteCount} {noteCount === 1 ? 'note' : 'notes'}, {taskCount} {taskCount === 1 ? 'task' : 'tasks'})
             </span>
           {/if}
@@ -76,12 +76,12 @@
     </div>
 
     <!-- Actions: full-opacity on touch devices, hover/focus-revealed on pointer devices -->
-    <div class="flex items-center gap-1 -mx-2 pt-2 border-t border-gray-100 dark:border-gray-800
+    <div class="flex items-center gap-1 -mx-2 pt-2 border-t border-stone-100 dark:border-stone-800
                 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
       {#if !showDeleteConfirm}
         <button
           on:click={handleEdit}
-          class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
           Edit
         </button>
@@ -93,7 +93,7 @@
           Delete
         </button>
       {:else}
-        <span class="text-sm text-gray-700 dark:text-gray-300 px-2">Delete this list?</span>
+        <span class="text-sm text-stone-700 dark:text-stone-300 px-2">Delete this list?</span>
         <button
           on:click={handleDelete}
           class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors"
@@ -103,7 +103,7 @@
         </button>
         <button
           on:click={cancelDelete}
-          class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
           Cancel
         </button>

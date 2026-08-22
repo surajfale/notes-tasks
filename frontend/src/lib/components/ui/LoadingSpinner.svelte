@@ -12,7 +12,7 @@
   const colorClasses = {
     primary: 'border-primary-600 border-t-transparent',
     white: 'border-white border-t-transparent',
-    gray: 'border-gray-400 border-t-transparent dark:border-gray-500'
+    gray: 'border-stone-400 border-t-transparent dark:border-stone-500'
   };
 
   $: spinnerClasses = `${sizeClasses[size]} ${colorClasses[color]} rounded-full animate-spin`;
@@ -23,6 +23,6 @@
     <span class="sr-only">Loading...</span>
   </div>
   {#if text}
-    <p class="text-sm text-gray-600 dark:text-gray-400">{text}</p>
+    <p class="text-sm text-stone-600 dark:text-stone-400">{text}</p>
   {/if}
 </div>

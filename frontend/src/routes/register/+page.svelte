@@ -96,14 +96,14 @@
   }
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4 sm:px-6 py-8 sm:py-12">
+<div class="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4 sm:px-6 py-8 sm:py-12">
   <div class="max-w-md w-full space-y-6 sm:space-y-8">
     <!-- Header -->
     <div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-900 dark:text-gray-100">
+      <h1 class="font-serif text-2xl sm:text-3xl font-bold text-center text-stone-900 dark:text-stone-100">
         Create Account
       </h1>
-      <p class="mt-2 text-center text-sm sm:text-base text-gray-600 dark:text-gray-400">
+      <p class="mt-2 text-center text-sm sm:text-base text-stone-600 dark:text-stone-400">
         Sign up to start organizing your notes and tasks
       </p>
     </div>
@@ -111,12 +111,12 @@
     <!-- Registration Form -->
     <form
       on:submit={handleSubmit}
-      class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 sm:p-8 space-y-6"
+      class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 sm:p-8 space-y-6"
     >
       <div class="space-y-4">
         <!-- Username Field -->
         <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="username" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             Username
           </label>
           <input
@@ -128,9 +128,9 @@
             on:input={() => clearFieldError('username')}
             disabled={isSubmitting || authLoading}
             class="appearance-none relative block w-full px-4 py-3 min-h-[44px] text-base border rounded-lg
-                   placeholder-gray-400 text-gray-900 dark:text-gray-100
-                   bg-white dark:bg-gray-800
-                   border-gray-300 dark:border-gray-600
+                   placeholder-stone-400 text-stone-900 dark:text-stone-100
+                   bg-stone-50 dark:bg-stone-800
+                   border-stone-300 dark:border-stone-600
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
                    disabled:opacity-50 disabled:cursor-not-allowed
                    {validationErrors.username ? 'border-red-500 dark:border-red-500' : ''}"
@@ -145,7 +145,7 @@
 
         <!-- Email Field -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="email" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             Email
           </label>
           <input
@@ -157,9 +157,9 @@
             on:input={() => clearFieldError('email')}
             disabled={isSubmitting || authLoading}
             class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-gray-400 text-gray-900 dark:text-gray-100
-                   bg-white dark:bg-gray-800
-                   border-gray-300 dark:border-gray-600
+                   placeholder-stone-400 text-stone-900 dark:text-stone-100
+                   bg-stone-50 dark:bg-stone-800
+                   border-stone-300 dark:border-stone-600
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
                    disabled:opacity-50 disabled:cursor-not-allowed
                    {validationErrors.email ? 'border-red-500 dark:border-red-500' : ''}"
@@ -174,7 +174,7 @@
 
         <!-- Display Name Field -->
         <div>
-          <label for="displayName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="displayName" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             Display Name
           </label>
           <input
@@ -186,9 +186,9 @@
             on:input={() => clearFieldError('displayName')}
             disabled={isSubmitting || authLoading}
             class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-gray-400 text-gray-900 dark:text-gray-100
-                   bg-white dark:bg-gray-800
-                   border-gray-300 dark:border-gray-600
+                   placeholder-stone-400 text-stone-900 dark:text-stone-100
+                   bg-stone-50 dark:bg-stone-800
+                   border-stone-300 dark:border-stone-600
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
                    disabled:opacity-50 disabled:cursor-not-allowed
                    {validationErrors.displayName ? 'border-red-500 dark:border-red-500' : ''}"
@@ -203,7 +203,7 @@
 
         <!-- Password Field -->
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="password" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             Password
           </label>
           <input
@@ -215,9 +215,9 @@
             on:input={() => clearFieldError('password')}
             disabled={isSubmitting || authLoading}
             class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-gray-400 text-gray-900 dark:text-gray-100
-                   bg-white dark:bg-gray-800
-                   border-gray-300 dark:border-gray-600
+                   placeholder-stone-400 text-stone-900 dark:text-stone-100
+                   bg-stone-50 dark:bg-stone-800
+                   border-stone-300 dark:border-stone-600
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
                    disabled:opacity-50 disabled:cursor-not-allowed
                    {validationErrors.password ? 'border-red-500 dark:border-red-500' : ''}"
@@ -228,7 +228,7 @@
               {validationErrors.password}
             </p>
           {:else}
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
               Must be at least 8 characters with uppercase, lowercase, and numbers
             </p>
           {/if}
@@ -236,7 +236,7 @@
 
         <!-- Confirm Password Field -->
         <div>
-          <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="confirmPassword" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             Confirm Password
           </label>
           <input
@@ -248,9 +248,9 @@
             on:input={() => clearFieldError('confirmPassword')}
             disabled={isSubmitting || authLoading}
             class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-gray-400 text-gray-900 dark:text-gray-100
-                   bg-white dark:bg-gray-800
-                   border-gray-300 dark:border-gray-600
+                   placeholder-stone-400 text-stone-900 dark:text-stone-100
+                   bg-stone-50 dark:bg-stone-800
+                   border-stone-300 dark:border-stone-600
                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
                    disabled:opacity-50 disabled:cursor-not-allowed
                    {validationErrors.confirmPassword ? 'border-red-500 dark:border-red-500' : ''}"
@@ -281,7 +281,7 @@
 
       <!-- Login Link -->
       <div class="text-center">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
+        <p class="text-sm text-stone-600 dark:text-stone-400">
           Already have an account?
           <a href="/login" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
             Sign in instead
