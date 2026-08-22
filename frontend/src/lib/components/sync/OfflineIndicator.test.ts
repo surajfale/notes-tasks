@@ -1,10 +1,28 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { writable } from 'svelte/store';
 import OfflineIndicator from './OfflineIndicator.svelte';
 
-// Create writable store for mocking
-const mockIsOnline = writable(true);
+// Create writable store for mocking. Built inline (rather than importing
+// svelte/store) because vi.mock factories run before the module graph's
+// static imports are initialized, so `mockIsOnline` must be self-contained.
+const { mockIsOnline } = vi.hoisted(() => {
+  function createStore<T>(initial: T) {
+    let value = initial;
+    const subscribers = new Set<(v: T) => void>();
+    return {
+      subscribe(fn: (v: T) => void) {
+        fn(value);
+        subscribers.add(fn);
+        return () => subscribers.delete(fn);
+      },
+      set(v: T) {
+        value = v;
+        subscribers.forEach((fn) => fn(v));
+      }
+    };
+  }
+  return { mockIsOnline: createStore(true) };
+});
 
 // Mock the sync store
 vi.mock('$lib/storage/sync', () => ({

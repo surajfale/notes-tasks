@@ -1,13 +1,33 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
-import { writable } from 'svelte/store';
 import SyncStatusIndicator from './SyncStatusIndicator.svelte';
 
-// Create writable stores for mocking
-const mockPendingCount = writable(0);
-const mockIsSyncing = writable(false);
-const mockSyncErrors = writable<string[]>([]);
-const mockIsOnline = writable(true);
+// Create writable stores for mocking. Built inline (rather than importing
+// svelte/store) because vi.mock factories run before the module graph's
+// static imports are initialized, so these stores must be self-contained.
+const { mockPendingCount, mockIsSyncing, mockSyncErrors, mockIsOnline } = vi.hoisted(() => {
+  function createStore<T>(initial: T) {
+    let value = initial;
+    const subscribers = new Set<(v: T) => void>();
+    return {
+      subscribe(fn: (v: T) => void) {
+        fn(value);
+        subscribers.add(fn);
+        return () => subscribers.delete(fn);
+      },
+      set(v: T) {
+        value = v;
+        subscribers.forEach((fn) => fn(v));
+      }
+    };
+  }
+  return {
+    mockPendingCount: createStore(0),
+    mockIsSyncing: createStore(false),
+    mockSyncErrors: createStore<string[]>([]),
+    mockIsOnline: createStore(true)
+  };
+});
 
 // Mock the sync stores and service
 vi.mock('$lib/storage/sync', () => ({

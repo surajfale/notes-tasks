@@ -8,6 +8,8 @@ export default defineConfig({
 		environment: 'happy-dom',
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	},
+	// Svelte 5 ships separate client/server runtimes; force the browser build under Vitest.
+	resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
 	server: {
 		port: 5173
 	},
