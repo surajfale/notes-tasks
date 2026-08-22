@@ -6,6 +6,7 @@
   import Input from '$lib/components/ui/Input.svelte';
   import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
+  import { PageHeader } from '$lib/components/ui';
 
   import { onMount } from 'svelte';
   import { validateNoteForm } from '$lib/utils/validation';
@@ -106,13 +107,10 @@
 </script>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-  <div class="mb-6">
-    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Create Note</h1>
-    <p class="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">Add a new note to your collection</p>
-  </div>
+  <PageHeader title="Create Note" description="Add a new note to your collection" />
 
   <form on:submit={handleSubmit} class="space-y-6">
-    <div class="bg-white dark:bg-black rounded-lg shadow-md p-4 sm:p-6 space-y-6">
+    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 space-y-6">
       <Input
         type="text"
         label="Title"

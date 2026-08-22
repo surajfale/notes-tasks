@@ -116,7 +116,7 @@
     </div>
   </div>
 
-  <div class="bg-white dark:bg-black rounded-lg shadow-md p-6 space-y-6">
+  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 space-y-6">
     <!-- Completion Checkbox at the top -->
     <div class="flex items-center gap-3 pb-4 border-b border-gray-200 dark:border-gray-700">
       <input

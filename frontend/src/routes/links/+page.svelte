@@ -8,7 +8,7 @@
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Tag from '$lib/components/ui/Tag.svelte';
-  import { LoadingOverlay, ErrorMessage } from '$lib/components/ui';
+  import { LoadingOverlay, ErrorMessage, PageHeader, EmptyState } from '$lib/components/ui';
   import type { Link, LinkFilters } from '$lib/types/link';
 
   // Filter state
@@ -128,22 +128,20 @@
 </svelte:head>
 
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-    <div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Links</h1>
-      <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
-        {$linksStore.items.length} {$linksStore.items.length === 1 ? 'link' : 'links'}
-      </p>
-    </div>
-    <Button variant="primary" on:click={handleCreateLink} fullWidth={false}>
-      <span class="hidden sm:inline">Create Link</span>
-      <span class="sm:hidden">+ New</span>
-    </Button>
-  </div>
+  <PageHeader
+    title="Links"
+    description="{$linksStore.items.length} {$linksStore.items.length === 1 ? 'link' : 'links'}"
+  >
+    <svelte:fragment slot="actions">
+      <Button variant="primary" on:click={handleCreateLink} fullWidth={false}>
+        <span class="hidden sm:inline">Create Link</span>
+        <span class="sm:hidden">+ New</span>
+      </Button>
+    </svelte:fragment>
+  </PageHeader>
 
   <!-- Filters -->
-  <div class="bg-white dark:bg-gray-950 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
+  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
       <!-- Search -->
       <div class="w-full">
@@ -238,13 +236,6 @@
     </div>
   </div>
 
-  <!-- Error message -->
-  {#if $linksStore.error}
-    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-      <p class="text-red-800 dark:text-red-200">{$linksStore.error}</p>
-    </div>
-  {/if}
-
   <!-- Error state -->
   {#if $linksStore.error}
     <ErrorMessage
@@ -256,33 +247,26 @@
   {:else if $linksStore.isLoading}
     <LoadingOverlay text="Loading links..." />
   {:else if $linksStore.items.length === 0}
-    <!-- Empty state -->
-    <div class="text-center py-12">
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-        />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No links found</h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {hasActiveFilters ? 'Try adjusting your filters' : 'Get started by creating a new link'}
-      </p>
+    <EmptyState
+      title="No links found"
+      description={hasActiveFilters ? 'Try adjusting your filters' : 'Get started by creating a new link'}
+    >
+      <svelte:fragment slot="icon">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+          />
+        </svg>
+      </svelte:fragment>
       {#if !hasActiveFilters}
-        <div class="mt-6">
-          <Button variant="primary" on:click={handleCreateLink}>
-            Create Link
-          </Button>
-        </div>
+        <Button variant="primary" on:click={handleCreateLink}>
+          Create Link
+        </Button>
       {/if}
-    </div>
+    </EmptyState>
   {:else}
     <!-- Links grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

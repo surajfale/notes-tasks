@@ -8,7 +8,7 @@ describe('Card', () => {
     const card = container.querySelector('div');
     expect(card).toBeTruthy();
     expect(card?.className).toContain('bg-white');
-    expect(card?.className).toContain('rounded-xl');
+    expect(card?.className).toContain('rounded-lg');
   });
 
   it('renders with small padding', () => {
@@ -38,14 +38,13 @@ describe('Card', () => {
   it('applies hover effect when hover prop is true', () => {
     const { container } = render(Card, { props: { hover: true } });
     const card = container.querySelector('div');
-    expect(card?.className).toContain('hover:shadow-lg');
+    expect(card?.className).toContain('hover:border-gray-300');
   });
 
   it('is clickable when clickable prop is true', () => {
     const { container } = render(Card, { props: { clickable: true } });
-    const card = container.querySelector('div');
-    expect(card?.getAttribute('role')).toBe('button');
-    expect(card?.getAttribute('tabindex')).toBe('0');
+    const card = container.querySelector('button');
+    expect(card).toBeTruthy();
     expect(card?.className).toContain('cursor-pointer');
   });
 });

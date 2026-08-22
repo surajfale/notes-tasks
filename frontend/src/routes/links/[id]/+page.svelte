@@ -42,7 +42,7 @@
     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Edit Link</h1>
   </div>
 
-  <div class="bg-white dark:bg-gray-950 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 p-6 sm:p-8">
+  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 sm:p-8">
     {#if $linksStore.isLoading && !link}
       <LoadingOverlay text="Loading link..." />
     {:else if link}

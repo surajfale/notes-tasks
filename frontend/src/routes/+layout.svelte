@@ -151,27 +151,28 @@
       {/if}
       
       <!-- Sidebar -->
-      <aside 
-        class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-surface-light dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0"
+      <aside
+        class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-gray-50/80 dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800/80 transform transition-transform duration-300 ease-in-out {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0"
       >
         <div class="flex flex-col h-full">
-          
-          <!-- App header -->
-          <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-            <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">
-              Notes & Tasks
-            </h1>
-          </div>
-          
-          <!-- User info -->
-          {#if user}
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
+
+          <!-- Workspace header: app identity + user, Notion-style compact switcher -->
+          <div class="p-3 border-b border-gray-200 dark:border-gray-800/80">
+            <div class="flex items-center gap-2 px-2 py-1.5 mb-1">
+              <div class="w-6 h-6 rounded-md bg-primary-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                N
+              </div>
+              <h1 class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                Notes &amp; Tasks
+              </h1>
+            </div>
+            {#if user}
+              <div class="flex items-center gap-2.5 px-2 py-1.5 rounded-md">
+                <div class="w-7 h-7 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
                   {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.username ? user.username.charAt(0).toUpperCase() : '?'}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium truncate">
+                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                     {user.displayName || user.username || 'User'}
                   </p>
                   <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -179,20 +180,20 @@
                   </p>
                 </div>
               </div>
-            </div>
-          {/if}
-          
+            {/if}
+          </div>
+
           <!-- Navigation links -->
-          <nav class="flex-1 overflow-y-auto p-4 space-y-1">
-            
+          <nav class="flex-1 overflow-y-auto p-3 space-y-0.5">
+
             <!-- Home -->
             <a
               href="/"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
               on:click={closeSidebar}
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
               <span>Home</span>
@@ -202,10 +203,10 @@
             <a
               href="/notes"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/notes') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/notes') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
               on:click={closeSidebar}
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span>Notes</span>
@@ -215,10 +216,10 @@
             <a
               href="/tasks"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/tasks') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/tasks') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
               on:click={closeSidebar}
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
               <span>Tasks</span>
@@ -228,10 +229,10 @@
             <a
               href="/links"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/links') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/links') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
               on:click={closeSidebar}
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
               <span>Links</span>
@@ -240,7 +241,7 @@
             <!-- Lists section -->
             {#if Array.isArray(lists) && lists.length > 0}
               <div class="pt-4">
-                <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                <h3 class="px-2.5 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">
                   Lists
                 </h3>
                 {#each lists as list}
@@ -251,7 +252,7 @@
                         goto(`/notes?listId=${list._id}`);
                         closeSidebar();
                       }}
-                      class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-left {$page.url.searchParams.get('listId') === list._id ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+                      class="w-full flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors text-left {$page.url.searchParams.get('listId') === list._id ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
                     >
                       <span 
                         class="w-5 h-5 rounded flex items-center justify-center text-sm flex-shrink-0"
@@ -312,10 +313,10 @@
             <a
               href="/lists"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/lists') && !$page.url.pathname.includes('/lists/') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/lists') && !$page.url.pathname.includes('/lists/') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
               on:click={closeSidebar}
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
               <span>Manage Lists</span>
@@ -325,10 +326,10 @@
             <a
               href="/settings"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors {isActive('/settings') ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium transition-colors {isActive('/settings') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"
               on:click={closeSidebar}
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -338,12 +339,12 @@
           </nav>
           
           <!-- Logout button -->
-          <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="p-3 border-t border-gray-200 dark:border-gray-800/80">
             <button
               on:click={handleLogout}
-              class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 transition-colors"
+              class="w-full flex items-center space-x-3 px-2.5 py-2 rounded-md text-sm font-medium text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/20 transition-colors"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
               <span>Logout</span>
@@ -354,13 +355,13 @@
       </aside>
       
       <!-- Main content area -->
-      <div class="flex-1 flex flex-col overflow-hidden">
-        
+      <div class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
+
         <!-- Mobile header with hamburger -->
-        <header class="md:hidden bg-surface-light dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 p-4">
+        <header class="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-4">
           <button
             on:click={toggleSidebar}
-            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
             aria-label="Toggle sidebar"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -368,14 +369,14 @@
             </svg>
           </button>
         </header>
-        
+
         <!-- Page content -->
         <main class="flex-1 overflow-y-auto">
           <ErrorBoundary>
             <slot />
           </ErrorBoundary>
         </main>
-        
+
       </div>
       
     </div>
