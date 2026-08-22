@@ -133,9 +133,9 @@
     description="{$notesStore.items.length} {$notesStore.items.length === 1 ? 'note' : 'notes'}"
   >
     <svelte:fragment slot="actions">
-      <Button variant="primary" on:click={handleCreateNote} fullWidth={false}>
-        <span class="hidden sm:inline">Create Note</span>
-        <span class="sm:hidden">+ New</span>
+      <!-- Hidden on mobile: the floating create button already covers this there. -->
+      <Button variant="primary" on:click={handleCreateNote} fullWidth={false} class="hidden md:inline-flex">
+        Create Note
       </Button>
     </svelte:fragment>
   </PageHeader>

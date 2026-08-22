@@ -136,9 +136,9 @@
       {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-      <Button variant="primary" on:click={handleCreateTask} fullWidth={false}>
-        <span class="hidden sm:inline">Create Task</span>
-        <span class="sm:hidden">+ New</span>
+      <!-- Hidden on mobile: the floating create button already covers this there. -->
+      <Button variant="primary" on:click={handleCreateTask} fullWidth={false} class="hidden md:inline-flex">
+        Create Task
       </Button>
     </svelte:fragment>
   </PageHeader>

@@ -137,9 +137,9 @@
     description="{$linksStore.items.length} {$linksStore.items.length === 1 ? 'link' : 'links'}"
   >
     <svelte:fragment slot="actions">
-      <Button variant="primary" on:click={handleCreateLink} fullWidth={false}>
-        <span class="hidden sm:inline">Create Link</span>
-        <span class="sm:hidden">+ New</span>
+      <!-- Hidden on mobile: the floating create button already covers this there. -->
+      <Button variant="primary" on:click={handleCreateLink} fullWidth={false} class="hidden md:inline-flex">
+        Create Link
       </Button>
     </svelte:fragment>
   </PageHeader>

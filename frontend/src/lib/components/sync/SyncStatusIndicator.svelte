@@ -31,7 +31,11 @@
 </script>
 
 {#if $pendingCount > 0 || $isSyncing || $syncErrors.length > 0}
-  <div class="fixed bottom-4 right-4 z-40 max-w-md" transition:fade={{ duration: 200 }}>
+  <!-- On mobile, sit above the fixed bottom nav bar + floating create button rather than under them. -->
+  <div
+    class="fixed right-4 z-40 max-w-md bottom-[calc(9rem+env(safe-area-inset-bottom,0px))] md:bottom-4"
+    transition:fade={{ duration: 200 }}
+  >
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
       <!-- Main Status Bar -->
       <button

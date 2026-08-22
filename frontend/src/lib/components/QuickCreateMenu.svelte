@@ -1,8 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { browser } from '$app/environment';
 
   export let onNavigate: (() => void) | undefined = undefined;
+  // 'sidebar': full-width button used in the desktop sidebar.
+  // 'fab': circular floating action button used on mobile.
+  export let variant: 'sidebar' | 'fab' = 'sidebar';
 
   let open = false;
   let menuEl: HTMLDivElement | undefined;
@@ -54,28 +56,52 @@
 <svelte:window on:click={handleWindowClick} on:keydown={handleKeydown} />
 
 <div class="relative">
-  <button
-    bind:this={triggerEl}
-    type="button"
-    on:click={toggle}
-    aria-haspopup="true"
-    aria-expanded={open}
-    class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium
-           bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-150"
-  >
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-    </svg>
-    New
-  </button>
+  {#if variant === 'fab'}
+    <button
+      bind:this={triggerEl}
+      type="button"
+      on:click={toggle}
+      aria-haspopup="true"
+      aria-expanded={open}
+      aria-label="Create new"
+      class="flex items-center justify-center w-14 h-14 rounded-full text-white
+             bg-primary-600 hover:bg-primary-700 active:scale-95 shadow-lg shadow-primary-600/30
+             transition-all duration-150"
+    >
+      <svg
+        class="w-6 h-6 transition-transform duration-200 {open ? 'rotate-45' : ''}"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+    </button>
+  {:else}
+    <button
+      bind:this={triggerEl}
+      type="button"
+      on:click={toggle}
+      aria-haspopup="true"
+      aria-expanded={open}
+      class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium
+             bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-150"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      New
+    </button>
+  {/if}
 
   {#if open}
     <div
       bind:this={menuEl}
       role="menu"
-      class="absolute left-0 right-0 sm:right-auto sm:w-56 mt-1.5 z-40
+      class="absolute z-40 w-56
              bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-lg
-             py-1"
+             py-1
+             {variant === 'fab' ? 'bottom-16 right-0' : 'left-0 right-0 sm:right-auto mt-1.5'}"
     >
       {#each items as item}
         <button
