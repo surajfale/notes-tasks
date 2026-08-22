@@ -13,6 +13,11 @@
   let selectedListId = '';
   let completionFilter: 'all' | 'active' | 'completed' = 'all';
   let selectedPriority: TaskPriority | '' = '';
+  let showFilters = false;
+
+  // Quick-add: create a task from just a title without leaving the list
+  let quickAddTitle = '';
+  let isQuickAdding = false;
 
   // Read listId from URL parameters
   $: {
@@ -75,6 +80,25 @@
     goto('/tasks/new');
   }
 
+  async function handleQuickAdd() {
+    const title = quickAddTitle.trim();
+    if (!title || isQuickAdding) return;
+
+    isQuickAdding = true;
+    try {
+      await tasksStore.create({
+        title,
+        description: '',
+        listId: selectedListId || undefined
+      });
+      quickAddTitle = '';
+    } catch (error) {
+      console.error('Failed to quick-add task:', error);
+    } finally {
+      isQuickAdding = false;
+    }
+  }
+
   // Clear filters
   function clearAllFilters() {
     selectedListId = '';
@@ -84,6 +108,7 @@
   }
 
   $: hasActiveFilters = selectedListId || completionFilter !== 'all' || selectedPriority;
+  $: activeFilterCount = (selectedListId ? 1 : 0) + (completionFilter !== 'all' ? 1 : 0) + (selectedPriority ? 1 : 0);
 
   // Group tasks by priority (optional feature)
   $: tasksByPriority = {
@@ -118,7 +143,42 @@
     </svelte:fragment>
   </PageHeader>
 
-  <!-- Filters -->
+  <!-- Quick add + filters toggle -->
+  <div class="flex gap-3 mb-4">
+    <form on:submit|preventDefault={handleQuickAdd} class="flex-1 flex gap-2">
+      <input
+        type="text"
+        bind:value={quickAddTitle}
+        placeholder="Quick add a task and press Enter…"
+        disabled={isQuickAdding}
+        class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-gray-200 dark:border-gray-800
+               bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500
+               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+               disabled:opacity-50"
+      />
+    </form>
+    <button
+      type="button"
+      on:click={() => (showFilters = !showFilters)}
+      aria-expanded={showFilters}
+      class="flex items-center gap-2 px-4 min-h-[44px] rounded-lg border text-sm font-medium transition-colors flex-shrink-0
+             {showFilters || activeFilterCount > 0
+               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+               : 'border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      <span class="hidden sm:inline">Filters</span>
+      {#if activeFilterCount > 0}
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-primary-600 text-white text-xs font-semibold">
+          {activeFilterCount}
+        </span>
+      {/if}
+    </button>
+  </div>
+
+  {#if showFilters}
   <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
       <!-- Filter controls row -->
@@ -196,6 +256,7 @@
       </div>
     </div>
   </div>
+  {/if}
 
   <!-- Error state -->
   {#if $tasksStore.error}
@@ -230,9 +291,10 @@
     </EmptyState>
   {:else}
     <!-- Tasks list -->
-    <TaskList 
-      tasks={Array.isArray($tasksStore.items) ? $tasksStore.items : []} 
+    <TaskList
+      tasks={Array.isArray($tasksStore.items) ? $tasksStore.items : []}
       emptyMessage={hasActiveFilters ? 'No tasks match your filters' : 'No tasks found'}
+      splitCompleted={completionFilter === 'all'}
     />
   {/if}
 </div>

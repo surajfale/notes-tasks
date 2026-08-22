@@ -5,6 +5,11 @@
   export let tasks: Task[];
   export let emptyMessage = 'No tasks found';
   export let groupByPriority = false;
+  // When true, completed tasks are moved into a collapsed section below the
+  // active ones instead of being interleaved with them.
+  export let splitCompleted = false;
+
+  let completedExpanded = false;
 
   // Group tasks by priority if enabled
   $: groupedTasks = groupByPriority
@@ -14,6 +19,9 @@
         1: (Array.isArray(tasks) ? tasks : []).filter(t => t.priority === 1)
       } as Record<number, Task[]>
     : null;
+
+  $: activeTasks = splitCompleted ? (Array.isArray(tasks) ? tasks : []).filter(t => !t.isCompleted) : [];
+  $: completedTasks = splitCompleted ? (Array.isArray(tasks) ? tasks : []).filter(t => t.isCompleted) : [];
 
   const priorityLabels: Record<number, string> = {
     3: 'High Priority',
@@ -61,6 +69,42 @@
       {/if}
     {/each}
   </div>
+{:else if splitCompleted}
+  <!-- Active tasks first, completed ones tucked into a collapsed section -->
+  <div class="space-y-4">
+    {#each activeTasks as task (task._id)}
+      <TaskCard {task} />
+    {/each}
+  </div>
+
+  {#if completedTasks.length > 0}
+    <div class="mt-6">
+      <button
+        type="button"
+        on:click={() => (completedExpanded = !completedExpanded)}
+        aria-expanded={completedExpanded}
+        class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+      >
+        <svg
+          class="w-4 h-4 transition-transform {completedExpanded ? 'rotate-90' : ''}"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        Completed ({completedTasks.length})
+      </button>
+
+      {#if completedExpanded}
+        <div class="space-y-4 mt-3">
+          {#each completedTasks as task (task._id)}
+            <TaskCard {task} />
+          {/each}
+        </div>
+      {/if}
+    </div>
+  {/if}
 {:else}
   <!-- Simple list -->
   <div class="space-y-4">

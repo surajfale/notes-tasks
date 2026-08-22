@@ -17,6 +17,10 @@
   let selectedTags: string[] = [];
   let searchQuery = '';
   let searchDebounceTimer: ReturnType<typeof setTimeout>;
+  let showFilters = false;
+
+  // Count of active filters beyond search, shown as a badge on the Filters toggle
+  $: activeFilterCount = (selectedListId ? 1 : 0) + (showArchived ? 1 : 0) + selectedTags.length;
 
   // Read listId from URL parameters
   $: {
@@ -140,19 +144,40 @@
     </svelte:fragment>
   </PageHeader>
 
-  <!-- Filters -->
+  <!-- Search + filters toggle -->
+  <div class="flex gap-3 mb-4">
+    <div class="flex-1">
+      <Input
+        type="search"
+        placeholder="Search links..."
+        bind:value={searchQuery}
+        on:input={handleSearchInput}
+      />
+    </div>
+    <button
+      type="button"
+      on:click={() => (showFilters = !showFilters)}
+      aria-expanded={showFilters}
+      class="flex items-center gap-2 px-4 min-h-[44px] rounded-lg border text-sm font-medium transition-colors flex-shrink-0
+             {showFilters || activeFilterCount > 0
+               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+               : 'border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      <span class="hidden sm:inline">Filters</span>
+      {#if activeFilterCount > 0}
+        <span class="flex items-center justify-center w-5 h-5 rounded-full bg-primary-600 text-white text-xs font-semibold">
+          {activeFilterCount}
+        </span>
+      {/if}
+    </button>
+  </div>
+
+  {#if showFilters}
   <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 mb-6 sm:mb-8">
     <div class="flex flex-col gap-4">
-      <!-- Search -->
-      <div class="w-full">
-        <Input
-          type="search"
-          placeholder="Search links..."
-          bind:value={searchQuery}
-          on:input={handleSearchInput}
-        />
-      </div>
-
       <!-- Filter controls row -->
       <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-stretch sm:items-center">
         <!-- List filter -->
@@ -235,6 +260,7 @@
       {/if}
     </div>
   </div>
+  {/if}
 
   <!-- Error state -->
   {#if $linksStore.error}

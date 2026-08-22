@@ -11,6 +11,7 @@
   import SyncStatusIndicator from '$lib/components/sync/SyncStatusIndicator.svelte';
   import ThemeColorManager from '$lib/components/ThemeColorManager.svelte';
   import { ErrorBoundary, DisclaimerBanner } from '$lib/components/ui';
+  import QuickCreateMenu from '$lib/components/QuickCreateMenu.svelte';
   
   // Reactive state
   let sidebarOpen = false;
@@ -181,6 +182,11 @@
                 </div>
               </div>
             {/if}
+          </div>
+
+          <!-- Quick create: one click to start a note/task/link from anywhere -->
+          <div class="px-3 pt-3">
+            <QuickCreateMenu onNavigate={closeSidebar} />
           </div>
 
           <!-- Navigation links -->
@@ -357,8 +363,8 @@
       <!-- Main content area -->
       <div class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
 
-        <!-- Mobile header with hamburger -->
-        <header class="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-4">
+        <!-- Mobile header with hamburger + quick create -->
+        <header class="md:hidden flex items-center justify-between gap-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-4">
           <button
             on:click={toggleSidebar}
             class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -368,6 +374,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
+          <div class="w-32">
+            <QuickCreateMenu />
+          </div>
         </header>
 
         <!-- Page content -->
