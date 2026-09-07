@@ -38,6 +38,9 @@ Tests are colocated with source (`Foo.svelte` + `Foo.test.ts` in the same direct
 ### Full local dev
 `.\start-dev.ps1` (Windows) starts both servers. Otherwise run `npm run dev` in both `backend/` and `frontend/` in separate shells. Verify the backend with `curl http://localhost:3000/health`.
 
+### Codebase graph
+`docs/CODEBASE_GRAPH.md` is a generated map of internal module dependencies (layer-to-layer Mermaid graph + highest-fan-in files per app). Regenerate it after a structural refactor with `node .claude/skills/graphify/scripts/generate-graph.js` (see the `graphify` skill) — it's not auto-updated.
+
 ## Architecture
 
 ### User data isolation (the one rule that matters most)
