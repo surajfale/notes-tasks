@@ -140,9 +140,13 @@
         aria-label={task.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
       >
         {#if task.isCompleted}
-          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-          </svg>
+          {#if persona === 'terminal'}
+            <span class="text-white font-mono text-xs leading-none" aria-hidden="true">×</span>
+          {:else}
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
+          {/if}
         {/if}
       </button>
       {#if showCelebration}

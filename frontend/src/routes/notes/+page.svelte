@@ -8,8 +8,14 @@
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Tag from '$lib/components/ui/Tag.svelte';
+  import ViewLayoutToggle from '$lib/components/ui/ViewLayoutToggle.svelte';
   import { LoadingOverlay, ErrorMessage, PageHeader, EmptyState } from '$lib/components/ui';
+  import { personaStore } from '$lib/stores/persona';
+  import { getStoredLayout, setStoredLayout, type ViewLayout } from '$lib/utils/viewLayout';
   import type { NoteFilters } from '$lib/types/note';
+  import type { UiPersona } from '$lib/types/user';
+
+  const LAYOUT_STORAGE_KEY = 'notes-view-layout';
 
   // Filter state
   let selectedListId = '';
@@ -18,6 +24,23 @@
   let searchQuery = '';
   let searchDebounceTimer: ReturnType<typeof setTimeout>;
   let showFilters = false;
+
+  // View layout: defaults from the active persona (vivid -> grid, everyone
+  // else -> dense list), overridable by hand and remembered per-browser.
+  let persona: UiPersona = 'focus';
+  personaStore.subscribe((value) => {
+    persona = value;
+  });
+  let manualLayout: ViewLayout | null = null;
+  let defaultLayout: ViewLayout;
+  $: defaultLayout = persona === 'vivid' ? 'grid' : 'list';
+  let layout: ViewLayout;
+  $: layout = manualLayout ?? defaultLayout;
+
+  function handleLayoutChange(value: ViewLayout) {
+    manualLayout = value;
+    setStoredLayout(LAYOUT_STORAGE_KEY, value);
+  }
 
   // Count of active filters beyond search, shown as a badge on the Filters toggle
   $: activeFilterCount = (selectedListId ? 1 : 0) + (showArchived ? 1 : 0) + selectedTags.length;
@@ -40,6 +63,7 @@
 
   // Load notes and lists on mount
   onMount(async () => {
+    manualLayout = getStoredLayout(LAYOUT_STORAGE_KEY);
     try {
       await Promise.all([
         listsStore.loadAll(),
@@ -150,6 +174,7 @@
         on:input={handleSearchInput}
       />
     </div>
+    <ViewLayoutToggle {layout} onChange={handleLayoutChange} />
     <button
       type="button"
       on:click={() => (showFilters = !showFilters)}
@@ -290,8 +315,8 @@
       {/if}
     </EmptyState>
   {:else}
-    <!-- Notes grid - single column on mobile, 2 on tablet, 3 on desktop -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+    <!-- Grid: single column on mobile, 2 on tablet, 3 on desktop. List: dense stack. -->
+    <div class={layout === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6' : 'flex flex-col gap-3'}>
       {#each Array.isArray($notesStore.items) ? $notesStore.items : [] as note (note._id)}
         <NoteCard {note} />
       {/each}
