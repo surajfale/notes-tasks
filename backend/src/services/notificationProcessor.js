@@ -4,6 +4,7 @@ const emailTemplateService = require('./emailTemplateService');
 const NotificationLog = require('../models/NotificationLog');
 const NotificationPreference = require('../models/NotificationPreference');
 const List = require('../models/List');
+const personaCopy = require('./personaCopy');
 const logger = require('../utils/logger');
 
 /**
@@ -239,7 +240,7 @@ async function processNotification(notification) {
         );
 
         if (!alreadySentPush) {
-          const pushPayload = createPushPayload(task, list, notificationType);
+          const pushPayload = createPushPayload(task, list, notificationType, user);
 
           const pushData = {
             userId: userId.toString(),
@@ -357,17 +358,11 @@ async function processNotification(notification) {
  * @param {Object} task - Task object
  * @param {Object|null} list - List object
  * @param {string} notificationType - Type of notification
+ * @param {Object} [user] - User object (used for persona-aware copy)
  * @returns {Object} Push notification payload
  */
-function createPushPayload(task, list, notificationType) {
-  const typeMessages = {
-    same_day: 'Due Today',
-    '1_day_before': 'Due Tomorrow',
-    '2_days_before': 'Due in 2 Days',
-    overdue: 'Overdue'
-  };
-
-  const title = typeMessages[notificationType] || 'Task Reminder';
+function createPushPayload(task, list, notificationType, user) {
+  const title = personaCopy.pushTitle(user?.uiPersona, notificationType);
   const listName = list ? ` [${list.name}]` : '';
   const body = `${task.title}${listName}`;
 
@@ -615,7 +610,7 @@ async function processOverdueNotifications(currentDate = new Date()) {
 
     for (const userId of userIds) {
       // Check if user has notifications enabled
-      const userPreference = await NotificationPreference.findOne({ userId }).populate('userId', 'email displayName');
+      const userPreference = await NotificationPreference.findOne({ userId }).populate('userId', 'email displayName uiPersona');
       
       if (!userPreference || !userPreference.emailNotificationsEnabled) {
         continue;

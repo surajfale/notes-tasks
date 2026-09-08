@@ -5,6 +5,7 @@
   import { goto, beforeNavigate } from '$app/navigation';
   import { authStore, isAuthenticated, currentUser } from '$lib/stores/auth';
   import { themeStore } from '$lib/stores/theme';
+  import { personaStore } from '$lib/stores/persona';
   import { listsStore } from '$lib/stores/lists';
   import { isPublicRoute, isAuthOnlyRoute } from '../hooks.client';
   import OfflineIndicator from '$lib/components/sync/OfflineIndicator.svelte';
@@ -13,7 +14,10 @@
   import { ErrorBoundary, DisclaimerBanner } from '$lib/components/ui';
   import QuickCreateMenu from '$lib/components/QuickCreateMenu.svelte';
   import MobileBottomNav from '$lib/components/MobileBottomNav.svelte';
-  
+  import PersonaOnboarding from '$lib/components/PersonaOnboarding.svelte';
+  import FocusShortcutHint from '$lib/components/FocusShortcutHint.svelte';
+  import CommandPalette from '$lib/components/CommandPalette.svelte';
+
   // Reactive state
   let sidebarOpen = false;
   let isMobile = false;
@@ -24,6 +28,16 @@
   $: authenticated = $isAuthenticated;
   $: theme = $themeStore;
   $: lists = Array.isArray($listsStore.items) ? $listsStore.items : [];
+  $: persona = $personaStore;
+  let commandPaletteOpen = false;
+
+  // Keep the persona store (and the data-persona attribute it drives) in
+  // sync with whichever account is currently logged in.
+  $: personaStore.syncFromUser(user?.uiPersona);
+
+  // First-time users (or anyone who hasn't been through it yet) pick a
+  // persona before using the rest of the app.
+  $: needsPersonaOnboarding = authenticated && user != null && user.personaOnboarded === false;
   
   // Check if current route is active
   function isActive(path: string): boolean {
@@ -59,6 +73,45 @@
     isMobile = window.innerWidth < 768;
     if (!isMobile) {
       sidebarOpen = true; // Always open on desktop
+    }
+  }
+
+  // Focus persona: n/t/"/" shortcuts for new note, new task, and jumping to
+  // the page's search field. Gated to the focus persona so the other
+  // personas don't get shortcuts they were never told about.
+  function handleGlobalKeydown(e: KeyboardEvent) {
+    if (!authenticated || isCurrentPagePublic) return;
+
+    // Terminal persona: Cmd/Ctrl+K toggles the command palette.
+    if (persona === 'terminal' && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      commandPaletteOpen = !commandPaletteOpen;
+      return;
+    }
+
+    if (persona !== 'focus') return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    const target = e.target as HTMLElement | null;
+    const tag = target?.tagName;
+    const isEditableTarget =
+      tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable;
+    if (isEditableTarget) return;
+
+    if (e.key === 'n') {
+      e.preventDefault();
+      goto('/notes/new');
+    } else if (e.key === 't') {
+      e.preventDefault();
+      goto('/tasks/new');
+    } else if (e.key === '/') {
+      const search = document.querySelector<HTMLInputElement>(
+        'input[type="search"], input[placeholder*="Search" i]'
+      );
+      if (search) {
+        e.preventDefault();
+        search.focus();
+      }
     }
   }
   
@@ -108,9 +161,11 @@
   onMount(() => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+    window.addEventListener('keydown', handleGlobalKeydown);
+
     return () => {
       window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('keydown', handleGlobalKeydown);
     };
   });
   
@@ -120,7 +175,7 @@
 </script>
 
 <!-- Main app container with theme classes -->
-<div class="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100 paper-grain">
+<div class="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
   
   <!-- Theme Color Manager (updates meta theme-color dynamically) -->
   <ThemeColorManager />
@@ -135,7 +190,15 @@
   {#if authenticated && !isCurrentPagePublic}
     <SyncStatusIndicator />
   {/if}
-  
+
+  {#if needsPersonaOnboarding && !isCurrentPagePublic}
+    <PersonaOnboarding />
+  {/if}
+
+  {#if persona === 'terminal' && authenticated && !isCurrentPagePublic}
+    <CommandPalette bind:open={commandPaletteOpen} />
+  {/if}
+
   {#if authenticated && !isCurrentPagePublic}
     <!-- Authenticated layout with sidebar -->
     <div class="flex h-screen overflow-hidden">
@@ -383,6 +446,23 @@
 
       <!-- Mobile: bottom tab bar (Home/Notes/Tasks/Links + More, which opens the sidebar as a drawer) -->
       <MobileBottomNav {isActive} onMore={toggleSidebar} moreOpen={isMobile && sidebarOpen} />
+
+      {#if persona === 'focus'}
+        <FocusShortcutHint />
+      {/if}
+
+      {#if persona === 'terminal'}
+        <button
+          type="button"
+          on:click={() => (commandPaletteOpen = true)}
+          class="hidden md:flex items-center gap-1.5 fixed bottom-4 left-4 z-20 px-3 py-2 rounded
+                 bg-stone-900 dark:bg-stone-950 border border-stone-700 text-stone-300 text-xs font-mono
+                 hover:border-stone-500 transition-colors"
+        >
+          <kbd class="px-1 py-0.5 rounded border border-stone-600 text-[10px]">⌘K</kbd>
+          commands
+        </button>
+      {/if}
 
     </div>
 

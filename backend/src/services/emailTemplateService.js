@@ -3,6 +3,7 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const logger = require('../utils/logger');
 const { generateDeepLinkToken } = require('../middleware/deepLinkAuth');
+const personaCopy = require('./personaCopy');
 
 class EmailTemplateService {
   constructor() {
@@ -201,8 +202,10 @@ class EmailTemplateService {
       const supportLink = `mailto:${this.supportEmail}`;
       
       // Prepare template data
+      const userName = user.displayName || user.name || 'there';
+      const persona = user.uiPersona;
       const templateData = {
-        userName: user.displayName || user.name || 'there',
+        userName,
         taskTitle: task.title,
         taskDescription: task.description || '',
         dueDate: formattedDueDate,
@@ -211,17 +214,20 @@ class EmailTemplateService {
         listName: list ? list.name : '',
         taskLink,
         unsubscribeLink,
-        supportLink
+        supportLink,
+        greeting: personaCopy.emailGreeting(persona, userName),
+        introText: personaCopy.emailIntro(persona),
+        closingText: personaCopy.emailClosing(persona)
       };
-      
+
       // Render HTML content
       const htmlContent = this.renderTemplate(template, templateData);
-      
+
       // Generate plain text version
-      const textContent = this.generatePlainTextVersion(templateData);
-      
+      const textContent = this.generatePlainTextVersion({ ...templateData, persona });
+
       // Generate subject line
-      const subject = this.generateSubjectLine(task, notificationType);
+      const subject = personaCopy.emailSubject(persona, task, notificationType);
       
       logger.debug('Generated task notification email', {
         userId: user._id,
@@ -242,53 +248,34 @@ class EmailTemplateService {
   }
 
   /**
-   * Generate subject line for task notification
-   * @param {Object} task - Task object
-   * @param {string} notificationType - Type of notification
-   * @returns {string} Email subject
-   * @private
-   */
-  generateSubjectLine(task, notificationType) {
-    const typeMap = {
-      'same_day': '📋 Task Due Today',
-      '1_day_before': '📋 Task Due Tomorrow',
-      '2_days_before': '📋 Task Due in 2 Days',
-      'overdue': '⚠️ Overdue Task'
-    };
-    
-    const prefix = typeMap[notificationType] || '📋 Task Reminder';
-    return `${prefix}: ${task.title}`;
-  }
-
-  /**
    * Generate plain text version of email
    * @param {Object} data - Template data
    * @returns {string} Plain text email content
    * @private
    */
   generatePlainTextVersion(data) {
-    let text = `Hello ${data.userName},\n\n`;
-    text += `This is a friendly reminder about your upcoming task:\n\n`;
+    let text = `${data.greeting || `Hello ${data.userName},`}\n\n`;
+    text += `${personaCopy.plainTextIntro(data.persona)}\n\n`;
     text += `Task: ${data.taskTitle}\n`;
-    
+
     if (data.taskDescription) {
       text += `Description: ${data.taskDescription}\n`;
     }
-    
+
     text += `Due Date: ${data.dueDate}\n`;
     text += `Priority: ${data.priority}\n`;
-    
+
     if (data.listName) {
       text += `List: ${data.listName}\n`;
     }
-    
+
     text += `\nView Task: ${data.taskLink}\n\n`;
-    text += `Stay organized and productive!\n\n`;
+    text += `${personaCopy.plainTextSignoff(data.persona)}\n\n`;
     text += `---\n`;
     text += `Task Management System\n`;
     text += `Need help? Contact support: ${data.supportLink}\n\n`;
     text += `Don't want to receive these notifications? Update your preferences: ${data.unsubscribeLink}`;
-    
+
     return text;
   }
 

@@ -144,6 +144,10 @@ const schemas = {
     tone: Joi.string().valid('concise', 'detailed', 'professional', 'casual').optional().default('casual'),
   }),
 
+  updatePersona: Joi.object({
+    uiPersona: Joi.string().valid('focus', 'vivid', 'terminal').required(),
+  }),
+
   updateNotificationPreferences: Joi.object({
     emailNotificationsEnabled: Joi.boolean().optional(),
     notificationDays: Joi.array()

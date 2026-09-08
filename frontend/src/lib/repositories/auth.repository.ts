@@ -7,6 +7,7 @@ import type {
   LoginCredentials,
   RegisterData,
   User,
+  UiPersona,
   ChangePasswordData,
   ForgotPasswordData,
   ResetPasswordData
@@ -48,6 +49,16 @@ export const authRepository = {
    */
   async getCurrentUser(): Promise<User> {
     return apiClient.get<User>(API_ENDPOINTS.AUTH.ME);
+  },
+
+  /**
+   * Update the user's UI persona (visual/behavioral style) and mark
+   * persona onboarding as complete.
+   * @param uiPersona - The persona to switch to
+   * @returns Promise resolving to the updated user
+   */
+  async updatePersona(uiPersona: UiPersona): Promise<{ user: User }> {
+    return apiClient.put<{ user: User }>(API_ENDPOINTS.AUTH.PERSONA, { uiPersona });
   },
 
   /**

@@ -85,6 +85,8 @@ const register = async (req, res, next) => {
         username: user.username,
         email: user.email,
         displayName: user.displayName,
+        uiPersona: user.uiPersona,
+        personaOnboarded: user.personaOnboarded,
         createdAt: user.createdAt,
       },
     });
@@ -134,6 +136,8 @@ const login = async (req, res, next) => {
         username: user.username,
         email: user.email,
         displayName: user.displayName,
+        uiPersona: user.uiPersona,
+        personaOnboarded: user.personaOnboarded,
         createdAt: user.createdAt,
       },
     });
@@ -153,7 +157,38 @@ const getMe = async (req, res, next) => {
         username: req.user.username,
         email: req.user.email,
         displayName: req.user.displayName,
+        uiPersona: req.user.uiPersona,
+        personaOnboarded: req.user.personaOnboarded,
         createdAt: req.user.createdAt,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update UI persona (visual/behavioral style) and mark onboarding done
+// @route   PUT /api/auth/persona
+// @access  Private
+const updatePersona = async (req, res, next) => {
+  try {
+    const { uiPersona } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { uiPersona, personaOnboarded: true },
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        displayName: user.displayName,
+        uiPersona: user.uiPersona,
+        personaOnboarded: user.personaOnboarded,
+        createdAt: user.createdAt,
       },
     });
   } catch (error) {
@@ -306,6 +341,7 @@ module.exports = {
   register,
   login,
   getMe,
+  updatePersona,
   changePassword,
   deleteAccount,
   forgotPassword,

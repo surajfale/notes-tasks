@@ -1,10 +1,14 @@
 // User type definitions
 
+export type UiPersona = 'focus' | 'vivid' | 'terminal';
+
 export interface User {
   _id: string;
   username: string;
   email: string;
   displayName: string;
+  uiPersona?: UiPersona;
+  personaOnboarded?: boolean;
   createdAt: string;
   updatedAt: string;
 }

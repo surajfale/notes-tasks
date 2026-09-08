@@ -13,26 +13,189 @@ body {
 	padding: 0;
 }
 
-/* Subtle paper-grain texture layered over the stone background. Kept to a
-   near-invisible opacity so it reads as paper fiber, not visual noise, and
-   never interferes with text contrast. Dark mode gets a lighter-value grain
-   so it still shows on the near-black paper tone. */
-.paper-grain {
-	position: relative;
+/* ==========================================================================
+   Persona tokens
+   ==========================================================================
+   Three selectable personas (stores/persona.ts), applied via a
+   `data-persona` attribute on <html>. Each persona swaps the neutral
+   (`stone-*`) palette and font families via CSS custom properties consumed
+   by tailwind.config.js, then re-skins Tailwind's own radius/shadow/heading
+   utility classes with attribute-scoped overrides below — this reaches the
+   whole existing component library without editing every component file,
+   since those utilities (rounded-lg, shadow, font-serif, ...) are already
+   used consistently throughout. Accent color and light/dark mode (theme.ts)
+   are a separate, independent axis layered on top of whichever persona is
+   active.
+
+   - focus:    minimal/neutral SaaS — restrained, dense, hairline borders.
+   - vivid:    bold & colorful — rounded, playful, shadows tinted by accent.
+   - terminal: dark/techy — sharp corners, monospace, glow instead of blur.
+   ========================================================================== */
+
+:root {
+	/* Default (and "focus" persona) neutral scale — cool, restrained gray. */
+	--stone-50: 247 247 248;
+	--stone-100: 238 238 240;
+	--stone-200: 220 220 224;
+	--stone-300: 185 185 192;
+	--stone-400: 143 143 153;
+	--stone-500: 107 107 118;
+	--stone-600: 82 82 92;
+	--stone-700: 63 63 71;
+	--stone-800: 39 39 46;
+	--stone-900: 24 24 28;
+	--stone-950: 14 14 17;
+
+	--font-sans: 'Public Sans';
+	--font-mono: 'IBM Plex Mono';
 }
 
-.paper-grain::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	opacity: 0.035;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+[data-persona='vivid'] {
+	/* Warm, violet-tinted neutral — never fully desaturated. */
+	--stone-50: 248 246 255;
+	--stone-100: 240 236 253;
+	--stone-200: 221 213 247;
+	--stone-300: 190 176 236;
+	--stone-400: 149 133 214;
+	--stone-500: 117 102 187;
+	--stone-600: 92 79 156;
+	--stone-700: 71 61 121;
+	--stone-800: 46 39 80;
+	--stone-900: 28 23 51;
+	--stone-950: 16 13 31;
+
+	--font-sans: 'Nunito Sans';
+	--font-mono: 'IBM Plex Mono';
 }
 
-.dark .paper-grain::before {
-	opacity: 0.06;
+[data-persona='terminal'] {
+	/* Navy-tinted neutral — pale enough to stay usable in light mode, dark
+	   enough at the top of the scale to read as a "terminal" in dark mode. */
+	--stone-50: 243 245 248;
+	--stone-100: 230 234 240;
+	--stone-200: 204 211 224;
+	--stone-300: 163 174 198;
+	--stone-400: 118 131 161;
+	--stone-500: 87 96 128;
+	--stone-600: 67 74 99;
+	--stone-700: 47 52 70;
+	--stone-800: 28 31 44;
+	--stone-900: 18 20 29;
+	--stone-950: 11 14 20;
+
+	--font-sans: 'IBM Plex Sans';
+	--font-mono: 'JetBrains Mono';
+}
+
+/* Headings reuse the app's existing `font-serif` utility class (PageHeader,
+   card titles, auth screens, ...) — repurposed per persona instead of
+   introducing a second heading utility that would need per-component edits. */
+[data-persona='focus'] .font-serif {
+	font-family: var(--font-sans), sans-serif;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+[data-persona='vivid'] .font-serif {
+	font-family: 'Baloo 2', var(--font-sans), sans-serif;
+	font-weight: 700;
+}
+
+[data-persona='terminal'] .font-serif {
+	font-family: var(--font-mono), monospace;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* Radius: restrained (focus) -> rounded/playful (vivid) -> sharp (terminal).
+   rounded-full is intentionally left alone everywhere (avatars, dots, pills
+   that are meant to be circular regardless of persona). */
+[data-persona='focus'] .rounded {
+	border-radius: 4px;
+}
+[data-persona='focus'] .rounded-md {
+	border-radius: 6px;
+}
+[data-persona='focus'] .rounded-lg {
+	border-radius: 8px;
+}
+[data-persona='focus'] .rounded-xl {
+	border-radius: 10px;
+}
+[data-persona='focus'] .rounded-2xl {
+	border-radius: 12px;
+}
+[data-persona='focus'] .rounded-t {
+	border-radius: 6px 6px 0 0;
+}
+[data-persona='focus'] .rounded-b {
+	border-radius: 0 0 6px 6px;
+}
+
+[data-persona='vivid'] .rounded {
+	border-radius: 12px;
+}
+[data-persona='vivid'] .rounded-md {
+	border-radius: 16px;
+}
+[data-persona='vivid'] .rounded-lg {
+	border-radius: 20px;
+}
+[data-persona='vivid'] .rounded-xl {
+	border-radius: 24px;
+}
+[data-persona='vivid'] .rounded-2xl {
+	border-radius: 28px;
+}
+[data-persona='vivid'] .rounded-t {
+	border-radius: 16px 16px 0 0;
+}
+[data-persona='vivid'] .rounded-b {
+	border-radius: 0 0 16px 16px;
+}
+
+[data-persona='terminal'] .rounded,
+[data-persona='terminal'] .rounded-md,
+[data-persona='terminal'] .rounded-lg,
+[data-persona='terminal'] .rounded-xl,
+[data-persona='terminal'] .rounded-2xl {
+	border-radius: 3px;
+}
+[data-persona='terminal'] .rounded-t {
+	border-radius: 3px 3px 0 0;
+}
+[data-persona='terminal'] .rounded-b {
+	border-radius: 0 0 3px 3px;
+}
+
+/* Shadow: each persona commits to one elevation language rather than
+   Tailwind's default gradation, applied uniformly across the shadow-*
+   scale used in this codebase. */
+[data-persona='focus'] .shadow,
+[data-persona='focus'] .shadow-sm,
+[data-persona='focus'] .shadow-md,
+[data-persona='focus'] .shadow-lg,
+[data-persona='focus'] .shadow-xl,
+[data-persona='focus'] .shadow-2xl {
+	box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 1px rgb(0 0 0 / 0.04);
+}
+
+[data-persona='vivid'] .shadow,
+[data-persona='vivid'] .shadow-sm,
+[data-persona='vivid'] .shadow-md,
+[data-persona='vivid'] .shadow-lg,
+[data-persona='vivid'] .shadow-xl,
+[data-persona='vivid'] .shadow-2xl {
+	box-shadow: 0 14px 30px -18px rgb(var(--primary-500, 117 102 187) / 0.45);
+}
+
+[data-persona='terminal'] .shadow,
+[data-persona='terminal'] .shadow-sm,
+[data-persona='terminal'] .shadow-md,
+[data-persona='terminal'] .shadow-lg,
+[data-persona='terminal'] .shadow-xl,
+[data-persona='terminal'] .shadow-2xl {
+	box-shadow: 0 0 0 1px rgb(var(--primary-500, 87 96 128) / 0.3);
 }
 
 * {
