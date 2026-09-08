@@ -29,6 +29,21 @@ const userSchema = new mongoose.Schema(
       trim: true,
       maxlength: [50, 'Display name cannot exceed 50 characters'],
     },
+    // Visual/behavioral persona: drives Tailwind token overrides on the frontend
+    // (neutral palette, fonts, radius/shadow) plus persona-specific UI features
+    // (Focus: shortcuts strip, Vivid: completion celebration, Terminal: command palette)
+    // and notification copy tone. See frontend stores/persona.ts.
+    uiPersona: {
+      type: String,
+      enum: ['focus', 'vivid', 'terminal'],
+      default: 'focus',
+    },
+    // True once the user has been through (or explicitly skipped) the persona
+    // onboarding step, so it isn't shown again on every login.
+    personaOnboarded: {
+      type: Boolean,
+      default: false,
+    },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
   },

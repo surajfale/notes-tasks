@@ -6,18 +6,27 @@
   import { tasksStore } from '$lib/stores/tasks';
   import { listsStore } from '$lib/stores/lists';
   import { isTaskPending } from '$lib/stores/syncStatus';
+  import { personaStore } from '$lib/stores/persona';
   import { formatDueDate, isPastDate } from '$lib/utils/date';
   import { getTagColor } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types/task';
+  import type { UiPersona } from '$lib/types/user';
 
   export let task: Task;
-  
+
   // Check if this task has pending changes
   $: hasPendingChanges = isTaskPending(task._id);
 
   let isDeleting = false;
   let showDeleteConfirm = false;
   let isTogglingComplete = false;
+
+  // Vivid persona: small confetti burst when a task is marked complete.
+  let persona: UiPersona = 'focus';
+  personaStore.subscribe((value) => {
+    persona = value;
+  });
+  let showCelebration = false;
 
   // Get list info if task has a listId
   $: list = task.listId 
@@ -63,10 +72,17 @@
   async function handleToggleComplete(e: Event) {
     e.stopPropagation();
     if (isTogglingComplete) return;
-    
+
+    const willComplete = !task.isCompleted;
     isTogglingComplete = true;
     try {
-      await tasksStore.toggleComplete(task._id, !task.isCompleted);
+      await tasksStore.toggleComplete(task._id, willComplete);
+      if (willComplete && persona === 'vivid') {
+        showCelebration = true;
+        setTimeout(() => {
+          showCelebration = false;
+        }, 650);
+      }
     } catch (error) {
       console.error('Failed to toggle completion:', error);
     } finally {
@@ -113,22 +129,33 @@
   <div class="p-4 sm:p-6">
     <div class="flex gap-4">
     <!-- Completion checkbox -->
-    <div class="flex-shrink-0 pt-1">
+    <div class="flex-shrink-0 pt-1 relative">
       <button
         on:click={handleToggleComplete}
         disabled={isTogglingComplete}
         class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all
-               {task.isCompleted 
-                 ? 'bg-primary-600 border-primary-600' 
+               {task.isCompleted
+                 ? 'bg-primary-600 border-primary-600'
                  : 'border-stone-300 dark:border-stone-600 hover:border-primary-500'}"
         aria-label={task.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
       >
         {#if task.isCompleted}
-          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-          </svg>
+          {#if persona === 'terminal'}
+            <span class="text-white font-mono text-xs leading-none" aria-hidden="true">×</span>
+          {:else}
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
+          {/if}
         {/if}
       </button>
+      {#if showCelebration}
+        <span class="celebration" aria-hidden="true">
+          {#each Array(6) as _, i}
+            <span class="spark" style="--angle: {i * 60}deg"></span>
+          {/each}
+        </span>
+      {/if}
     </div>
 
     <!-- Task content -->
@@ -272,3 +299,55 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* Vivid persona only (see showCelebration in the script block) — a brief
+     radial confetti burst around the checkbox. Neutralized automatically by
+     app.css's prefers-reduced-motion rule (zeros animation-duration). */
+  .celebration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .spark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    transform: translate(-50%, -50%);
+    animation: task-spark-burst 550ms ease-out forwards;
+  }
+
+  .spark:nth-child(1) {
+    background: #ff5a36;
+  }
+  .spark:nth-child(2) {
+    background: #5b5fef;
+  }
+  .spark:nth-child(3) {
+    background: #14ae7a;
+  }
+  .spark:nth-child(4) {
+    background: #ff8a3d;
+  }
+  .spark:nth-child(5) {
+    background: #ffcf3d;
+  }
+  .spark:nth-child(6) {
+    background: #5b5fef;
+  }
+
+  @keyframes task-spark-burst {
+    0% {
+      transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(var(--angle)) translateX(22px) scale(0.4);
+      opacity: 0;
+    }
+  }
+</style>

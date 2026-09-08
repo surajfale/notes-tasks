@@ -8,6 +8,11 @@
   // When true, completed tasks are moved into a collapsed section below the
   // active ones instead of being interleaved with them.
   export let splitCompleted = false;
+  // 'list': dense vertical stack (default). 'grid': responsive card grid.
+  export let layout: 'grid' | 'list' = 'list';
+
+  $: containerClass =
+    layout === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-4';
 
   let completedExpanded = false;
 
@@ -60,7 +65,7 @@
               ({groupedTasks[priority]?.length || 0})
             </span>
           </h2>
-          <div class="space-y-4">
+          <div class={containerClass}>
             {#each groupedTasks[priority] || [] as task (task._id)}
               <TaskCard {task} />
             {/each}
@@ -71,7 +76,7 @@
   </div>
 {:else if splitCompleted}
   <!-- Active tasks first, completed ones tucked into a collapsed section -->
-  <div class="space-y-4">
+  <div class={containerClass}>
     {#each activeTasks as task (task._id)}
       <TaskCard {task} />
     {/each}
@@ -97,7 +102,7 @@
       </button>
 
       {#if completedExpanded}
-        <div class="space-y-4 mt-3">
+        <div class="{containerClass} mt-3">
           {#each completedTasks as task (task._id)}
             <TaskCard {task} />
           {/each}
@@ -107,7 +112,7 @@
   {/if}
 {:else}
   <!-- Simple list -->
-  <div class="space-y-4">
+  <div class={containerClass}>
     {#each Array.isArray(tasks) ? tasks : [] as task (task._id)}
       <TaskCard {task} />
     {/each}

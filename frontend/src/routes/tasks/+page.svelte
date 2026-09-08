@@ -6,14 +6,37 @@
   import { listsStore } from '$lib/stores/lists';
   import TaskList from '$lib/components/tasks/TaskList.svelte';
   import Button from '$lib/components/ui/Button.svelte';
+  import ViewLayoutToggle from '$lib/components/ui/ViewLayoutToggle.svelte';
   import { LoadingOverlay, ErrorMessage, PageHeader, EmptyState } from '$lib/components/ui';
+  import { personaStore } from '$lib/stores/persona';
+  import { getStoredLayout, setStoredLayout, type ViewLayout } from '$lib/utils/viewLayout';
   import type { TaskFilters, TaskPriority } from '$lib/types/task';
+  import type { UiPersona } from '$lib/types/user';
+
+  const LAYOUT_STORAGE_KEY = 'tasks-view-layout';
 
   // Filter state
   let selectedListId = '';
   let completionFilter: 'all' | 'active' | 'completed' = 'all';
   let selectedPriority: TaskPriority | '' = '';
   let showFilters = false;
+
+  // View layout: defaults from the active persona (vivid -> grid, everyone
+  // else -> dense list), overridable by hand and remembered per-browser.
+  let persona: UiPersona = 'focus';
+  personaStore.subscribe((value) => {
+    persona = value;
+  });
+  let manualLayout: ViewLayout | null = null;
+  let defaultLayout: ViewLayout;
+  $: defaultLayout = persona === 'vivid' ? 'grid' : 'list';
+  let layout: ViewLayout;
+  $: layout = manualLayout ?? defaultLayout;
+
+  function handleLayoutChange(value: ViewLayout) {
+    manualLayout = value;
+    setStoredLayout(LAYOUT_STORAGE_KEY, value);
+  }
 
   // Quick-add: create a task from just a title without leaving the list
   let quickAddTitle = '';
@@ -32,6 +55,7 @@
 
   // Load tasks and lists on mount
   onMount(async () => {
+    manualLayout = getStoredLayout(LAYOUT_STORAGE_KEY);
     try {
       await Promise.all([
         listsStore.loadAll(),
@@ -157,6 +181,7 @@
                disabled:opacity-50"
       />
     </form>
+    <ViewLayoutToggle {layout} onChange={handleLayoutChange} />
     <button
       type="button"
       on:click={() => (showFilters = !showFilters)}
@@ -295,6 +320,7 @@
       tasks={Array.isArray($tasksStore.items) ? $tasksStore.items : []}
       emptyMessage={hasActiveFilters ? 'No tasks match your filters' : 'No tasks found'}
       splitCompleted={completionFilter === 'all'}
+      {layout}
     />
   {/if}
 </div>

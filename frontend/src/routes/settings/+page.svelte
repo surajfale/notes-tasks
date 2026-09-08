@@ -11,6 +11,7 @@
   import { ErrorMessage, LoadingSpinner, PageHeader } from '$lib/components/ui';
   import { validatePasswordChangeForm } from '$lib/utils/validation';
   import NotificationSettings from '$lib/components/settings/NotificationSettings.svelte';
+  import PersonaPicker from '$lib/components/settings/PersonaPicker.svelte';
 
   // Track auth loading state
   let isAuthLoading = true;
@@ -166,6 +167,17 @@
           <span class="ml-2 text-stone-900 dark:text-stone-100">{$currentUser.displayName}</span>
         </div>
       </div>
+    </Card>
+
+    <!-- Style (Persona) Section -->
+    <Card class="mb-6">
+      <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-1">
+        Style
+      </h2>
+      <p class="text-sm text-stone-500 dark:text-stone-400 mb-4">
+        Changes fonts, shapes, and a few features to match how you like to work. Independent of the light/dark and accent-color settings below.
+      </p>
+      <PersonaPicker />
     </Card>
 
     <!-- Theme Settings Section -->

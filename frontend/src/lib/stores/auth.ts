@@ -143,6 +143,15 @@ function createAuthStore() {
      */
     clearError(): void {
       update(state => ({ ...state, error: null }));
+    },
+
+    /**
+     * Merge a partial update into the current user (e.g. after a
+     * profile/persona change that doesn't warrant a full re-fetch).
+     * No-ops if there's no authenticated user.
+     */
+    updateUser(partial: Partial<User>): void {
+      update(state => (state.user ? { ...state, user: { ...state.user, ...partial } } : state));
     }
   };
 }

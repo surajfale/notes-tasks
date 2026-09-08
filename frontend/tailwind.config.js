@@ -9,8 +9,10 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
+				// Persona-driven: app.css redefines --font-sans/--font-mono per
+				// data-persona value. Fallback stack covers pre-hydration paint.
 				sans: [
-					'Plus Jakarta Sans',
+					'var(--font-sans)',
 					'-apple-system',
 					'BlinkMacSystemFont',
 					'Segoe UI',
@@ -21,6 +23,14 @@ export default {
 					'Open Sans',
 					'Helvetica Neue',
 					'sans-serif'
+				],
+				mono: [
+					'var(--font-mono)',
+					'ui-monospace',
+					'SFMono-Regular',
+					'Menlo',
+					'Consolas',
+					'monospace'
 				],
 				serif: [
 					'Lora',
@@ -44,6 +54,23 @@ export default {
 					700: 'rgb(var(--primary-700) / <alpha-value>)',
 					800: 'rgb(var(--primary-800) / <alpha-value>)',
 					900: 'rgb(var(--primary-900) / <alpha-value>)',
+				},
+				// Neutral scale, remapped per persona in app.css (data-persona
+				// attribute). Values below are the "focus" persona's own scale,
+				// duplicated as the :root default so nothing renders unstyled
+				// before JS sets data-persona on first paint.
+				stone: {
+					50: 'rgb(var(--stone-50) / <alpha-value>)',
+					100: 'rgb(var(--stone-100) / <alpha-value>)',
+					200: 'rgb(var(--stone-200) / <alpha-value>)',
+					300: 'rgb(var(--stone-300) / <alpha-value>)',
+					400: 'rgb(var(--stone-400) / <alpha-value>)',
+					500: 'rgb(var(--stone-500) / <alpha-value>)',
+					600: 'rgb(var(--stone-600) / <alpha-value>)',
+					700: 'rgb(var(--stone-700) / <alpha-value>)',
+					800: 'rgb(var(--stone-800) / <alpha-value>)',
+					900: 'rgb(var(--stone-900) / <alpha-value>)',
+					950: 'rgb(var(--stone-950) / <alpha-value>)',
 				},
 				secondary: {
 					50: '#fce4ec',
