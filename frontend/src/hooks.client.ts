@@ -53,7 +53,7 @@ if (typeof window !== 'undefined') {
 /**
  * Public routes that don't require authentication
  */
-export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password'];
+export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password', '/tactile-demo'];
 
 /**
  * Auth-only routes that should redirect authenticated users

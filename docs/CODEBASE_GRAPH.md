@@ -44,7 +44,7 @@ flowchart LR
 
 ## frontend
 
-119 files scanned, 338 internal import edges found (90 within the same layer, omitted from the diagram below for readability).
+125 files scanned, 346 internal import edges found (92 within the same layer, omitted from the diagram below for readability).
 
 ```mermaid
 flowchart LR
@@ -53,8 +53,8 @@ flowchart LR
     api["api"] -->|1| storage["storage"]
     api["api"] -->|1| types["types"]
     components["components"] -->|26| stores["stores"]
-    components["components"] -->|20| types["types"]
-    components["components"] -->|14| utils["utils"]
+    components["components"] -->|22| types["types"]
+    components["components"] -->|15| utils["utils"]
     components["components"] -->|1| services["services"]
     components["components"] -->|2| storage["storage"]
     components["components"] -->|1| repositories["repositories"]
@@ -72,10 +72,10 @@ flowchart LR
     stores["stores"] -->|1| api["api"]
     routes["routes"] -->|33| stores["stores"]
     routes["routes"] -->|1| entry["entry"]
-    routes["routes"] -->|62| components["components"]
+    routes["routes"] -->|63| components["components"]
     routes["routes"] -->|7| repositories["repositories"]
-    routes["routes"] -->|11| types["types"]
-    routes["routes"] -->|9| utils["utils"]
+    routes["routes"] -->|12| types["types"]
+    routes["routes"] -->|10| utils["utils"]
 ```
 
 **Most-depended-on files** (read these first — changing them has the widest blast radius):
