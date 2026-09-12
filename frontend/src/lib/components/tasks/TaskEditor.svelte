@@ -333,7 +333,7 @@
     label="Description"
     bind:value={description}
     bind:selectedTone
-    placeholder="Enter task description... Supports **bold**, *italic*, # headings, - lists, and more"
+    placeholder="Add more details..."
     rows={6}
     error={errors.description}
     disabled={enhancing}
