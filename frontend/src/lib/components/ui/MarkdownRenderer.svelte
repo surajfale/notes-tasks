@@ -22,8 +22,11 @@
       return tableMarkdown; // Not a valid table
     }
 
-    // Build HTML table
-    let tableHtml = '<table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
+    // Build HTML table. Wrapped in a scrollable div — a table can't be
+    // shrunk to fit a narrow (mobile) viewport, so without this wrapper a
+    // table with more than a couple columns overflows the page horizontally
+    // instead of scrolling within its own bounds.
+    let tableHtml = '<div class="overflow-x-auto"><table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
 
     // Header row
     tableHtml += '<thead class="bg-stone-100 dark:bg-stone-800"><tr>';
@@ -41,7 +44,7 @@
       });
       tableHtml += '</tr>';
     }
-    tableHtml += '</tbody></table>';
+    tableHtml += '</tbody></table></div>';
 
     return tableHtml;
   }
@@ -180,8 +183,6 @@
   .markdown-content :global(table) {
     width: 100%;
     border-spacing: 0;
-    overflow: auto;
-    display: table;
   }
 
   .markdown-content :global(table th),
