@@ -22,10 +22,14 @@
     disabled?: boolean;
     label: string;
     accent?: 'tasks' | 'notes' | 'lists';
+    /** Checked-state glyph. 'terminal' swaps the drawn checkmark for a
+     * monospace '×', matching the terminal persona's checkbox treatment
+     * elsewhere in the app. */
+    glyph?: 'check' | 'terminal';
     onToggle: (next: boolean) => void;
   }
 
-  let { checked, disabled = false, label, accent = 'tasks', onToggle }: Props = $props();
+  let { checked, disabled = false, label, accent = 'tasks', glyph = 'check', onToggle }: Props = $props();
 
   let isPressed = $state(false);
 
@@ -100,15 +104,19 @@
   onclick={commitToggle}
 >
   {#if checked}
-    <svg viewBox="0 0 16 16" class="h-3.5 w-3.5 text-white" fill="none" aria-hidden="true">
-      <path
-        d="M3 8.5L6.5 12L13 4.5"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        in:draw={{ duration: 260, easing: cubicOut }}
-      />
-    </svg>
+    {#if glyph === 'terminal'}
+      <span class="font-mono text-xs leading-none text-white" aria-hidden="true">×</span>
+    {:else}
+      <svg viewBox="0 0 16 16" class="h-3.5 w-3.5 text-white" fill="none" aria-hidden="true">
+        <path
+          d="M3 8.5L6.5 12L13 4.5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          in:draw={{ duration: 260, easing: cubicOut }}
+        />
+      </svg>
+    {/if}
   {/if}
 </button>

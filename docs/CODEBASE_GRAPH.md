@@ -44,7 +44,7 @@ flowchart LR
 
 ## frontend
 
-135 files scanned, 369 internal import edges found (100 within the same layer, omitted from the diagram below for readability).
+135 files scanned, 367 internal import edges found (98 within the same layer, omitted from the diagram below for readability).
 
 ```mermaid
 flowchart LR

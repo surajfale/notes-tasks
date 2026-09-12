@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Card from '$lib/components/ui/Card.svelte';
   import PendingBadge from '$lib/components/sync/PendingBadge.svelte';
   import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
+  import TactileCheckbox from '$lib/components/tactile/TactileCheckbox.svelte';
   import { tasksStore } from '$lib/stores/tasks';
   import { listsStore } from '$lib/stores/lists';
   import { isTaskPending } from '$lib/stores/syncStatus';
@@ -11,6 +11,7 @@
   import { getTagColor } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types/task';
   import type { UiPersona } from '$lib/types/user';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let task: Task;
 
@@ -69,15 +70,13 @@
     ? task.notificationTimings.map(formatNotificationTiming).join(', ')
     : '';
 
-  async function handleToggleComplete(e: Event) {
-    e.stopPropagation();
+  async function handleToggleComplete(next: boolean) {
     if (isTogglingComplete) return;
 
-    const willComplete = !task.isCompleted;
     isTogglingComplete = true;
     try {
-      await tasksStore.toggleComplete(task._id, willComplete);
-      if (willComplete && persona === 'vivid') {
+      await tasksStore.toggleComplete(task._id, next);
+      if (next && persona === 'vivid') {
         showCelebration = true;
         setTimeout(() => {
           showCelebration = false;
@@ -118,9 +117,7 @@
 </script>
 
 <div
-  class="group relative rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900
-         transition-colors duration-150 cursor-pointer
-         hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50/60 dark:hover:bg-stone-800/40"
+  class="group relative cursor-pointer {task.isCompleted ? 'neu-pressed' : 'neu-raised neu-interactive'}"
   on:click={handleClick}
   on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
   role="button"
@@ -129,26 +126,17 @@
   <div class="p-4 sm:p-6">
     <div class="flex gap-4">
     <!-- Completion checkbox -->
-    <div class="flex-shrink-0 pt-1 relative">
-      <button
-        on:click={handleToggleComplete}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="flex-shrink-0 pt-1 relative" role="presentation" on:click|stopPropagation>
+      <TactileCheckbox
+        checked={task.isCompleted}
         disabled={isTogglingComplete}
-        class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all
-               {task.isCompleted
-                 ? 'bg-primary-600 border-primary-600'
-                 : 'border-stone-300 dark:border-stone-600 hover:border-primary-500'}"
-        aria-label={task.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
-      >
-        {#if task.isCompleted}
-          {#if persona === 'terminal'}
-            <span class="text-white font-mono text-xs leading-none" aria-hidden="true">×</span>
-          {:else}
-            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-            </svg>
-          {/if}
-        {/if}
-      </button>
+        label={task.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
+        accent="tasks"
+        glyph={persona === 'terminal' ? 'terminal' : 'check'}
+        onToggle={handleToggleComplete}
+      />
       {#if showCelebration}
         <span class="celebration" aria-hidden="true">
           {#each Array(6) as _, i}
@@ -257,7 +245,7 @@
                     opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
           {#if !showDeleteConfirm}
             <button
-              on:click={handleToggleComplete}
+              on:click={(e) => { e.stopPropagation(); handleToggleComplete(!task.isCompleted); }}
               disabled={isTogglingComplete}
               class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-50"
             >

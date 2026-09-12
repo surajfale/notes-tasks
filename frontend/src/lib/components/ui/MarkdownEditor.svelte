@@ -21,7 +21,11 @@
   export let selectedTone: 'concise' | 'detailed' | 'professional' | 'casual' = 'casual';
 
   let textareaElement: HTMLTextAreaElement;
-  let activeTab: 'write' | 'preview' = 'write';
+  // Existing content (editing a note/task) opens read-first in Preview;
+  // an empty draft (creating new) opens in Write since there's nothing to
+  // preview yet. One-time initial value — switching tabs afterwards is a
+  // deliberate user action, not something we override reactively.
+  let activeTab: 'write' | 'preview' = value.trim().length > 0 ? 'preview' : 'write';
   // Secondary formatting (headings, numbered list, link, code) is tucked
   // behind this toggle by default — a handful of always-visible icon
   // buttons with hover-only tooltips is meaningless on a touch screen
