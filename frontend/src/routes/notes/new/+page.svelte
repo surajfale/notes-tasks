@@ -125,7 +125,7 @@
         label="Body"
         bind:value={body}
         bind:selectedTone
-        placeholder="Enter note content... Supports **bold**, *italic*, # headings, - lists, and more"
+        placeholder="Start writing..."
         rows={12}
         disabled={enhancing}
         showAiControls={true}
