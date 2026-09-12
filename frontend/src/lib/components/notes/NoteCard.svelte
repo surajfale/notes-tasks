@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/Button.svelte';
   import PendingBadge from '$lib/components/sync/PendingBadge.svelte';
   import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
   import Tag from '$lib/components/ui/Tag.svelte';
   import ShareModal from '$lib/components/ui/ShareModal.svelte';
+  import NoteQuickViewModal from '$lib/components/notes/NoteQuickViewModal.svelte';
   import { notesStore } from '$lib/stores/notes';
   import { listsStore } from '$lib/stores/lists';
   import { isNotePending } from '$lib/stores/syncStatus';
@@ -25,6 +25,8 @@
   let isDeleting = false;
   let showDeleteConfirm = false;
   let showShareModal = false;
+  let showQuickView = false;
+  let quickViewMode: 'preview' | 'edit' = 'preview';
 
   // Get list info if note has a listId
   $: list = note.listId 
@@ -60,7 +62,18 @@
   }
 
   function handleClick() {
-    goto(`/notes/${note._id}`);
+    quickViewMode = 'preview';
+    showQuickView = true;
+  }
+
+  function handleEdit(e: Event) {
+    e.stopPropagation();
+    quickViewMode = 'edit';
+    showQuickView = true;
+  }
+
+  function closeQuickView() {
+    showQuickView = false;
   }
 
   function cancelDelete(e: Event) {
@@ -137,6 +150,12 @@
                 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
       {#if !showDeleteConfirm}
         <button
+          on:click={handleEdit}
+          class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+        >
+          Edit
+        </button>
+        <button
           on:click={handleShare}
           class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           title="Share note"
@@ -188,4 +207,12 @@
   bind:open={showShareModal}
   {note}
   onClose={closeShareModal}
+/>
+
+<!-- Quick view/edit popup -->
+<NoteQuickViewModal
+  {note}
+  bind:open={showQuickView}
+  initialMode={quickViewMode}
+  onClose={closeQuickView}
 />
