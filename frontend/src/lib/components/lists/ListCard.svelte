@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Card from '$lib/components/ui/Card.svelte';
   import { listsStore } from '$lib/stores/lists';
   import { notesStore } from '$lib/stores/notes';
   import { tasksStore } from '$lib/stores/tasks';
   import type { List } from '$lib/types/list';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let list: List;
   export let onEdit: ((list: List) => void) | undefined = undefined;
@@ -42,12 +42,12 @@
   }
 </script>
 
-<Card padding="medium" hover class="group">
+<div class="neu-raised neu-interactive group p-4 sm:p-6">
   <div class="flex flex-col gap-4">
     <!-- Header with color indicator and emoji -->
     <div class="flex items-start gap-3">
       <div
-        class="w-11 h-11 rounded-lg flex items-center justify-center text-xl flex-shrink-0"
+        class="neu-raised-sm w-11 h-11 flex items-center justify-center text-xl flex-shrink-0"
         style="background-color: {list.color}1a"
       >
         {#if list.emoji}
@@ -110,4 +110,4 @@
       {/if}
     </div>
   </div>
-</Card>
+</div>

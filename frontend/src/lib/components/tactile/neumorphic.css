@@ -1,0 +1,204 @@
+/**
+ * Shared neumorphic surfaces + funky per-content-type accents. Used by the
+ * original tactile/* demo AND (as of the production transplant) the real
+ * NoteCard/TaskCard/ListCard — both read the same classes so they stay
+ * visually consistent instead of drifting into two competing palettes.
+ *
+ * Design intent (see chat for the full reasoning): neumorphism and truly
+ * saturated color fight each other — the soft-shadow illusion needs low,
+ * controlled contrast, which vivid hues destroy. So base surfaces derive
+ * from the app's own `--stone-*` tokens (app.css) rather than a hardcoded
+ * palette — that's what lets a neumorphic card sit on the app's actual
+ * page background without looking like a mismatched gray box, and makes
+ * it automatically follow whichever of the three personas (each of which
+ * redefines --stone-*) is active. The funky palette stays hardcoded and
+ * is spent entirely on STATE: a gradient + glow only appears on
+ * completed/pinned/active elements and the AI-thinking shimmer. Plain
+ * .css (not a Svelte <style> block) so these classes are genuinely shared
+ * across components without Svelte's per-component style scoping getting
+ * in the way.
+ *
+ * Dark mode follows the app-wide convention: a `.dark` class on <html>
+ * (see theme.ts), not a prefers-color-scheme query.
+ */
+
+.neu-surface {
+  background: rgb(var(--stone-50));
+}
+.dark .neu-surface {
+  background: rgb(var(--stone-900));
+}
+
+.neu-raised {
+  background: rgb(var(--stone-50));
+  border-radius: 20px;
+  box-shadow:
+    8px 8px 16px rgb(var(--stone-300) / 0.55),
+    -8px -8px 16px rgba(255, 255, 255, 0.85);
+}
+.dark .neu-raised {
+  background: rgb(var(--stone-900));
+  box-shadow:
+    8px 8px 16px rgba(0, 0, 0, 0.55),
+    -6px -6px 14px rgb(var(--stone-700) / 0.12);
+}
+
+.neu-raised-sm {
+  background: rgb(var(--stone-50));
+  border-radius: 14px;
+  box-shadow:
+    5px 5px 10px rgb(var(--stone-300) / 0.55),
+    -5px -5px 10px rgba(255, 255, 255, 0.85);
+}
+.dark .neu-raised-sm {
+  background: rgb(var(--stone-900));
+  box-shadow:
+    5px 5px 10px rgba(0, 0, 0, 0.55),
+    -4px -4px 8px rgb(var(--stone-700) / 0.12);
+}
+
+.neu-pressed {
+  background: rgb(var(--stone-50));
+  border-radius: 14px;
+  box-shadow:
+    inset 4px 4px 8px rgb(var(--stone-300) / 0.55),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+}
+.dark .neu-pressed {
+  background: rgb(var(--stone-900));
+  box-shadow:
+    inset 4px 4px 8px rgba(0, 0, 0, 0.55),
+    inset -3px -3px 6px rgb(var(--stone-700) / 0.12);
+}
+
+/* Applied while a card is being dragged — a deeper version of neu-raised
+   so the "lifted off the surface" read gets stronger, not just scaled. */
+.neu-dragging {
+  box-shadow:
+    14px 14px 28px rgb(var(--stone-300) / 0.6),
+    -14px -14px 28px rgba(255, 255, 255, 0.9) !important;
+}
+.dark .neu-dragging {
+  box-shadow:
+    14px 14px 28px rgba(0, 0, 0, 0.6),
+    -10px -10px 22px rgb(var(--stone-700) / 0.16) !important;
+}
+
+/* Applied alongside .neu-raised on hoverable/clickable cards for a subtle
+   "lift" cue on hover/focus — the neumorphic equivalent of a hover border. */
+.neu-interactive {
+  transition: box-shadow 200ms ease;
+}
+.neu-interactive:hover,
+.neu-interactive:focus-visible {
+  box-shadow:
+    10px 10px 20px rgb(var(--stone-300) / 0.6),
+    -10px -10px 20px rgba(255, 255, 255, 0.9);
+}
+.dark .neu-interactive:hover,
+.dark .neu-interactive:focus-visible {
+  box-shadow:
+    10px 10px 20px rgba(0, 0, 0, 0.6),
+    -8px -8px 16px rgb(var(--stone-700) / 0.16);
+}
+
+/* ---- Per-content-type funky accents (state only, never base surfaces) --- */
+
+.accent-tasks {
+  background: linear-gradient(135deg, #ff7a6e, #ff3d7f);
+}
+.accent-notes {
+  background: linear-gradient(135deg, #8b5cf6, #4361ee);
+}
+.accent-lists {
+  background: linear-gradient(135deg, #06d6a0, #34d399);
+}
+
+.accent-tasks-glow {
+  box-shadow:
+    0 0 0 4px rgba(255, 61, 127, 0.25),
+    5px 5px 10px rgba(163, 177, 198, 0.4);
+}
+.accent-notes-glow {
+  box-shadow:
+    0 0 0 4px rgba(67, 97, 238, 0.25),
+    5px 5px 10px rgba(163, 177, 198, 0.4);
+}
+.accent-lists-glow {
+  box-shadow:
+    0 0 0 4px rgba(6, 214, 160, 0.28),
+    5px 5px 10px rgba(163, 177, 198, 0.4);
+}
+.dark .accent-tasks-glow {
+  box-shadow:
+    0 0 0 4px rgba(255, 61, 127, 0.35),
+    5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+.dark .accent-notes-glow {
+  box-shadow:
+    0 0 0 4px rgba(99, 130, 255, 0.35),
+    5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+.dark .accent-lists-glow {
+  box-shadow:
+    0 0 0 4px rgba(6, 214, 160, 0.4),
+    5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.accent-tasks-text {
+  color: #ff3d7f;
+}
+.accent-notes-text {
+  color: #6d5bf7;
+}
+.accent-lists-text {
+  color: #06b98e;
+}
+.dark .accent-tasks-text {
+  color: #ff89ab;
+}
+.dark .accent-notes-text {
+  color: #a996ff;
+}
+.dark .accent-lists-text {
+  color: #4ce0bb;
+}
+
+/* A pinned note/list keeps the neu-raised shadow but gets a faint violet
+   wash instead of the plain neutral surface — layered with a left accent
+   border (set directly in the component) for the "state changed" read
+   that a strikethrough would give a task. */
+.note-pinned-tint {
+  background: #f2f0ff !important;
+}
+.dark .note-pinned-tint {
+  background: #242030 !important;
+}
+.list-pinned-tint {
+  background: #eafbf5 !important;
+}
+.dark .list-pinned-tint {
+  background: #16241f !important;
+}
+
+/* ---- "AI is thinking" shimmer, used by the Preview/Edit/AI drawer ---- */
+
+@keyframes tactile-ai-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.tactile-ai-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.12) 25%,
+    rgba(67, 97, 238, 0.3) 50%,
+    rgba(139, 92, 246, 0.12) 75%
+  );
+  background-size: 200% 100%;
+  animation: tactile-ai-shimmer 1.1s ease-in-out infinite;
+}

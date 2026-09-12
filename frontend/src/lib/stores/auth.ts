@@ -8,7 +8,28 @@
 import { writable, derived } from 'svelte/store';
 import { authRepository } from '$lib/repositories/auth.repository';
 import { tokenStorage } from '$lib/storage/token';
+import { ApiError } from '$lib/types/error';
 import type { User, LoginCredentials, RegisterData } from '$lib/types/user';
+
+/**
+ * Fetch the current user, retrying once after a short delay for anything
+ * that isn't a definitive "this token is invalid" response. Covers a
+ * cold-starting backend (e.g. Railway free tier waking from sleep) so a
+ * slow first request doesn't get treated the same as a bad token.
+ */
+async function fetchCurrentUserWithRetry(): Promise<User> {
+  try {
+    const response = await authRepository.getCurrentUser();
+    return (response as any).user || response;
+  } catch (error) {
+    if (error instanceof ApiError && !error.isAuthError()) {
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+      const response = await authRepository.getCurrentUser();
+      return (response as any).user || response;
+    }
+    throw error;
+  }
+}
 
 /**
  * Authentication state interface
@@ -71,14 +92,18 @@ function createAuthStore() {
       }
 
       try {
-        const response = await authRepository.getCurrentUser();
-        // Extract user from response (API returns {user: {...}})
-        const user = (response as any).user || response;
+        const user = await fetchCurrentUserWithRetry();
         set({ user, isLoading: false, error: null });
         hasInitialized = true;
       } catch (error: any) {
-        // Token is invalid or expired, clear it
-        tokenStorage.clearToken();
+        // Only clear the token when the server actually rejected it (401).
+        // A network error, timeout, or 5xx means we couldn't confirm the
+        // session either way — keep the token so the next successful load
+        // restores it automatically, instead of forcing a fresh login for
+        // what might just be a slow/cold-starting backend.
+        if (error instanceof ApiError && error.isAuthError()) {
+          tokenStorage.clearToken();
+        }
         set({ user: null, isLoading: false, error: null });
         hasInitialized = true;
       } finally {

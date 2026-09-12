@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import PendingBadge from '$lib/components/sync/PendingBadge.svelte';
   import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
@@ -12,6 +11,7 @@
   import { formatRelativeDate } from '$lib/utils/date';
   import { getTagColor } from '$lib/utils/tagColors';
   import type { Note } from '$lib/types/note';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let note: Note;
   
@@ -79,9 +79,7 @@
 </script>
 
 <div
-  class="group relative rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900
-         transition-colors duration-150 cursor-pointer
-         hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50/60 dark:hover:bg-stone-800/40"
+  class="group relative cursor-pointer {note.isArchived ? 'neu-pressed' : 'neu-raised neu-interactive'}"
   on:click={handleClick}
   on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
   role="button"

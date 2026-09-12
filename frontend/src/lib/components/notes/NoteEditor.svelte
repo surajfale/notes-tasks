@@ -74,7 +74,7 @@
   <MarkdownEditor
     label="Body"
     bind:value={body}
-    placeholder="Enter note content... Supports **bold**, *italic*, # headings, - lists, and more"
+    placeholder="Start writing..."
     rows={12}
     maxLength={2000}
     showCharCount={true}
