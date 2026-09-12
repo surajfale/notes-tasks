@@ -22,8 +22,11 @@
       return tableMarkdown; // Not a valid table
     }
 
-    // Build HTML table
-    let tableHtml = '<table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
+    // Build HTML table. Wrapped in a scrollable div — a table can't be
+    // shrunk to fit a narrow (mobile) viewport, so without this wrapper a
+    // table with more than a couple columns overflows the page horizontally
+    // instead of scrolling within its own bounds.
+    let tableHtml = '<div class="overflow-x-auto"><table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
 
     // Header row
     tableHtml += '<thead class="bg-stone-100 dark:bg-stone-800"><tr>';
@@ -41,7 +44,7 @@
       });
       tableHtml += '</tr>';
     }
-    tableHtml += '</tbody></table>';
+    tableHtml += '</tbody></table></div>';
 
     return tableHtml;
   }
@@ -57,9 +60,14 @@
       html = html.substring(0, maxLength) + '...';
     }
 
-    // Process tables BEFORE escaping HTML (so we can inject HTML tags)
+    // Process tables BEFORE escaping HTML (so we can inject HTML tags).
+    // Each row must be followed by a newline OR be at the very end of the
+    // string — without the `|$` alternative, a table with no trailing
+    // newline (e.g. the last thing typed, before pressing Enter) would
+    // lose its final row: it'd fall outside the match entirely and render
+    // as raw "| a | b |" text instead of joining the table.
     const tableParts: string[] = [];
-    html = html.replace(/(\|.+\|[\r\n]+)+/g, (match) => {
+    html = html.replace(/(\|.+\|(?:[\r\n]+|$))+/g, (match) => {
       const placeholder = `__TABLE_${tableParts.length}__`;
       tableParts.push(convertTableToHtml(match));
       return placeholder;
@@ -180,8 +188,6 @@
   .markdown-content :global(table) {
     width: 100%;
     border-spacing: 0;
-    overflow: auto;
-    display: table;
   }
 
   .markdown-content :global(table th),

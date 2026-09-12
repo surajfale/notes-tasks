@@ -163,7 +163,10 @@
   function convertTableToHtml(tableRows: string[]): string {
     if (tableRows.length < 2) return tableRows.join('\n');
 
-    let html = '<table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
+    // Wrapped in a scrollable div — a table can't shrink to fit a narrow
+    // (mobile) viewport, so without this a table with more than a couple
+    // columns overflows the page instead of scrolling within its own bounds.
+    let html = '<div class="overflow-x-auto"><table class="min-w-full border-collapse border border-stone-300 dark:border-stone-600 my-4">';
 
     for (let i = 0; i < tableRows.length; i++) {
       const row = tableRows[i];
@@ -193,7 +196,7 @@
       }
     }
 
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     return html;
   }
 
@@ -270,8 +273,8 @@
       const line = finalLines[i];
       const trimmedLine = line.trim();
 
-      // Skip if line is already HTML (table)
-      if (trimmedLine.startsWith('<table') || trimmedLine.startsWith('</table>')) {
+      // Skip if line is already HTML (table, or its scroll-wrapper div)
+      if (trimmedLine.startsWith('<table') || trimmedLine.startsWith('</table>') || trimmedLine.startsWith('<div class="overflow-x-auto">')) {
         if (inUnorderedList) {
           finalProcessedLines.push('</ul>');
           inUnorderedList = false;
