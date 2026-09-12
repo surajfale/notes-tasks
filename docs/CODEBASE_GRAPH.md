@@ -44,7 +44,7 @@ flowchart LR
 
 ## frontend
 
-125 files scanned, 346 internal import edges found (92 within the same layer, omitted from the diagram below for readability).
+130 files scanned, 355 internal import edges found (94 within the same layer, omitted from the diagram below for readability).
 
 ```mermaid
 flowchart LR
@@ -53,8 +53,8 @@ flowchart LR
     api["api"] -->|1| storage["storage"]
     api["api"] -->|1| types["types"]
     components["components"] -->|26| stores["stores"]
-    components["components"] -->|22| types["types"]
-    components["components"] -->|15| utils["utils"]
+    components["components"] -->|24| types["types"]
+    components["components"] -->|18| utils["utils"]
     components["components"] -->|1| services["services"]
     components["components"] -->|2| storage["storage"]
     components["components"] -->|1| repositories["repositories"]
@@ -72,9 +72,9 @@ flowchart LR
     stores["stores"] -->|1| api["api"]
     routes["routes"] -->|33| stores["stores"]
     routes["routes"] -->|1| entry["entry"]
-    routes["routes"] -->|63| components["components"]
+    routes["routes"] -->|64| components["components"]
     routes["routes"] -->|7| repositories["repositories"]
-    routes["routes"] -->|12| types["types"]
+    routes["routes"] -->|13| types["types"]
     routes["routes"] -->|10| utils["utils"]
 ```
 

@@ -1,18 +1,31 @@
 <script lang="ts">
   import TaskQuickNoteList from '$lib/components/tactile/TaskQuickNoteList.svelte';
+  import NoteQuickList from '$lib/components/tactile/NoteQuickList.svelte';
   import { audioMuted, toggleAudioMute } from '$lib/utils/audioFeedback';
   import type { TactileTask } from '$lib/types/tactileTask';
+  import type { TactileNote } from '$lib/types/tactileNote';
 
   const seedTasks: TactileTask[] = [
-    { id: 'seed-1', title: 'Ship the tactile checkbox spring physics', note: '', completed: false },
+    { id: 'task-1', title: 'Ship the tactile checkbox spring physics', note: '', completed: false },
     {
-      id: 'seed-2',
+      id: 'task-2',
       title: 'Wire up the synthesized completion click',
       note: 'Sine sweep 800→1400Hz, ~15ms, fast gain decay.',
       completed: false
     },
-    { id: 'seed-3', title: 'Reorder items with drag + flip', note: '', completed: false },
-    { id: 'seed-4', title: 'Review with the design team', note: 'Compare against Things 3 and Linear.', completed: true }
+    { id: 'task-3', title: 'Reorder items with drag + flip', note: '', completed: false },
+    { id: 'task-4', title: 'Review with the design team', note: 'Compare against Things 3 and Linear.', completed: true }
+  ];
+
+  const seedNotes: TactileNote[] = [
+    {
+      id: 'note-1',
+      title: 'Interaction notes',
+      body: 'Spring stiffness 0.5 / damping 0.65 feels closest to Things 3.',
+      pinned: true
+    },
+    { id: 'note-2', title: 'Palette', body: 'Zinc throughout — no accent color needed for this one.', pinned: false },
+    { id: 'note-3', title: 'Follow-up', body: '', pinned: false }
   ];
 </script>
 
@@ -21,12 +34,12 @@
 </svelte:head>
 
 <div class="min-h-screen bg-zinc-50 px-4 py-10 dark:bg-zinc-900 sm:px-6">
-  <div class="mx-auto max-w-lg">
-    <div class="mb-6 flex items-start justify-between gap-4">
+  <div class="mx-auto max-w-4xl">
+    <div class="mb-8 flex items-start justify-between gap-4">
       <div>
-        <h1 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Tactile Task List</h1>
+        <h1 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Tactile Task &amp; Quick-Note</h1>
         <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Click a checkbox, click a title to add a note, drag the grip handle to reorder.
+          Click a checkbox/pin, click a title to expand, drag the grip handle to reorder.
         </p>
       </div>
       <button
@@ -53,6 +66,16 @@
       </button>
     </div>
 
-    <TaskQuickNoteList initialTasks={seedTasks} />
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <section>
+        <h2 class="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Tasks</h2>
+        <TaskQuickNoteList initialTasks={seedTasks} />
+      </section>
+
+      <section>
+        <h2 class="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Notes</h2>
+        <NoteQuickList initialNotes={seedNotes} />
+      </section>
+    </div>
   </div>
 </div>
