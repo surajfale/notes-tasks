@@ -60,9 +60,14 @@
       html = html.substring(0, maxLength) + '...';
     }
 
-    // Process tables BEFORE escaping HTML (so we can inject HTML tags)
+    // Process tables BEFORE escaping HTML (so we can inject HTML tags).
+    // Each row must be followed by a newline OR be at the very end of the
+    // string — without the `|$` alternative, a table with no trailing
+    // newline (e.g. the last thing typed, before pressing Enter) would
+    // lose its final row: it'd fall outside the match entirely and render
+    // as raw "| a | b |" text instead of joining the table.
     const tableParts: string[] = [];
-    html = html.replace(/(\|.+\|[\r\n]+)+/g, (match) => {
+    html = html.replace(/(\|.+\|(?:[\r\n]+|$))+/g, (match) => {
       const placeholder = `__TABLE_${tableParts.length}__`;
       tableParts.push(convertTableToHtml(match));
       return placeholder;
