@@ -1,16 +1,19 @@
 <script lang="ts">
   /**
    * The notes counterpart to TaskItem — same card shell, drag handle,
-   * expandable drawer and physics, but no completion state. Pinning
-   * (TactilePinButton) stands in for the checkbox, and the "state changed"
-   * visual is a left accent + tint rather than a strikethrough, since
-   * strikethrough has no sensible meaning for a note.
+   * expandable Preview/Edit/AI drawer and physics, but no completion
+   * state. Pinning (TactilePinButton) stands in for the checkbox, and the
+   * "state changed" visual is a violet left accent + faint tint rather
+   * than a strikethrough, since strikethrough has no sensible meaning for
+   * a note.
    */
   import type { Snippet } from 'svelte';
   import { slide } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
   import TactilePinButton from './TactilePinButton.svelte';
+  import TactileContentDrawer from './TactileContentDrawer.svelte';
   import type { TactileNote } from '$lib/types/tactileNote';
+  import './neumorphic.css';
 
   interface BodyEditorProps {
     body: string;
@@ -53,17 +56,12 @@
 </script>
 
 <div
-  class="group relative flex items-start gap-3 rounded-lg border border-l-4 bg-white p-3 transition-colors duration-300
-         dark:bg-zinc-950
-         {note.pinned
-    ? 'border-zinc-200 border-l-zinc-900 bg-zinc-50 dark:border-zinc-800 dark:border-l-zinc-100 dark:bg-zinc-900/60'
-    : 'border-zinc-200 border-l-zinc-200 dark:border-zinc-800 dark:border-l-zinc-800'}"
+  class="group relative flex items-start gap-3 border-l-4 p-3 transition-colors duration-300
+         neu-raised {isDragging ? 'neu-dragging' : ''}
+         {note.pinned ? 'note-pinned-tint border-l-violet-500 dark:border-l-violet-400' : 'border-l-transparent'}"
   style="
     transform: translateY({dragOffsetY}px) scale({isDragging ? 1.02 : 1}) rotate({isDragging ? 1 : 0}deg);
-    box-shadow: {isDragging
-    ? '0 12px 24px -8px rgb(0 0 0 / 0.25), 0 4px 8px -4px rgb(0 0 0 / 0.15)'
-    : 'none'};
-    transition: {isDragging ? 'none' : 'transform 200ms ease, box-shadow 200ms ease, border-color 300ms ease, background-color 300ms ease'};
+    transition: {isDragging ? 'none' : 'transform 200ms ease, box-shadow 200ms ease'};
     z-index: {isDragging ? 10 : 1};
   "
 >
@@ -91,6 +89,7 @@
   <div class="pt-0.5">
     <TactilePinButton
       pinned={note.pinned}
+      accent="notes"
       label={note.pinned ? `Unpin "${note.title}"` : `Pin "${note.title}"`}
       onToggle={(next) => onTogglePinned(note.id, next)}
     />
@@ -118,19 +117,18 @@
     </button>
 
     {#if isExpanded}
-      <div id={bodyFieldId} transition:slide={{ duration: 220, easing: cubicOut }} class="overflow-hidden pt-2">
+      <div transition:slide={{ duration: 220, easing: cubicOut }} class="overflow-hidden">
         {#if bodyEditor}
           {@render bodyEditor({ body: localBody, onChange: handleBodyChange })}
         {:else}
-          <textarea
+          <TactileContentDrawer
             value={localBody}
-            oninput={(e) => handleBodyChange(e.currentTarget.value)}
+            onChange={handleBodyChange}
+            kind="note"
+            accent="notes"
             placeholder="Write a note…"
-            rows="3"
-            class="w-full resize-none rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-2 text-sm text-zinc-700
-                   placeholder-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500
-                   dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder-zinc-600"
-          ></textarea>
+            fieldId={bodyFieldId}
+          />
         {/if}
       </div>
     {/if}

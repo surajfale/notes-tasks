@@ -5,20 +5,27 @@
    * intentionally NOT wired here (in TaskItem, Enter opens the quick-note
    * drawer instead) — we preventDefault it so a focused checkbox doesn't
    * also fire the browser's native "Enter triggers click" behavior.
+   *
+   * Neumorphic: idle/pressed states use raised/inset shadow (neumorphic.css)
+   * instead of a flat border; the checked state switches to the funky
+   * per-content-type gradient + glow, since a persistent "on" state reads
+   * better popped-forward than pressed-in.
    */
   import { spring } from 'svelte/motion';
   import { draw } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
   import { playCompletionClick, triggerHaptic } from '$lib/utils/audioFeedback';
+  import './neumorphic.css';
 
   interface Props {
     checked: boolean;
     disabled?: boolean;
     label: string;
+    accent?: 'tasks' | 'notes' | 'lists';
     onToggle: (next: boolean) => void;
   }
 
-  let { checked, disabled = false, label, onToggle }: Props = $props();
+  let { checked, disabled = false, label, accent = 'tasks', onToggle }: Props = $props();
 
   let isPressed = $state(false);
 
@@ -78,13 +85,11 @@
   aria-checked={checked}
   aria-label={label}
   disabled={disabled}
-  class="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2
+  class="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-xl
          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2
          focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-900
-         transition-colors duration-150
-         {checked
-    ? 'border-zinc-900 bg-zinc-900 dark:border-zinc-100 dark:bg-zinc-100'
-    : 'border-zinc-300 bg-white hover:border-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-400'}
+         transition-shadow duration-200
+         {checked ? `accent-${accent} accent-${accent}-glow` : isPressed ? 'neu-pressed' : 'neu-raised-sm'}
          {disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}"
   style="transform: scale({$pressScale})"
   onpointerdown={handlePointerDown}
@@ -95,7 +100,7 @@
   onclick={commitToggle}
 >
   {#if checked}
-    <svg viewBox="0 0 16 16" class="h-3.5 w-3.5 text-white dark:text-zinc-900" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 16 16" class="h-3.5 w-3.5 text-white" fill="none" aria-hidden="true">
       <path
         d="M3 8.5L6.5 12L13 4.5"
         stroke="currentColor"

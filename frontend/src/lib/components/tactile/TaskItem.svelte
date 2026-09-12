@@ -1,17 +1,23 @@
 <script lang="ts">
   /**
    * A single tactile task row: checkbox, animated strikethrough, an
-   * expandable quick-note drawer, and a drag handle. Drag *tracking*
+   * expandable Preview/Edit/AI drawer, and a drag handle. Drag *tracking*
    * (pointer math, array reorder, flip) lives in the parent
    * TaskQuickNoteList — this component only renders the resulting
    * isDragging/dragOffsetY as a lift/scale/tilt, and reports the handle's
    * pointerdown back up.
+   *
+   * Neumorphic: the card is a `.neu-raised` surface (neumorphic.css) that
+   * deepens into `.neu-dragging` while being dragged; the funky "tasks"
+   * accent (coral/pink) only shows up on the checkbox's checked state.
    */
   import type { Snippet } from 'svelte';
   import { slide } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
   import TactileCheckbox from './TactileCheckbox.svelte';
+  import TactileContentDrawer from './TactileContentDrawer.svelte';
   import type { TactileTask } from '$lib/types/tactileTask';
+  import './neumorphic.css';
 
   interface NoteEditorProps {
     note: string;
@@ -55,13 +61,9 @@
 </script>
 
 <div
-  class="group relative flex items-start gap-3 rounded-lg border border-zinc-200 bg-white p-3
-         dark:border-zinc-800 dark:bg-zinc-950"
+  class="group relative flex items-start gap-3 p-3 neu-raised {isDragging ? 'neu-dragging' : ''}"
   style="
     transform: translateY({dragOffsetY}px) scale({isDragging ? 1.02 : 1}) rotate({isDragging ? 1 : 0}deg);
-    box-shadow: {isDragging
-    ? '0 12px 24px -8px rgb(0 0 0 / 0.25), 0 4px 8px -4px rgb(0 0 0 / 0.15)'
-    : 'none'};
     transition: {isDragging ? 'none' : 'transform 200ms ease, box-shadow 200ms ease'};
     z-index: {isDragging ? 10 : 1};
   "
@@ -90,6 +92,7 @@
   <div class="pt-0.5">
     <TactileCheckbox
       checked={task.completed}
+      accent="tasks"
       label={task.completed ? `Mark "${task.title}" as incomplete` : `Mark "${task.title}" as complete`}
       onToggle={(next) => onToggleComplete(task.id, next)}
     />
@@ -121,19 +124,18 @@
     </button>
 
     {#if isExpanded}
-      <div id={noteFieldId} transition:slide={{ duration: 220, easing: cubicOut }} class="overflow-hidden pt-2">
+      <div transition:slide={{ duration: 220, easing: cubicOut }} class="overflow-hidden">
         {#if noteEditor}
           {@render noteEditor({ note: localNote, onChange: handleNoteChange })}
         {:else}
-          <textarea
+          <TactileContentDrawer
             value={localNote}
-            oninput={(e) => handleNoteChange(e.currentTarget.value)}
+            onChange={handleNoteChange}
+            kind="task"
+            accent="tasks"
             placeholder="Add a note or subtask…"
-            rows="2"
-            class="w-full resize-none rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-2 text-sm text-zinc-700
-                   placeholder-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500
-                   dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder-zinc-600"
-          ></textarea>
+            fieldId={noteFieldId}
+          />
         {/if}
       </div>
     {/if}
