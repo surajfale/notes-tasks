@@ -4,36 +4,54 @@
   import Tag from '$lib/components/ui/Tag.svelte';
   import { linksStore } from '$lib/stores/links';
   import { listsStore } from '$lib/stores/lists';
-  
+  import '$lib/components/tactile/neumorphic.css';
+
   export let link: Link;
-  
+
   const dispatch = createEventDispatcher();
-  
+
   $: list = link.listId ? $listsStore.items.find(l => l._id === link.listId) : null;
-  
-  // Get favicon URL
-  $: faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=32`;
-  
+
+  // Google's favicon service; falls back to a chain-link glyph when the URL
+  // can't be parsed or the favicon itself 404s (many sites have none).
+  function getFaviconUrl(url: string): string | null {
+    try {
+      return `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`;
+    } catch {
+      return null;
+    }
+  }
+
+  let faviconError = false;
+  let imageError = false;
+  $: faviconUrl = getFaviconUrl(link.url);
+  // Reset error flags whenever the underlying source changes so a previous
+  // failure doesn't stick around after editing the link's URL.
+  $: faviconUrl, (faviconError = false);
+  $: link.image, (imageError = false);
+
   function handleCardClick(e: MouseEvent) {
-    // Don't trigger if clicking on actions or tags
-    if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('.tag-container')) {
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a') || target.closest('.tag-container')) {
       return;
     }
-    window.open(link.url, '_blank');
+    window.open(link.url, '_blank', 'noopener,noreferrer');
   }
-  
-  async function handleDelete() {
+
+  async function handleDelete(e: Event) {
+    e.stopPropagation();
     if (confirm('Are you sure you want to delete this link?')) {
       await linksStore.delete(link._id);
     }
   }
-  
-  async function toggleArchive() {
+
+  async function toggleArchive(e: Event) {
+    e.stopPropagation();
     await linksStore.update(link._id, { isArchived: !link.isArchived });
   }
-  
-  function handleEdit() {
-    // TODO: Implement edit functionality, maybe dispatch event to parent
+
+  function handleEdit(e: Event) {
+    e.stopPropagation();
     dispatch('edit', link);
   }
 </script>
@@ -41,98 +59,117 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-  class="group relative bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-4 sm:p-5 transition-colors duration-150 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50/60 dark:hover:bg-stone-800/40 cursor-pointer flex flex-col h-full"
+  class="group relative cursor-pointer {link.isArchived ? 'neu-pressed' : 'neu-raised neu-interactive'}"
   on:click={handleCardClick}
+  on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && window.open(link.url, '_blank', 'noopener,noreferrer')}
+  role="button"
+  tabindex="0"
 >
-  <!-- Header -->
-  <div class="flex justify-between items-start mb-2">
-    <h3 class="font-serif text-lg font-semibold text-stone-900 dark:text-stone-100 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors flex items-center gap-2">
-      <img src={faviconUrl} alt="" class="w-4 h-4 flex-shrink-0" />
-      {link.title}
-    </h3>
-    
-    <!-- Actions dropdown (visible on hover/focus) -->
-    <div class="relative opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
-      <div class="flex items-center gap-1">
-        <button
-          on:click|stopPropagation={handleEdit}
-          class="p-1.5 text-stone-500 hover:text-primary-600 dark:text-stone-400 dark:hover:text-primary-400 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-          title="Edit"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  <div class="p-4 sm:p-6 flex flex-col gap-3 h-full">
+    <!-- Header: favicon avatar + title/url -->
+    <div class="flex items-start gap-3">
+      <div class="neu-raised-sm w-11 h-11 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        {#if faviconUrl && !faviconError}
+          <img
+            src={faviconUrl}
+            alt=""
+            class="w-5 h-5 object-contain"
+            on:error={() => (faviconError = true)}
+          />
+        {:else}
+          <svg class="w-5 h-5 accent-links-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+            />
           </svg>
-        </button>
-        <button
-          on:click|stopPropagation={toggleArchive}
-          class="p-1.5 text-stone-500 hover:text-yellow-600 dark:text-stone-400 dark:hover:text-yellow-400 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-          title={link.isArchived ? "Unarchive" : "Archive"}
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {#if link.isArchived}
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-            {:else}
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-            {/if}
-          </svg>
-        </button>
-        <button
-          on:click|stopPropagation={handleDelete}
-          class="p-1.5 text-stone-500 hover:text-red-600 dark:text-stone-400 dark:hover:text-red-400 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-          title="Delete"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
+        {/if}
       </div>
-    </div>
-  </div>
-  
-  <!-- URL -->
-  <div class="mb-4 flex-grow">
-    <a 
-      href={link.url} 
-      target="_blank" 
-      rel="noopener noreferrer"
-      class="text-sm text-primary-600 dark:text-primary-400 hover:underline break-all block"
-      on:click|stopPropagation
-    >
-      {link.url}
-    </a>
-  </div>
 
-  <!-- Description & Image -->
-  {#if link.description || link.image}
-    <div class="mb-4">
-      {#if link.image}
-        <div class="mb-3 rounded-lg overflow-hidden bg-stone-100 dark:bg-stone-900 aspect-video">
-          <img src={link.image} alt={link.title} class="w-full h-full object-cover" />
-        </div>
-      {/if}
-      {#if link.description}
-        <p class="text-sm text-stone-600 dark:text-stone-400 line-clamp-3 mb-2">
-          {link.description}
-        </p>
-      {/if}
+      <div class="flex-1 min-w-0">
+        <h3 class="font-serif text-base font-semibold text-stone-900 dark:text-stone-100 line-clamp-2">
+          {link.title}
+        </h3>
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm text-primary-600 dark:text-primary-400 hover:underline truncate block"
+          title={link.url}
+          on:click|stopPropagation
+        >
+          {link.url}
+        </a>
+      </div>
     </div>
-  {/if}
-  
-  <!-- Footer (Tags & List) -->
-  <div class="flex flex-wrap items-center gap-2 mt-auto tag-container">
-    {#if list}
-      <div 
-        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-        style="background-color: {list.color}20; color: {list.color}"
-      >
-        {list.emoji ? `${list.emoji} ` : ''}{list.title}
+
+    <!-- Preview image -->
+    {#if link.image && !imageError}
+      <div class="neu-raised-sm overflow-hidden aspect-video">
+        <img
+          src={link.image}
+          alt=""
+          class="w-full h-full object-cover"
+          on:error={() => (imageError = true)}
+        />
       </div>
     {/if}
-    
-    {#if link.tags && link.tags.length > 0}
-      {#each link.tags as tag}
-        <Tag {tag} size="sm" />
-      {/each}
+
+    <!-- Description -->
+    {#if link.description}
+      <p class="text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
+        {link.description}
+      </p>
     {/if}
+
+    <!-- Tags & list badge -->
+    {#if (link.tags && link.tags.length > 0) || list}
+      <div class="flex flex-wrap items-center gap-2 tag-container">
+        {#if list}
+          <span
+            class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap"
+            style="background-color: {list.color}20; color: {list.color}"
+          >
+            {list.emoji ? `${list.emoji} ` : ''}{list.title}
+          </span>
+        {/if}
+        {#if link.tags && link.tags.length > 0}
+          {#each link.tags as tag}
+            <Tag {tag} size="sm" />
+          {/each}
+        {/if}
+      </div>
+    {/if}
+
+    <!-- Actions: full-opacity on touch devices, hover/focus-revealed on pointer devices -->
+    <div class="flex items-center gap-1 mt-auto pt-2 -mx-2 border-t border-stone-100 dark:border-stone-800
+                opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
+      <button
+        on:click={handleEdit}
+        class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+      >
+        Edit
+      </button>
+      <button
+        on:click={toggleArchive}
+        class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+      >
+        {link.isArchived ? 'Unarchive' : 'Archive'}
+      </button>
+      <button
+        on:click={handleDelete}
+        class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+      >
+        Delete
+      </button>
+
+      {#if link.isArchived}
+        <span class="ml-auto text-xs text-stone-400 dark:text-stone-500 px-2">
+          Archived
+        </span>
+      {/if}
+    </div>
   </div>
 </div>
