@@ -8,23 +8,54 @@ const { AppError } = require('../middleware/errorHandler');
 async function fetchMetadata(url) {
     try {
         const response = await axios.get(url, {
-            timeout: 5000,
+            timeout: 8000,
+            maxRedirects: 5,
+            maxContentLength: 2 * 1024 * 1024, // 2MB cap - we only need the <head>
+            responseType: 'text',
             headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; NotesTasksBot/1.0; +http://localhost:3000)'
-            }
+                // A real browser UA + Accept headers: many sites (Cloudflare-fronted
+                // ones especially) serve a bot-block page instead of real markup to
+                // the previous generic UA, which silently produced empty metadata.
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9'
+            },
+            // Only 2xx counts as success; anything else falls into the catch below.
+            validateStatus: (status) => status >= 200 && status < 300
         });
 
         const html = response.data;
         const $ = cheerio.load(html);
 
-        const title = $('meta[property="og:title"]').attr('content') || $('title').text() || '';
-        const description = $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content') || '';
-        const image = $('meta[property="og:image"]').attr('content') || '';
+        const title = $('meta[property="og:title"]').attr('content')
+            || $('meta[name="twitter:title"]').attr('content')
+            || $('title').text()
+            || '';
+        const description = $('meta[property="og:description"]').attr('content')
+            || $('meta[name="twitter:description"]').attr('content')
+            || $('meta[name="description"]').attr('content')
+            || '';
+        const rawImage = $('meta[property="og:image"]').attr('content')
+            || $('meta[property="og:image:url"]').attr('content')
+            || $('meta[name="twitter:image"]').attr('content')
+            || '';
         const siteName = $('meta[property="og:site_name"]').attr('content') || '';
 
-        return { title, description, image, siteName };
+        // Sites frequently publish og:image as a path relative to their own
+        // origin (e.g. "/images/share.png") - resolve it against the page URL
+        // so the frontend gets a directly loadable absolute URL.
+        let image = '';
+        if (rawImage) {
+            try {
+                image = new URL(rawImage, url).href;
+            } catch (e) {
+                image = '';
+            }
+        }
+
+        return { title: title.trim(), description: description.trim(), image, siteName: siteName.trim() };
     } catch (error) {
-        console.error('Error fetching metadata:', error.message);
+        console.error(`Error fetching metadata for ${url}:`, error.message);
         return {};
     }
 }

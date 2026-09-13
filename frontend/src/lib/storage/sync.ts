@@ -11,10 +11,12 @@ import { offlineStorage, type StoredItem } from './offline';
 import { notesRepository } from '$lib/repositories/notes.repository';
 import { tasksRepository } from '$lib/repositories/tasks.repository';
 import { listsRepository } from '$lib/repositories/lists.repository';
+import { linksRepository } from '$lib/repositories/links.repository';
 import { syncStatusService } from '$lib/stores/syncStatus';
 import type { Note } from '$lib/types/note';
 import type { Task } from '$lib/types/task';
 import type { List } from '$lib/types/list';
+import type { Link } from '$lib/types/link';
 
 /**
  * Sync operation types
@@ -26,7 +28,7 @@ type SyncOperation = 'create' | 'update' | 'delete';
  */
 interface SyncQueueItem {
   id: string;
-  type: 'note' | 'task' | 'list';
+  type: 'note' | 'task' | 'list' | 'link';
   operation: SyncOperation;
   data: any;
   retryCount: number;
@@ -184,6 +186,36 @@ async function syncList(item: StoredItem<List>, operation: SyncOperation): Promi
 }
 
 /**
+ * Sync a single link
+ */
+async function syncLink(item: StoredItem<Link>, operation: SyncOperation): Promise<void> {
+  const link = item.data;
+
+  switch (operation) {
+    case 'create':
+      await linksRepository.create({
+        title: link.title,
+        url: link.url,
+        tags: link.tags,
+        listId: link.listId
+      });
+      break;
+    case 'update':
+      await linksRepository.update(link._id, {
+        title: link.title,
+        url: link.url,
+        tags: link.tags,
+        listId: link.listId,
+        isArchived: link.isArchived
+      });
+      break;
+    case 'delete':
+      await linksRepository.delete(link._id);
+      break;
+  }
+}
+
+/**
  * Process sync queue and synchronize pending items
  */
 async function processSyncQueue(): Promise<void> {
@@ -200,7 +232,7 @@ async function processSyncQueue(): Promise<void> {
   try {
     // Get all pending items
     const pending = await offlineStorage.getAllPending();
-    const totalPending = pending.notes.length + pending.tasks.length + pending.lists.length;
+    const totalPending = pending.notes.length + pending.tasks.length + pending.lists.length + pending.links.length;
 
     if (totalPending === 0) {
       syncStateStore.update(s => ({
@@ -251,6 +283,19 @@ async function processSyncQueue(): Promise<void> {
       } catch (error: any) {
         console.error('Failed to sync task:', error);
         errors.push(`Task "${item.data.title}": ${error.message}`);
+      }
+    }
+
+    // Sync links (may reference a listId, so lists have already gone above)
+    for (const item of pending.links) {
+      try {
+        await syncLink(item, 'update');
+        await offlineStorage.updateLinkSync(item.data._id, 'synced');
+        syncStatusService.clearLinkPending(item.data._id);
+        successCount++;
+      } catch (error: any) {
+        console.error('Failed to sync link:', error);
+        errors.push(`Link "${item.data.title}": ${error.message}`);
       }
     }
 

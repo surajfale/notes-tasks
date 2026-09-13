@@ -36,6 +36,12 @@ export const API_ENDPOINTS = {
     BY_ID: (id: string) => `/api/lists/${id}`
   },
 
+  // Links endpoints
+  LINKS: {
+    BASE: '/api/links',
+    BY_ID: (id: string) => `/api/links/${id}`
+  },
+
   // AI endpoints
   AI: {
     ENHANCE: '/api/ai/enhance'

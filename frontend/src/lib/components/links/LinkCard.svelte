@@ -2,8 +2,10 @@
   import { createEventDispatcher } from 'svelte';
   import type { Link } from '$lib/types/link';
   import Tag from '$lib/components/ui/Tag.svelte';
+  import PendingBadge from '$lib/components/sync/PendingBadge.svelte';
   import { linksStore } from '$lib/stores/links';
   import { listsStore } from '$lib/stores/lists';
+  import { isLinkPending } from '$lib/stores/syncStatus';
   import '$lib/components/tactile/neumorphic.css';
 
   export let link: Link;
@@ -11,6 +13,9 @@
   const dispatch = createEventDispatcher();
 
   $: list = link.listId ? $listsStore.items.find(l => l._id === link.listId) : null;
+
+  // Check if this link has pending changes
+  $: hasPendingChanges = isLinkPending(link._id);
 
   // Google's favicon service; falls back to a chain-link glyph when the URL
   // can't be parsed or the favicon itself 404s (many sites have none).
@@ -89,9 +94,12 @@
       </div>
 
       <div class="flex-1 min-w-0">
-        <h3 class="font-serif text-base font-semibold text-stone-900 dark:text-stone-100 line-clamp-2">
-          {link.title}
-        </h3>
+        <div class="flex items-start justify-between gap-2">
+          <h3 class="font-serif text-base font-semibold text-stone-900 dark:text-stone-100 line-clamp-2">
+            {link.title}
+          </h3>
+          <PendingBadge show={$hasPendingChanges} size="sm" />
+        </div>
         <a
           href={link.url}
           target="_blank"
