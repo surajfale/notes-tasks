@@ -10,6 +10,7 @@
   import Tag from '$lib/components/ui/Tag.svelte';
   import ViewLayoutToggle from '$lib/components/ui/ViewLayoutToggle.svelte';
   import { LoadingOverlay, ErrorMessage, PageHeader, EmptyState } from '$lib/components/ui';
+  import '$lib/components/tactile/neumorphic.css';
   import { personaStore } from '$lib/stores/persona';
   import { getStoredLayout, setStoredLayout, type ViewLayout } from '$lib/utils/viewLayout';
   import type { NoteFilters } from '$lib/types/note';
@@ -179,10 +180,10 @@
       type="button"
       on:click={() => (showFilters = !showFilters)}
       aria-expanded={showFilters}
-      class="flex items-center gap-2 px-4 min-h-[44px] rounded-lg border text-sm font-medium transition-colors flex-shrink-0
+      class="flex items-center gap-2 px-4 min-h-[44px] rounded-2xl text-sm font-medium transition-all flex-shrink-0
              {showFilters || activeFilterCount > 0
-               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
-               : 'border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/50'}"
+               ? 'neu-pressed text-primary-700 dark:text-primary-300'
+               : 'neu-raised-sm neu-interactive text-stone-700 dark:text-stone-300'}"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -197,7 +198,7 @@
   </div>
 
   {#if showFilters}
-    <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-4 sm:p-6 mb-6 sm:mb-8">
+    <div class="neu-raised p-4 sm:p-6 mb-6 sm:mb-8">
       <div class="flex flex-col gap-4">
         <!-- Filter controls row -->
         <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-stretch sm:items-center">
@@ -210,9 +211,9 @@
               id="list-filter"
               bind:value={selectedListId}
               on:change={handleListFilterChange}
-              class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-stone-300 dark:border-stone-600
-                     bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100
-                     focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-3 min-h-[44px] text-base rounded-2xl neu-pressed
+                     text-stone-900 dark:text-stone-100
+                     focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             >
               <option value="">All Lists</option>
               {#each Array.isArray($listsStore.items) ? $listsStore.items : [] as list}

@@ -7,6 +7,7 @@
   import ChecklistEditor from '$lib/components/tasks/ChecklistEditor.svelte';
   import DueDatePicker from '$lib/components/ui/DueDatePicker.svelte';
   import NotificationPreferences from '$lib/components/tasks/NotificationPreferences.svelte';
+  import '$lib/components/tactile/neumorphic.css';
 
   import { listsStore } from '$lib/stores/lists';
   import { aiRepository } from '$lib/repositories/ai.repository';
@@ -364,10 +365,9 @@
         id="priority"
         bind:value={priority}
         disabled={enhancing}
-        class="w-full px-4 py-3 rounded-lg border border-stone-300 dark:border-stone-600
-               bg-stone-50 dark:bg-stone-950 
+        class="w-full px-4 py-3 rounded-2xl neu-pressed
                text-stone-900 dark:text-stone-100
-               focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
                disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <option value={1}>Low Priority</option>

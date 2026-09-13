@@ -1,4 +1,6 @@
 <script lang="ts">
+  import '$lib/components/tactile/neumorphic.css';
+
   let className = '';
   export { className as class };
   export let padding: 'none' | 'small' | 'medium' | 'large' = 'medium';
@@ -13,12 +15,9 @@
   };
 
   $: classes = `
-    bg-stone-50 dark:bg-stone-900
-    rounded-lg
-    border border-stone-200 dark:border-stone-800
-    transition-colors duration-150
+    neu-raised
+    ${hover || clickable ? 'neu-interactive' : ''}
     ${paddingClasses[padding]}
-    ${hover ? 'hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50' : ''}
     ${clickable ? 'cursor-pointer' : ''}
     ${className}
   `.trim().replace(/\s+/g, ' ');

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { personaStore } from '$lib/stores/persona';
   import PersonaPicker from '$lib/components/settings/PersonaPicker.svelte';
+  import '$lib/components/tactile/neumorphic.css';
 
   let skipping = false;
 
@@ -22,7 +23,7 @@
      +layout.svelte's `needsPersonaOnboarding`, which flips false as soon as
      PersonaPicker's choose() updates the current user. -->
 <div class="fixed inset-0 z-[60] flex items-center justify-center bg-stone-950/60 backdrop-blur-sm p-4">
-  <div class="w-full max-w-lg bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-xl">
+  <div class="w-full max-w-lg neu-raised p-6 sm:p-8">
     <h1 class="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100 mb-1.5">
       How do you like to work?
     </h1>

@@ -11,6 +11,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type { Note } from '$lib/types/note';
 import type { Task } from '$lib/types/task';
 import type { List } from '$lib/types/list';
+import type { Link } from '$lib/types/link';
 
 /**
  * Sync status for offline data
@@ -47,10 +48,15 @@ interface NotesTasksDB extends DBSchema {
     value: StoredItem<List>;
     indexes: { 'by-sync-status': SyncStatus };
   };
+  links: {
+    key: string; // _id
+    value: StoredItem<Link>;
+    indexes: { 'by-sync-status': SyncStatus };
+  };
 }
 
 const DB_NAME = 'notes-tasks-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 /**
  * Initialize and open the IndexedDB database
@@ -74,6 +80,12 @@ async function getDB(): Promise<IDBPDatabase<NotesTasksDB>> {
       if (!db.objectStoreNames.contains('lists')) {
         const listsStore = db.createObjectStore('lists', { keyPath: 'data._id' });
         listsStore.createIndex('by-sync-status', 'syncStatus');
+      }
+
+      // Create links store
+      if (!db.objectStoreNames.contains('links')) {
+        const linksStore = db.createObjectStore('links', { keyPath: 'data._id' });
+        linksStore.createIndex('by-sync-status', 'syncStatus');
       }
     }
   });
@@ -395,6 +407,110 @@ export const offlineStorage = {
     }
   },
 
+  // ==================== LINKS ====================
+
+  /**
+   * Store a single link in IndexedDB
+   */
+  async saveLink(link: Link, syncStatus: SyncStatus = 'synced'): Promise<void> {
+    if (!link || !link._id) {
+      console.error('Cannot save link without _id:', link);
+      return;
+    }
+
+    const db = await getDB();
+    await db.put('links', {
+      data: link,
+      syncStatus,
+      lastModified: Date.now()
+    });
+  },
+
+  /**
+   * Store multiple links in IndexedDB
+   */
+  async saveLinks(links: Link[], syncStatus: SyncStatus = 'synced'): Promise<void> {
+    if (!Array.isArray(links)) {
+      console.error('saveLinks called with non-array:', links);
+      return;
+    }
+
+    // Filter out links without _id
+    const validLinks = links.filter(link => {
+      if (!link || !link._id) {
+        console.error('Link missing _id, skipping:', link);
+        return false;
+      }
+      return true;
+    });
+
+    if (validLinks.length === 0) {
+      return;
+    }
+
+    const db = await getDB();
+    const tx = db.transaction('links', 'readwrite');
+    const timestamp = Date.now();
+
+    await Promise.all([
+      ...validLinks.map(link =>
+        tx.store.put({
+          data: link,
+          syncStatus,
+          lastModified: timestamp
+        })
+      ),
+      tx.done
+    ]);
+  },
+
+  /**
+   * Retrieve all links from IndexedDB
+   */
+  async getLinks(): Promise<Link[]> {
+    const db = await getDB();
+    const storedItems = await db.getAll('links');
+    return storedItems.map(item => item.data);
+  },
+
+  /**
+   * Retrieve a single link by ID
+   */
+  async getLink(id: string): Promise<Link | undefined> {
+    const db = await getDB();
+    const storedItem = await db.get('links', id);
+    return storedItem?.data;
+  },
+
+  /**
+   * Delete a link from IndexedDB
+   */
+  async deleteLink(id: string): Promise<void> {
+    const db = await getDB();
+    await db.delete('links', id);
+  },
+
+  /**
+   * Get all links with pending sync status
+   */
+  async getPendingLinks(): Promise<StoredItem<Link>[]> {
+    const db = await getDB();
+    return db.getAllFromIndex('links', 'by-sync-status', 'pending');
+  },
+
+  /**
+   * Update sync status for a link
+   */
+  async updateLinkSync(id: string, syncStatus: SyncStatus): Promise<void> {
+    const db = await getDB();
+    const storedItem = await db.get('links', id);
+    if (storedItem) {
+      storedItem.syncStatus = syncStatus;
+      storedItem.lastModified = Date.now();
+      await db.put('links', storedItem);
+    }
+  },
+
   // ==================== UTILITY ====================
 
   /**
@@ -404,14 +520,16 @@ export const offlineStorage = {
     notes: StoredItem<Note>[];
     tasks: StoredItem<Task>[];
     lists: StoredItem<List>[];
+    links: StoredItem<Link>[];
   }> {
-    const [notes, tasks, lists] = await Promise.all([
+    const [notes, tasks, lists, links] = await Promise.all([
       this.getPendingNotes(),
       this.getPendingTasks(),
-      this.getPendingLists()
+      this.getPendingLists(),
+      this.getPendingLinks()
     ]);
 
-    return { notes, tasks, lists };
+    return { notes, tasks, lists, links };
   },
 
   /**
@@ -419,12 +537,13 @@ export const offlineStorage = {
    */
   async clearAll(): Promise<void> {
     const db = await getDB();
-    const tx = db.transaction(['notes', 'tasks', 'lists'], 'readwrite');
+    const tx = db.transaction(['notes', 'tasks', 'lists', 'links'], 'readwrite');
 
     await Promise.all([
       tx.objectStore('notes').clear(),
       tx.objectStore('tasks').clear(),
       tx.objectStore('lists').clear(),
+      tx.objectStore('links').clear(),
       tx.done
     ]);
   },
@@ -434,6 +553,6 @@ export const offlineStorage = {
    */
   async getPendingCount(): Promise<number> {
     const pending = await this.getAllPending();
-    return pending.notes.length + pending.tasks.length + pending.lists.length;
+    return pending.notes.length + pending.tasks.length + pending.lists.length + pending.links.length;
   }
 };

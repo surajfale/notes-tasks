@@ -5,6 +5,7 @@
   import type { Link } from '$lib/types/link';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
+  import '$lib/components/tactile/neumorphic.css';
   
   const dispatch = createEventDispatcher();
   
@@ -121,7 +122,7 @@
     <select
       id="list"
       bind:value={listId}
-      class="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      class="w-full px-4 py-2 rounded-2xl neu-pressed text-stone-900 dark:text-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
     >
       <option value="">No List</option>
       {#each Array.isArray($listsStore.items) ? $listsStore.items : [] as list}

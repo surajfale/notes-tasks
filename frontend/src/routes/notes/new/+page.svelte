@@ -7,6 +7,7 @@
   import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
   import { PageHeader } from '$lib/components/ui';
+  import '$lib/components/tactile/neumorphic.css';
 
   import { onMount } from 'svelte';
   import { validateNoteForm } from '$lib/utils/validation';
@@ -110,7 +111,7 @@
   <PageHeader title="Create Note" description="Add a new note to your collection" />
 
   <form on:submit={handleSubmit} class="space-y-6">
-    <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-4 sm:p-6 space-y-6">
+    <div class="neu-raised p-4 sm:p-6 space-y-6">
       <Input
         type="text"
         label="Title"

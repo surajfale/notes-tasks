@@ -4,7 +4,8 @@
   import { onMount } from 'svelte';
   import type { RegisterData } from '$lib/types/user';
   import { validateRegisterForm } from '$lib/utils/validation';
-  import { ErrorMessage, Button } from '$lib/components/ui';
+  import { ErrorMessage, Button, Input } from '$lib/components/ui';
+  import '$lib/components/tactile/neumorphic.css';
 
   // Form state
   let username = '';
@@ -111,157 +112,74 @@
     <!-- Registration Form -->
     <form
       on:submit={handleSubmit}
-      class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 sm:p-8 space-y-6"
+      class="neu-raised p-6 sm:p-8 space-y-6"
     >
       <div class="space-y-4">
-        <!-- Username Field -->
-        <div>
-          <label for="username" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-            Username
-          </label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            autocomplete="username"
-            bind:value={username}
-            on:input={() => clearFieldError('username')}
-            disabled={isSubmitting || authLoading}
-            class="appearance-none relative block w-full px-4 py-3 min-h-[44px] text-base border rounded-lg
-                   placeholder-stone-400 text-stone-900 dark:text-stone-100
-                   bg-stone-50 dark:bg-stone-800
-                   border-stone-300 dark:border-stone-600
-                   focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   {validationErrors.username ? 'border-red-500 dark:border-red-500' : ''}"
-            placeholder="Choose a username"
-          />
-          {#if validationErrors.username}
-            <p class="mt-1 text-sm text-red-600 dark:text-red-400">
-              {validationErrors.username}
-            </p>
-          {/if}
-        </div>
+        <Input
+          id="username"
+          name="username"
+          type="text"
+          label="Username"
+          autocomplete="username"
+          bind:value={username}
+          on:input={() => clearFieldError('username')}
+          disabled={isSubmitting || authLoading}
+          error={validationErrors.username}
+          placeholder="Choose a username"
+        />
 
-        <!-- Email Field -->
-        <div>
-          <label for="email" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            bind:value={email}
-            on:input={() => clearFieldError('email')}
-            disabled={isSubmitting || authLoading}
-            class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-stone-400 text-stone-900 dark:text-stone-100
-                   bg-stone-50 dark:bg-stone-800
-                   border-stone-300 dark:border-stone-600
-                   focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   {validationErrors.email ? 'border-red-500 dark:border-red-500' : ''}"
-            placeholder="your.email@example.com"
-          />
-          {#if validationErrors.email}
-            <p class="mt-1 text-sm text-red-600 dark:text-red-400">
-              {validationErrors.email}
-            </p>
-          {/if}
-        </div>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          label="Email"
+          autocomplete="email"
+          bind:value={email}
+          on:input={() => clearFieldError('email')}
+          disabled={isSubmitting || authLoading}
+          error={validationErrors.email}
+          placeholder="your.email@example.com"
+        />
 
-        <!-- Display Name Field -->
-        <div>
-          <label for="displayName" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-            Display Name
-          </label>
-          <input
-            id="displayName"
-            name="displayName"
-            type="text"
-            autocomplete="name"
-            bind:value={displayName}
-            on:input={() => clearFieldError('displayName')}
-            disabled={isSubmitting || authLoading}
-            class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-stone-400 text-stone-900 dark:text-stone-100
-                   bg-stone-50 dark:bg-stone-800
-                   border-stone-300 dark:border-stone-600
-                   focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   {validationErrors.displayName ? 'border-red-500 dark:border-red-500' : ''}"
-            placeholder="Your name"
-          />
-          {#if validationErrors.displayName}
-            <p class="mt-1 text-sm text-red-600 dark:text-red-400">
-              {validationErrors.displayName}
-            </p>
-          {/if}
-        </div>
+        <Input
+          id="displayName"
+          name="displayName"
+          type="text"
+          label="Display Name"
+          autocomplete="name"
+          bind:value={displayName}
+          on:input={() => clearFieldError('displayName')}
+          disabled={isSubmitting || authLoading}
+          error={validationErrors.displayName}
+          placeholder="Your name"
+        />
 
-        <!-- Password Field -->
-        <div>
-          <label for="password" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autocomplete="new-password"
-            bind:value={password}
-            on:input={() => clearFieldError('password')}
-            disabled={isSubmitting || authLoading}
-            class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-stone-400 text-stone-900 dark:text-stone-100
-                   bg-stone-50 dark:bg-stone-800
-                   border-stone-300 dark:border-stone-600
-                   focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   {validationErrors.password ? 'border-red-500 dark:border-red-500' : ''}"
-            placeholder="Create a strong password"
-          />
-          {#if validationErrors.password}
-            <p class="mt-1 text-sm text-red-600 dark:text-red-400">
-              {validationErrors.password}
-            </p>
-          {:else}
-            <p class="mt-1 text-xs text-stone-500 dark:text-stone-400">
-              Must be at least 8 characters with uppercase, lowercase, and numbers
-            </p>
-          {/if}
-        </div>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          label="Password"
+          autocomplete="new-password"
+          bind:value={password}
+          on:input={() => clearFieldError('password')}
+          disabled={isSubmitting || authLoading}
+          error={validationErrors.password}
+          hint={validationErrors.password ? '' : 'Must be at least 8 characters with uppercase, lowercase, and numbers'}
+          placeholder="Create a strong password"
+        />
 
-        <!-- Confirm Password Field -->
-        <div>
-          <label for="confirmPassword" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-            Confirm Password
-          </label>
-          <input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            autocomplete="new-password"
-            bind:value={confirmPassword}
-            on:input={() => clearFieldError('confirmPassword')}
-            disabled={isSubmitting || authLoading}
-            class="appearance-none relative block w-full px-3 py-2 border rounded-lg
-                   placeholder-stone-400 text-stone-900 dark:text-stone-100
-                   bg-stone-50 dark:bg-stone-800
-                   border-stone-300 dark:border-stone-600
-                   focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   {validationErrors.confirmPassword ? 'border-red-500 dark:border-red-500' : ''}"
-            placeholder="Confirm your password"
-          />
-          {#if validationErrors.confirmPassword}
-            <p class="mt-1 text-sm text-red-600 dark:text-red-400">
-              {validationErrors.confirmPassword}
-            </p>
-          {/if}
-        </div>
+        <Input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          label="Confirm Password"
+          autocomplete="new-password"
+          bind:value={confirmPassword}
+          on:input={() => clearFieldError('confirmPassword')}
+          disabled={isSubmitting || authLoading}
+          error={validationErrors.confirmPassword}
+          placeholder="Confirm your password"
+        />
       </div>
 
       <!-- Error Message from Auth Store -->

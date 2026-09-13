@@ -15,12 +15,14 @@ interface SyncStatusState {
   pendingNoteIds: Set<string>;
   pendingTaskIds: Set<string>;
   pendingListIds: Set<string>;
+  pendingLinkIds: Set<string>;
 }
 
 const initialState: SyncStatusState = {
   pendingNoteIds: new Set(),
   pendingTaskIds: new Set(),
-  pendingListIds: new Set()
+  pendingListIds: new Set(),
+  pendingLinkIds: new Set()
 };
 
 const syncStatusStore = writable<SyncStatusState>(initialState);
@@ -37,7 +39,8 @@ async function updatePendingItems(): Promise<void> {
     syncStatusStore.set({
       pendingNoteIds: new Set(Array.isArray(pending.notes) ? pending.notes.map(item => item.data._id) : []),
       pendingTaskIds: new Set(Array.isArray(pending.tasks) ? pending.tasks.map(item => item.data._id) : []),
-      pendingListIds: new Set(Array.isArray(pending.lists) ? pending.lists.map(item => item.data._id) : [])
+      pendingListIds: new Set(Array.isArray(pending.lists) ? pending.lists.map(item => item.data._id) : []),
+      pendingLinkIds: new Set(Array.isArray(pending.links) ? pending.links.map(item => item.data._id) : [])
     });
   } catch (error) {
     console.error('Failed to update pending items:', error);
@@ -78,6 +81,17 @@ function markListPending(id: string): void {
 }
 
 /**
+ * Mark a link as pending
+ */
+function markLinkPending(id: string): void {
+  syncStatusStore.update(state => {
+    const newPendingLinkIds = new Set(state.pendingLinkIds);
+    newPendingLinkIds.add(id);
+    return { ...state, pendingLinkIds: newPendingLinkIds };
+  });
+}
+
+/**
  * Clear pending status for a note
  */
 function clearNotePending(id: string): void {
@@ -111,6 +125,17 @@ function clearListPending(id: string): void {
 }
 
 /**
+ * Clear pending status for a link
+ */
+function clearLinkPending(id: string): void {
+  syncStatusStore.update(state => {
+    const newPendingLinkIds = new Set(state.pendingLinkIds);
+    newPendingLinkIds.delete(id);
+    return { ...state, pendingLinkIds: newPendingLinkIds };
+  });
+}
+
+/**
  * Sync status service
  */
 export const syncStatusService = {
@@ -119,9 +144,11 @@ export const syncStatusService = {
   markNotePending,
   markTaskPending,
   markListPending,
+  markLinkPending,
   clearNotePending,
   clearTaskPending,
-  clearListPending
+  clearListPending,
+  clearLinkPending
 };
 
 /**
@@ -143,4 +170,11 @@ export function isTaskPending(taskId: string) {
  */
 export function isListPending(listId: string) {
   return derived(syncStatusStore, $state => $state.pendingListIds.has(listId));
+}
+
+/**
+ * Derived store to check if a link has pending changes
+ */
+export function isLinkPending(linkId: string) {
+  return derived(syncStatusStore, $state => $state.pendingLinkIds.has(linkId));
 }

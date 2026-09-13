@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ChecklistItem } from '$lib/types/task';
   import Button from '$lib/components/ui/Button.svelte';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let items: ChecklistItem[] = [];
   export let disabled = false;
@@ -172,11 +173,10 @@
       placeholder="Add checklist item (max 255 chars)"
       maxlength="255"
       {disabled}
-      class="flex-1 px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600
-             bg-stone-50 dark:bg-stone-950 
+      class="flex-1 px-4 py-2 rounded-2xl neu-pressed
              text-stone-900 dark:text-stone-100
              placeholder-stone-400 dark:placeholder-stone-500
-             focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+             focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
              disabled:opacity-50 disabled:cursor-not-allowed"
     />
     <Button
@@ -197,7 +197,7 @@
 
   <!-- Checklist items -->
   {#if items.length > 0}
-    <div class="space-y-2 border border-stone-300 dark:border-stone-600 rounded-lg p-4">
+    <div class="space-y-2 neu-pressed p-4">
       {#each items as item, index (item.order)}
         <div class="flex items-start gap-2 group">
           <!-- Checkbox -->

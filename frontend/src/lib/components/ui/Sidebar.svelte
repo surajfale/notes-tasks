@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let open = true;
   export let onClose: (() => void) | undefined = undefined;
@@ -35,9 +36,10 @@
 
 <!-- Sidebar -->
 <aside
-  class="fixed top-0 left-0 h-full bg-stone-50 dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 z-50 transition-transform duration-300 ease-in-out
+  class="neu-surface fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out
          {open ? 'translate-x-0' : '-translate-x-full'}
          w-64 md:translate-x-0"
+  style="box-shadow: 4px 0 16px rgb(var(--stone-300) / 0.35);"
 >
   <div class="flex flex-col h-full">
     <!-- Header -->
@@ -47,7 +49,7 @@
           Notes & Tasks
         </h1>
       </slot>
-      
+
       {#if onClose}
         <button
           type="button"
@@ -69,10 +71,10 @@
           <li>
             <a
               href={item.href}
-              class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200
+              class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200
                      {isActive(item.href)
-                       ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 font-medium'
-                       : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'}"
+                       ? 'neu-pressed text-primary-700 dark:text-primary-300 font-medium'
+                       : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/60 dark:hover:bg-stone-800/60'}"
               on:click={handleNavClick}
             >
               <span class="text-xl">{item.icon}</span>

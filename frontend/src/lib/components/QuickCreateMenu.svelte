@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let onNavigate: (() => void) | undefined = undefined;
   // 'sidebar': full-width button used in the desktop sidebar.
@@ -98,9 +99,7 @@
     <div
       bind:this={menuEl}
       role="menu"
-      class="absolute z-40 w-56
-             bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 shadow-lg
-             py-1
+      class="absolute z-40 w-56 neu-raised py-1
              {variant === 'fab' ? 'bottom-16 right-0' : 'left-0 right-0 sm:right-auto mt-1.5'}"
     >
       {#each items as item}

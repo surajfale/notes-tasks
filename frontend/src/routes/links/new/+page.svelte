@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import CreateLink from '$lib/components/links/CreateLink.svelte';
   import Button from '$lib/components/ui/Button.svelte';
+  import '$lib/components/tactile/neumorphic.css';
 
   function handleSuccess() {
     goto('/links');
@@ -27,7 +28,7 @@
     <h1 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">Create New Link</h1>
   </div>
 
-  <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 sm:p-8">
+  <div class="neu-raised p-6 sm:p-8">
     <CreateLink on:success={handleSuccess} on:cancel={handleCancel} />
   </div>
 </div>

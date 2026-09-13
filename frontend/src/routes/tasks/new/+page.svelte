@@ -4,6 +4,7 @@
   import { listsStore } from '$lib/stores/lists';
   import TaskEditor from '$lib/components/tasks/TaskEditor.svelte';
   import { PageHeader } from '$lib/components/ui';
+  import '$lib/components/tactile/neumorphic.css';
   import { onMount } from 'svelte';
   import type { CreateTaskData, UpdateTaskData } from '$lib/types/task';
   import { ApiError } from '$lib/types/error';
@@ -66,7 +67,7 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
   <PageHeader title="Create Task" description="Add a new task to your list" />
 
-  <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-4 sm:p-6">
+  <div class="neu-raised p-4 sm:p-6">
     <TaskEditor
       on:submit={handleSubmit}
       on:cancel={handleCancel}

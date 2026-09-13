@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let value: string = '';
   export let placeholder: string = 'Enter text...';
@@ -354,16 +355,18 @@
     </label>
   {/if}
 
-  <!-- Toolbar -->
-  <div class="border border-stone-300 dark:border-stone-600 rounded-t-lg bg-stone-50 dark:bg-stone-900 p-2">
+  <!-- Editor surface: one continuous neu-pressed shell for the toolbar + textarea/preview -->
+  <div class="neu-pressed rounded-2xl overflow-hidden">
+  <div class="p-2 border-b border-stone-200 dark:border-stone-800">
     <div class="flex items-center gap-1 flex-wrap">
-      <!-- Tab switcher -->
-      <div class="flex gap-1 mr-2 border-r border-stone-300 dark:border-stone-600 pr-2">
+      <!-- Tab switcher: same pressed-track + raised-active-chip pattern as
+           the tactile Preview/Edit toggle (TactileContentDrawer). -->
+      <div class="neu-pressed flex gap-0.5 p-0.5 mr-2">
         <button
           type="button"
           on:click={() => activeTab = 'write'}
           disabled={disabled}
-          class="px-3 py-1.5 min-h-[36px] text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'write' ? 'bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-medium' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'}"
+          class="px-3 py-1.5 min-h-[36px] text-sm rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'write' ? 'neu-raised-sm text-stone-900 dark:text-stone-100 font-medium' : 'text-stone-600 dark:text-stone-400'}"
         >
           Write
         </button>
@@ -371,7 +374,7 @@
           type="button"
           on:click={() => activeTab = 'preview'}
           disabled={disabled}
-          class="px-3 py-1.5 min-h-[36px] text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'preview' ? 'bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-medium' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'}"
+          class="px-3 py-1.5 min-h-[36px] text-sm rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed {activeTab === 'preview' ? 'neu-raised-sm text-stone-900 dark:text-stone-100 font-medium' : 'text-stone-600 dark:text-stone-400'}"
         >
           Preview
         </button>
@@ -410,7 +413,7 @@
               type="button"
               on:click={onRevert}
               disabled={disabled}
-              class="inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] text-sm rounded-md border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="neu-raised-sm neu-interactive inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] text-sm text-stone-700 dark:text-stone-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ↶ Revert
             </button>
@@ -420,7 +423,7 @@
             bind:value={selectedTone}
             disabled={disabled || enhancing}
             aria-label="Enhancement tone"
-            class="text-xs px-1.5 py-1 rounded border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800 text-stone-500 dark:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="text-xs px-1.5 py-1 rounded-md bg-transparent text-stone-500 dark:text-stone-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <option value="casual">Casual</option>
             <option value="professional">Professional</option>
@@ -582,21 +585,18 @@
         {rows}
         {disabled}
         maxlength={maxLength}
-        class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-stone-300 dark:border-stone-600 transition-colors
-               {error
-                 ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                 : 'focus:border-primary-500 focus:ring-primary-500'}
-               bg-stone-50 dark:bg-stone-950
+        class="w-full px-4 py-3 bg-transparent transition-shadow
+               {error ? 'ring-2 ring-inset ring-red-500' : ''}
                text-stone-900 dark:text-stone-100
                placeholder-stone-400 dark:placeholder-stone-500
-               focus:outline-none focus:ring-2 focus:ring-offset-0
+               focus:outline-none {error ? '' : 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500'}
                disabled:opacity-50 disabled:cursor-not-allowed
                font-sans text-base leading-relaxed"
         on:input
         on:keydown={handleKeyDown}
       />
     {:else}
-      <div class="w-full px-4 py-3 rounded-b-lg border border-t-0 border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-950 min-h-[200px]">
+      <div class="w-full px-4 py-3 min-h-[200px]">
         {#if value.trim()}
           <div class="prose prose-sm dark:prose-invert max-w-none text-stone-900 dark:text-stone-100">
             {@html previewHtml}
@@ -606,6 +606,7 @@
         {/if}
       </div>
     {/if}
+  </div>
   </div>
 
   {#if error}

@@ -11,6 +11,7 @@
     isToday,
     isTomorrow
   } from '$lib/utils/date';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let value: Date | null = null;
   export let label = 'Due Date';
@@ -331,14 +332,11 @@
           {disabled}
           on:blur={handleInputChange}
           on:keydown={handleKeydown}
-          class="w-full px-4 py-3 pr-10 min-h-[44px] text-base rounded-lg border transition-colors duration-200
-                 {error
-            ? 'border-red-500 focus:border-red-600 focus:ring-red-500'
-            : 'border-stone-300 dark:border-stone-600 focus:border-primary-500 focus:ring-primary-500'}
-                 bg-stone-50 dark:bg-stone-950
+          class="w-full px-4 py-3 pr-10 min-h-[44px] text-base rounded-2xl transition-shadow duration-200
+                 neu-pressed {error ? 'ring-2 ring-red-500' : ''}
                  text-stone-900 dark:text-stone-100
                  placeholder-stone-400 dark:placeholder-stone-500
-                 focus:outline-none focus:ring-2 focus:ring-offset-0
+                 focus:outline-none focus-visible:ring-2 {error ? 'focus-visible:ring-red-500' : 'focus-visible:ring-primary-500'}
                  disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={label}
           aria-invalid={!!error}
@@ -375,9 +373,7 @@
           type="button"
           on:click={handleClear}
           {disabled}
-          class="px-4 py-3 min-h-[44px] rounded-lg border border-stone-300 dark:border-stone-600
-                 bg-stone-50 dark:bg-stone-950 text-stone-700 dark:text-stone-300
-                 hover:bg-stone-50 dark:hover:bg-stone-900 transition-colors
+          class="neu-raised-sm neu-interactive px-4 py-3 min-h-[44px] text-stone-700 dark:text-stone-300
                  disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Clear date"
         >
@@ -392,7 +388,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
         bind:this={calendarContainer}
-        class="absolute z-50 top-full left-0 mt-2 p-4 bg-stone-50 dark:bg-stone-800 rounded-xl shadow-2xl border-2 border-stone-200 dark:border-stone-700 w-full sm:w-80 max-w-sm"
+        class="absolute z-50 top-full left-0 mt-2 p-4 neu-raised w-full sm:w-80 max-w-sm"
         role="dialog"
         aria-label="Select due date"
         aria-modal="true"
@@ -487,9 +483,8 @@
           <button
             type="button"
             on:click={goToToday}
-            class="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-lg bg-stone-100 dark:bg-stone-700
-                   text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600
-                   transition-colors touch-manipulation"
+            class="neu-raised-sm neu-interactive w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium
+                   text-stone-700 dark:text-stone-300 touch-manipulation"
             aria-label="Select today's date"
           >
             Today

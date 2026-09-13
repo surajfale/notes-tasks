@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { currentUser } from '$lib/stores/auth';
 	import { PageHeader } from '$lib/components/ui';
+	import '$lib/components/tactile/neumorphic.css';
 
 	$: user = $currentUser;
 
@@ -42,10 +43,10 @@
 		{#each shortcuts as item}
 			<a
 				href={item.href}
-				class="group block p-5 bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 transition-colors duration-150 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50/60 dark:hover:bg-stone-800/40"
+				class="group block p-5 neu-raised neu-interactive"
 			>
 				<div
-					class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-3"
+					class="neu-raised-sm flex items-center justify-center w-9 h-9 text-primary-600 dark:text-primary-400 mb-3"
 				>
 					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.path} />
