@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { personaStore } from '$lib/stores/persona';
+  import { personaStore, PERSONA_ACCENTS } from '$lib/stores/persona';
   import type { UiPersona } from '$lib/types/user';
   import '$lib/components/tactile/neumorphic.css';
 
@@ -15,6 +15,9 @@
 
   let choosing: UiPersona | null = null;
 
+  // Neutral light/dark + PERSONA_ACCENTS' accent — three dots that match
+  // app.css's real --stone-100/--stone-800 for each persona, since accent is
+  // no longer a separate free choice but baked into the persona itself.
   const OPTIONS: {
     value: UiPersona;
     name: string;
@@ -25,19 +28,19 @@
       value: 'focus',
       name: 'Focus',
       tagline: 'Minimal, dense, quiet. Keyboard shortcuts front and center.',
-      swatches: ['#f7f7f8', '#6b6b76', '#27272e']
+      swatches: ['#f2eeea', '#29241e', PERSONA_ACCENTS.focus]
     },
     {
       value: 'vivid',
       name: 'Vivid',
       tagline: 'Bold, colorful, rounded. Lists get their own personality.',
-      swatches: ['#f8f6ff', '#7566bb', '#2e2750']
+      swatches: ['#f0ecfd', '#2e2750', PERSONA_ACCENTS.vivid]
     },
     {
       value: 'terminal',
       name: 'Terminal',
       tagline: 'Dark, monospace, sharp corners. Cmd/Ctrl+K to do anything.',
-      swatches: ['#576080', '#1c1f2c', '#0b0e14']
+      swatches: ['#e6eaf0', '#1c1f2c', PERSONA_ACCENTS.terminal]
     }
   ];
 

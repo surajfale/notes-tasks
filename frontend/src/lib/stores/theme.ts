@@ -10,28 +10,32 @@ export interface ThemeState {
 
 const THEME_MODE_KEY = 'theme-mode';
 const ACCENT_COLOR_KEY = 'accent-color';
-const DEFAULT_ACCENT_COLOR = '#6750A4'; // Material Design 3 primary purple
+// Matches the Focus persona's own curated accent (stores/persona.ts's
+// PERSONA_ACCENTS) — color is now derived from persona, not chosen
+// independently, so this is just what a fresh install starts with before
+// persona.ts's own init call overrides it for the stored/default persona.
+const DEFAULT_ACCENT_COLOR = '#D97706';
 
 // Helper functions for localStorage
 function getStoredThemeMode(): ThemeMode {
   if (!browser) return 'light';
-  
+
   const stored = localStorage.getItem(THEME_MODE_KEY);
   if (stored === 'light' || stored === 'dark') {
     return stored;
   }
-  
+
   // Check system preference
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     return 'dark';
   }
-  
+
   return 'light';
 }
 
 function getStoredAccentColor(): string {
   if (!browser) return DEFAULT_ACCENT_COLOR;
-  
+
   const stored = localStorage.getItem(ACCENT_COLOR_KEY);
   return stored || DEFAULT_ACCENT_COLOR;
 }
@@ -71,20 +75,20 @@ function mixColors(color1: { r: number; g: number; b: number }, color2: { r: num
 // Apply theme to document
 function applyThemeToDocument(mode: ThemeMode, accentColor: string): void {
   if (!browser) return;
-  
+
   // Apply theme mode class to html element
   const html = document.documentElement;
   html.classList.remove('light', 'dark');
   html.classList.add(mode);
-  
+
   // Convert accent color to RGB
   const rgb = hexToRgb(accentColor);
   if (!rgb) return;
-  
+
   // Generate color shades by mixing with white and black
   const white = { r: 255, g: 255, b: 255 };
   const black = { r: 0, g: 0, b: 0 };
-  
+
   // Set CSS custom properties for all primary color shades
   html.style.setProperty('--accent-color', accentColor);
   html.style.setProperty('--primary-50', mixColors(rgb, white, 0.1));
@@ -103,20 +107,20 @@ function createThemeStore() {
   // Initialize with stored values
   const initialMode = getStoredThemeMode();
   const initialAccentColor = getStoredAccentColor();
-  
+
   const { subscribe, set, update } = writable<ThemeState>({
     mode: initialMode,
     accentColor: initialAccentColor
   });
-  
+
   // Apply initial theme
   if (browser) {
     applyThemeToDocument(initialMode, initialAccentColor);
   }
-  
+
   return {
     subscribe,
-    
+
     /**
      * Initialize theme from localStorage and apply to document
      * Should be called on app startup
@@ -124,11 +128,11 @@ function createThemeStore() {
     initialize(): void {
       const mode = getStoredThemeMode();
       const accentColor = getStoredAccentColor();
-      
+
       set({ mode, accentColor });
       applyThemeToDocument(mode, accentColor);
     },
-    
+
     /**
      * Toggle between light and dark mode
      */
@@ -140,7 +144,7 @@ function createThemeStore() {
         return { ...state, mode: newMode };
       });
     },
-    
+
     /**
      * Set theme mode explicitly
      */
@@ -151,9 +155,12 @@ function createThemeStore() {
         return { ...state, mode };
       });
     },
-    
+
     /**
-     * Set accent color
+     * Set accent color. Not exposed as a free picker in Settings anymore —
+     * called by stores/persona.ts whenever the persona changes, since each
+     * of the 3 personas now owns one curated accent (PERSONA_ACCENTS) rather
+     * than accent being a separate, independently-chosen axis.
      */
     setAccentColor(color: string): void {
       update(state => {
@@ -162,18 +169,18 @@ function createThemeStore() {
         return { ...state, accentColor: color };
       });
     },
-    
+
     /**
      * Reset theme to defaults
      */
     reset(): void {
       const mode: ThemeMode = 'light';
       const accentColor = DEFAULT_ACCENT_COLOR;
-      
+
       setStoredThemeMode(mode);
       setStoredAccentColor(accentColor);
       applyThemeToDocument(mode, accentColor);
-      
+
       set({ mode, accentColor });
     }
   };
@@ -184,7 +191,7 @@ export const themeStore = createThemeStore();
 // Listen for system theme changes
 if (browser && window.matchMedia) {
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  
+
   mediaQuery.addEventListener('change', (e) => {
     // Only auto-switch if user hasn't explicitly set a preference
     const storedMode = localStorage.getItem(THEME_MODE_KEY);

@@ -33,18 +33,22 @@ body {
    ========================================================================== */
 
 :root {
-	/* Default (and "focus" persona) neutral scale — cool, restrained gray. */
-	--stone-50: 247 247 248;
-	--stone-100: 238 238 240;
-	--stone-200: 220 220 224;
-	--stone-300: 185 185 192;
-	--stone-400: 143 143 153;
-	--stone-500: 107 107 118;
-	--stone-600: 82 82 92;
-	--stone-700: 63 63 71;
-	--stone-800: 39 39 46;
-	--stone-900: 24 24 28;
-	--stone-950: 14 14 17;
+	/* Default ("focus" persona) neutral scale — warm stone, paired with its
+	   own amber accent (PERSONA_ACCENTS in stores/persona.ts). Matches the
+	   "Notes & Writing App" reference palette (ui-ux-pro-max skill data) and
+	   the app's own accent-links hue, rather than the previous cool gray +
+	   independently-chosen accent. */
+	--stone-50: 250 248 246;
+	--stone-100: 242 238 234;
+	--stone-200: 228 221 213;
+	--stone-300: 199 189 177;
+	--stone-400: 163 150 135;
+	--stone-500: 120 108 94;
+	--stone-600: 90 80 68;
+	--stone-700: 66 58 49;
+	--stone-800: 41 36 30;
+	--stone-900: 26 23 19;
+	--stone-950: 16 14 11;
 
 	--font-sans: 'Public Sans';
 	--font-mono: 'IBM Plex Mono';
