@@ -198,6 +198,94 @@ body {
 	box-shadow: 0 0 0 1px rgb(var(--primary-500, 87 96 128) / 0.3);
 }
 
+/* Neumorphic surfaces (tactile/neumorphic.css): .neu-raised, .neu-pressed
+   and friends set border-radius and box-shadow directly rather than through
+   the rounded and shadow utilities overridden above, so without this they'd
+   render identically in every persona — silently erasing Vivid's bold/round
+   identity and Terminal's sharp/glow one on every neumorphic surface. Same
+   attribute-scoped override trick as above, applied to the neu- classes.
+   Focus gets no override here: true soft neumorphism (low-contrast pastel,
+   see neumorphic.css's own design-intent note) is the persona it actually
+   fits, so its defaults stay as-is. */
+
+[data-persona='vivid'] .neu-raised {
+	border-radius: 28px;
+	box-shadow:
+		10px 10px 24px rgb(var(--primary-500, 117 102 187) / 0.35),
+		-8px -8px 18px rgba(255, 255, 255, 0.85);
+}
+[data-persona='vivid'].dark .neu-raised {
+	box-shadow:
+		10px 10px 24px rgb(var(--primary-500, 117 102 187) / 0.45),
+		-6px -6px 14px rgb(var(--stone-700) / 0.16);
+}
+[data-persona='vivid'] .neu-raised-sm,
+[data-persona='vivid'] .neu-pressed {
+	border-radius: 20px;
+}
+[data-persona='vivid'] .neu-raised-sm {
+	box-shadow:
+		6px 6px 14px rgb(var(--primary-500, 117 102 187) / 0.3),
+		-5px -5px 12px rgba(255, 255, 255, 0.85);
+}
+[data-persona='vivid'].dark .neu-raised-sm {
+	box-shadow:
+		6px 6px 14px rgb(var(--primary-500, 117 102 187) / 0.4),
+		-4px -4px 10px rgb(var(--stone-700) / 0.16);
+}
+[data-persona='vivid'] .neu-pressed {
+	box-shadow:
+		inset 4px 4px 10px rgb(var(--primary-500, 117 102 187) / 0.28),
+		inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+}
+[data-persona='vivid'].dark .neu-pressed {
+	box-shadow:
+		inset 4px 4px 10px rgb(var(--primary-500, 117 102 187) / 0.38),
+		inset -3px -3px 6px rgb(var(--stone-700) / 0.16);
+}
+[data-persona='vivid'] .neu-interactive:hover,
+[data-persona='vivid'] .neu-interactive:focus-visible {
+	box-shadow:
+		12px 12px 26px rgb(var(--primary-500, 117 102 187) / 0.4),
+		-10px -10px 20px rgba(255, 255, 255, 0.9);
+}
+[data-persona='vivid'].dark .neu-interactive:hover,
+[data-persona='vivid'].dark .neu-interactive:focus-visible {
+	box-shadow:
+		12px 12px 26px rgb(var(--primary-500, 117 102 187) / 0.5),
+		-8px -8px 16px rgb(var(--stone-700) / 0.16);
+}
+[data-persona='vivid'] .neu-dragging {
+	box-shadow:
+		16px 16px 34px rgb(var(--primary-500, 117 102 187) / 0.45),
+		-14px -14px 28px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Terminal drops soft neumorphism altogether — a flat surface plus a glow
+   ring (same primary-500-driven look its pre-existing .shadow override
+   already used) instead of an embossed pastel blur, since that blur is the
+   opposite of what a "dark/techy, sharp corners" persona is going for. */
+[data-persona='terminal'] .neu-raised,
+[data-persona='terminal'] .neu-raised-sm {
+	border-radius: 4px;
+	box-shadow: 0 0 0 1px rgb(var(--primary-500, 87 96 128) / 0.35);
+}
+[data-persona='terminal'] .neu-pressed {
+	border-radius: 4px;
+	box-shadow: inset 0 0 0 1px rgb(var(--primary-500, 87 96 128) / 0.45);
+}
+[data-persona='terminal'] .neu-interactive:hover,
+[data-persona='terminal'] .neu-interactive:focus-visible {
+	box-shadow:
+		0 0 0 1.5px rgb(var(--primary-500, 87 96 128) / 0.6),
+		0 0 12px rgb(var(--primary-500, 87 96 128) / 0.25);
+}
+[data-persona='terminal'] .neu-dragging {
+	box-shadow:
+		0 0 0 2px rgb(var(--primary-500, 87 96 128) / 0.7),
+		0 0 20px rgb(var(--primary-500, 87 96 128) / 0.35) !important;
+}
+
 * {
 	box-sizing: border-box;
 }
