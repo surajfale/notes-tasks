@@ -12,6 +12,7 @@
   import { validatePasswordChangeForm } from '$lib/utils/validation';
   import NotificationSettings from '$lib/components/settings/NotificationSettings.svelte';
   import PersonaPicker from '$lib/components/settings/PersonaPicker.svelte';
+  import '$lib/components/tactile/neumorphic.css';
 
   // Track auth loading state
   let isAuthLoading = true;
@@ -192,31 +193,31 @@
       <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
         Theme Mode
       </label>
-      <div class="flex items-center space-x-4">
+      <div class="neu-pressed inline-flex gap-1 p-1">
         <button
           type="button"
           on:click={toggleTheme}
-          class="flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors duration-150 {theme.mode === 'light'
-            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-            : 'border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'}"
+          class="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-150 {theme.mode === 'light'
+            ? 'neu-raised-sm text-primary-700 dark:text-primary-300'
+            : 'text-stone-600 dark:text-stone-400'}"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          <span class="text-stone-900 dark:text-stone-100">Light</span>
+          <span>Light</span>
         </button>
 
         <button
           type="button"
           on:click={toggleTheme}
-          class="flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors duration-150 {theme.mode === 'dark'
-            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-            : 'border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'}"
+          class="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-150 {theme.mode === 'dark'
+            ? 'neu-raised-sm text-primary-700 dark:text-primary-300'
+            : 'text-stone-600 dark:text-stone-400'}"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
           </svg>
-          <span class="text-stone-900 dark:text-stone-100">Dark</span>
+          <span>Dark</span>
         </button>
       </div>
     </div>
@@ -304,7 +305,7 @@
   </Card>
 
   <!-- Account Deletion Section -->
-  <Card class="border-red-200 dark:border-red-800">
+  <Card class="border-l-4 border-red-400 dark:border-red-700">
     <h2 class="text-xl font-semibold text-red-600 dark:text-red-400 mb-4">
       Danger Zone
     </h2>

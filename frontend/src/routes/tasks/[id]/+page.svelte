@@ -6,6 +6,7 @@
   import Modal from '$lib/components/ui/Modal.svelte';
   import TaskEditor from '$lib/components/tasks/TaskEditor.svelte';
   import NotificationDisplay from '$lib/components/tasks/NotificationDisplay.svelte';
+  import '$lib/components/tactile/neumorphic.css';
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import type { UpdateTaskData } from '$lib/types/task';
@@ -116,7 +117,7 @@
     </div>
   </div>
 
-  <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 space-y-6">
+  <div class="neu-raised p-6 space-y-6">
     <!-- Completion Checkbox at the top -->
     <div class="flex items-center gap-3 pb-4 border-b border-stone-200 dark:border-stone-700">
       <input

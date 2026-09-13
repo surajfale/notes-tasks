@@ -1,7 +1,8 @@
 <script lang="ts">
   import { authRepository } from '$lib/repositories/auth.repository';
-  import { ErrorMessage, Button } from '$lib/components/ui';
-  
+  import { ErrorMessage, Button, Input } from '$lib/components/ui';
+  import '$lib/components/tactile/neumorphic.css';
+
   let email = '';
   let isSubmitting = false;
   let error: string | null = null;
@@ -41,30 +42,20 @@
 
     <form
       on:submit={handleSubmit}
-      class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 sm:p-8 space-y-6"
+      class="neu-raised p-6 sm:p-8 space-y-6"
     >
       <div class="space-y-4">
-        <div>
-          <label for="email" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
-            Email Address
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            required
-            bind:value={email}
-            disabled={isSubmitting}
-            class="appearance-none relative block w-full px-4 py-3 min-h-[44px] text-base border rounded-lg
-                   placeholder-stone-400 text-stone-900 dark:text-stone-100
-                   bg-stone-50 dark:bg-stone-800
-                   border-stone-300 dark:border-stone-600
-                   focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                   disabled:opacity-50 disabled:cursor-not-allowed"
-            placeholder="Enter your email"
-          />
-        </div>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          label="Email Address"
+          autocomplete="email"
+          required
+          bind:value={email}
+          disabled={isSubmitting}
+          placeholder="Enter your email"
+        />
       </div>
 
       {#if error}

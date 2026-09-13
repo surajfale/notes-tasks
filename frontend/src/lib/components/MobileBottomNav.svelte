@@ -1,4 +1,6 @@
 <script lang="ts">
+  import '$lib/components/tactile/neumorphic.css';
+
   export let isActive: (path: string) => boolean;
   export let onMore: () => void;
   export let moreOpen = false;
@@ -28,17 +30,17 @@
 </script>
 
 <nav
-  class="md:hidden fixed bottom-0 left-0 right-0 z-[45] bg-stone-50 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800"
-  style="padding-bottom: env(safe-area-inset-bottom, 0px)"
+  class="neu-surface md:hidden fixed bottom-0 left-0 right-0 z-[45]"
+  style="padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -4px 16px rgb(var(--stone-300) / 0.35);"
   aria-label="Primary"
 >
-  <div class="grid grid-cols-5">
+  <div class="grid grid-cols-5 gap-1 px-1.5 py-1.5">
     {#each items as item}
       <a
         href={item.href}
         data-sveltekit-preload-data="hover"
-        class="flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] text-xs font-medium transition-colors
-               {isActive(item.href) ? 'text-primary-600 dark:text-primary-400' : 'text-stone-500 dark:text-stone-400'}"
+        class="flex flex-col items-center justify-center gap-0.5 py-1.5 min-h-[56px] rounded-2xl text-xs font-medium transition-all
+               {isActive(item.href) ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-500 dark:text-stone-400'}"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.path} />
@@ -51,8 +53,8 @@
       type="button"
       on:click={onMore}
       aria-expanded={moreOpen}
-      class="flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] text-xs font-medium transition-colors
-             {moreOpen ? 'text-primary-600 dark:text-primary-400' : 'text-stone-500 dark:text-stone-400'}"
+      class="flex flex-col items-center justify-center gap-0.5 py-1.5 min-h-[56px] rounded-2xl text-xs font-medium transition-all
+             {moreOpen ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-500 dark:text-stone-400'}"
     >
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />

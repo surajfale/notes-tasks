@@ -5,12 +5,13 @@
   import NotePreview from '$lib/components/notes/NotePreview.svelte';
   import type { Note } from '$lib/types/note';
   import { formatNoteForWhatsApp, shareText, shareImage } from '$lib/utils/share';
-  import { 
-    elementToBlob, 
-    generateNoteImageFilename, 
+  import {
+    elementToBlob,
+    generateNoteImageFilename,
     getCurrentTheme,
-    getThemeBackgroundColor 
+    getThemeBackgroundColor
   } from '$lib/utils/imageGenerator';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let open: boolean = false;
   export let note: Note;
@@ -102,7 +103,7 @@
 <Modal bind:open title="Share Note" onClose={handleCloseModal} size="lg">
   <div class="space-y-6">
     <!-- Preview Section -->
-    <div class="bg-stone-50 dark:bg-stone-800 rounded-lg p-4 max-h-[400px] overflow-y-auto">
+    <div class="neu-pressed p-4 max-h-[400px] overflow-y-auto">
       <h3 class="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-3">
         Preview
       </h3>
@@ -116,16 +117,14 @@
       <h3 class="text-sm font-semibold text-stone-700 dark:text-stone-300">
         Share via WhatsApp
       </h3>
-      
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- Share as Text Button -->
         <button
           type="button"
           on:click={handleShareAsText}
           disabled={sharingText || sharingImage}
-          class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-stone-300 dark:border-stone-600
-                 bg-stone-50 dark:bg-stone-900 hover:border-primary-500 dark:hover:border-primary-400
-                 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all
+          class="neu-raised-sm neu-interactive flex flex-col items-center justify-center gap-3 p-6
                  disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg class="w-12 h-12 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,9 +145,7 @@
           type="button"
           on:click={handleShareAsImage}
           disabled={sharingText || sharingImage}
-          class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-stone-300 dark:border-stone-600
-                 bg-stone-50 dark:bg-stone-900 hover:border-primary-500 dark:hover:border-primary-400
-                 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all
+          class="neu-raised-sm neu-interactive flex flex-col items-center justify-center gap-3 p-6
                  disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg class="w-12 h-12 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,11 +164,11 @@
     </div>
 
     <!-- Text Preview (collapsible) -->
-    <details class="bg-stone-50 dark:bg-stone-800 rounded-lg p-4">
+    <details class="neu-pressed p-4">
       <summary class="cursor-pointer text-sm font-semibold text-stone-700 dark:text-stone-300 select-none">
         View Text Format
       </summary>
-      <pre class="mt-3 text-xs text-stone-600 dark:text-stone-400 whitespace-pre-wrap break-words font-mono bg-stone-50 dark:bg-stone-900 p-3 rounded border border-stone-200 dark:border-stone-700">{formattedText}</pre>
+      <pre class="neu-raised-sm mt-3 text-xs text-stone-600 dark:text-stone-400 whitespace-pre-wrap break-words font-mono p-3">{formattedText}</pre>
     </details>
 
     <!-- Error/Info Message -->

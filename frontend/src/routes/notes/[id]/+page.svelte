@@ -8,6 +8,7 @@
   import MarkdownEditor from '$lib/components/ui/MarkdownEditor.svelte';
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
   import ShareModal from '$lib/components/ui/ShareModal.svelte';
+  import '$lib/components/tactile/neumorphic.css';
 
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
@@ -227,8 +228,7 @@
         <button
           type="button"
           on:click={openShareModal}
-          class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors
-                 border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50"
+          class="neu-raised-sm neu-interactive flex items-center gap-2 px-4 py-2 text-stone-700 dark:text-stone-300"
           title="Share note"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,10 +241,10 @@
         <button
           type="button"
           on:click={handleCopyNote}
-          class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors
+          class="flex items-center gap-2 px-4 py-2 rounded-2xl transition-all
                  {copySuccess
-                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
-                   : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50'}"
+                   ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                   : 'neu-raised-sm neu-interactive text-stone-700 dark:text-stone-300'}"
           title="Copy note content"
         >
           {#if copySuccess}
@@ -264,7 +264,7 @@
   </div>
 
   <form on:submit={handleSubmit} class="space-y-6">
-    <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-6 space-y-6">
+    <div class="neu-raised p-6 space-y-6">
       <Input
         type="text"
         label="Title"

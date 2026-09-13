@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { NotificationTiming } from '$lib/types/task';
   import { notificationStore } from '$lib/stores/notifications';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let enabled: boolean = false;
   export let timings: NotificationTiming[] = [];
@@ -45,7 +46,7 @@
   $: hasSentNotifications = sentNotifications && sentNotifications.length > 0;
 </script>
 
-<div class="bg-stone-50 dark:bg-stone-900 rounded-xl border-2 border-stone-200 dark:border-stone-700 p-4 sm:p-6">
+<div class="neu-raised p-4 sm:p-6">
   <div class="flex items-start gap-3">
     <svg 
       class="w-6 h-6 flex-shrink-0 mt-0.5 {hasNotifications ? 'text-blue-600 dark:text-blue-400' : 'text-stone-400 dark:text-stone-600'}" 

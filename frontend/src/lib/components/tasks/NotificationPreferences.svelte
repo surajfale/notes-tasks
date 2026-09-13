@@ -5,6 +5,7 @@
   import NotificationSummary from './NotificationSummary.svelte';
   import Tooltip from '$lib/components/ui/Tooltip.svelte';
   import { notificationStore } from '$lib/stores/notifications';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let dueDate: Date | null = null;
   export let enabled: boolean = false;
@@ -173,7 +174,7 @@
 
 <div class="space-y-3">
   <!-- Compact Notification Toggle -->
-  <div class="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-800/50 rounded-lg border border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 transition-colors">
+  <div class="neu-raised-sm neu-interactive flex items-center justify-between p-3">
     <div class="flex items-center gap-2 flex-1 min-w-0">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-600 dark:text-primary-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -233,7 +234,7 @@
 
   <!-- Expanded Settings -->
   {#if isExpanded && dueDate}
-    <div class="bg-stone-50 dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-700 p-4">
+    <div class="neu-pressed p-4">
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -262,12 +263,12 @@
             {@const selected = isTimingSelected(option.value)}
 
             <label
-              class="flex items-center gap-2 p-2 rounded-lg border transition-all cursor-pointer
+              class="flex items-center gap-2 p-2 rounded-xl transition-all cursor-pointer
                      {available
                        ? selected
-                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                         : 'border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/50'
-                       : 'border-stone-100 dark:border-stone-800 opacity-50 cursor-not-allowed'}"
+                         ? 'neu-pressed text-primary-700 dark:text-primary-300'
+                         : 'neu-raised-sm neu-interactive'
+                       : 'opacity-50 cursor-not-allowed'}"
             >
               <input
                 type="checkbox"

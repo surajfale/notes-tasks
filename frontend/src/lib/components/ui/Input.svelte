@@ -1,4 +1,7 @@
 <script lang="ts">
+  import type { HTMLInputAttributes } from 'svelte/elements';
+  import '$lib/components/tactile/neumorphic.css';
+
   export let type: 'text' | 'email' | 'password' | 'number' | 'date' | 'search' | 'url' = 'text';
   export let value = '';
   export let label = '';
@@ -9,18 +12,20 @@
   export let disabled = false;
   export let id = '';
   export let name = '';
+  export let autocomplete: HTMLInputAttributes['autocomplete'] = undefined;
 
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
-  
-  // Touch-friendly input sizing: min-height 44px for mobile (Apple HIG recommendation)
-  $: inputClasses = `w-full px-4 py-3 min-h-[44px] text-base rounded-lg border transition-colors duration-200
-             ${error 
-               ? 'border-red-500 focus:border-red-600 focus:ring-red-500' 
-               : 'border-stone-300 dark:border-stone-600 focus:border-primary-500 focus:ring-primary-500'}
-             bg-stone-50 dark:bg-stone-950 
+
+  // Touch-friendly input sizing: min-height 44px for mobile (Apple HIG recommendation).
+  // neu-pressed gives the inset "carved into the surface" look shared with the
+  // tactile textarea/preview toggle in TactileContentDrawer; error state overrides
+  // it with a visible red ring since a subtle shadow alone doesn't read as an error.
+  $: inputClasses = `w-full px-4 py-3 min-h-[44px] text-base rounded-2xl transition-shadow duration-200
+             neu-pressed
+             ${error ? 'ring-2 ring-red-500' : ''}
              text-stone-900 dark:text-stone-100
              placeholder-stone-400 dark:placeholder-stone-500
-             focus:outline-none focus:ring-2 focus:ring-offset-0
+             focus:outline-none focus-visible:ring-2 ${error ? 'focus-visible:ring-red-500' : 'focus-visible:ring-primary-500'}
              disabled:opacity-50 disabled:cursor-not-allowed`;
 </script>
 
@@ -36,7 +41,7 @@
       {/if}
     </label>
   {/if}
-  
+
   {#if type === 'text'}
     <input
       type="text"
@@ -44,6 +49,7 @@
       {placeholder}
       {required}
       {disabled}
+      {autocomplete}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -59,6 +65,7 @@
       {placeholder}
       {required}
       {disabled}
+      {autocomplete}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -74,6 +81,7 @@
       {placeholder}
       {required}
       {disabled}
+      {autocomplete}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -89,6 +97,7 @@
       {placeholder}
       {required}
       {disabled}
+      {autocomplete}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -104,6 +113,7 @@
       {placeholder}
       {required}
       {disabled}
+      {autocomplete}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -119,6 +129,7 @@
       {placeholder}
       {required}
       {disabled}
+      {autocomplete}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -134,6 +145,7 @@
       {placeholder}
       {required}
       {disabled}
+      {autocomplete}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -143,7 +155,7 @@
       on:focus
     />
   {/if}
-  
+
   {#if error}
     <p class="mt-2 text-sm text-red-600 dark:text-red-400">
       {error}

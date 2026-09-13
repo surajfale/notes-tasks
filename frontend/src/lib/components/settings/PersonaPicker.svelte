@@ -1,6 +1,7 @@
 <script lang="ts">
   import { personaStore } from '$lib/stores/persona';
   import type { UiPersona } from '$lib/types/user';
+  import '$lib/components/tactile/neumorphic.css';
 
   // Fired after a persona is chosen and the backend sync has been kicked
   // off — used by the onboarding flow to dismiss itself. Settings doesn't
@@ -58,10 +59,10 @@
       type="button"
       on:click={() => choose(option.value)}
       disabled={choosing !== null}
-      class="text-left p-4 rounded-lg border-2 transition-colors duration-150 disabled:opacity-60
+      class="text-left p-4 transition-all duration-150 disabled:opacity-60
              {current === option.value
-               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-               : 'border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'}"
+               ? 'neu-pressed text-primary-700 dark:text-primary-300'
+               : 'neu-raised-sm neu-interactive'}"
       aria-pressed={current === option.value}
     >
       <div class="flex items-center justify-between mb-2">

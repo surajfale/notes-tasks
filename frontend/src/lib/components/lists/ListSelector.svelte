@@ -1,6 +1,7 @@
 <script lang="ts">
   import { listsStore } from '$lib/stores/lists';
   import type { List } from '$lib/types/list';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let value: string | undefined = undefined;
   export let label: string = 'List';
@@ -34,9 +35,7 @@
       on:change={handleChange}
       {disabled}
       {required}
-      class="w-full px-4 py-2.5 pr-10 rounded-lg border {error
-        ? 'border-error-500 focus:ring-error-500 focus:border-error-500'
-        : 'border-stone-300 dark:border-stone-600 focus:ring-primary-500 focus:border-primary-500'} bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
+      class="w-full px-4 py-2.5 pr-10 rounded-2xl neu-pressed {error ? 'ring-2 ring-error-500' : ''} text-stone-900 dark:text-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed appearance-none"
     >
       <option value="">{placeholder}</option>
       {#each lists as list (list._id)}

@@ -5,6 +5,7 @@
   import Button from '$lib/components/ui/Button.svelte';
   import type { List, CreateListData, UpdateListData } from '$lib/types/list';
   import { validateListForm } from '$lib/utils/validation';
+  import '$lib/components/tactile/neumorphic.css';
 
   export let open = false;
   export let list: List | null = null;
@@ -130,8 +131,8 @@
         Emoji (optional)
       </label>
       <div class="flex items-center gap-2 mb-3">
-        <div 
-          class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl border-2 border-stone-300 dark:border-stone-600"
+        <div
+          class="neu-raised-sm w-12 h-12 flex items-center justify-center text-2xl"
           style="background-color: {color}20"
         >
           {#if emoji}

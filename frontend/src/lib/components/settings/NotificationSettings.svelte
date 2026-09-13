@@ -5,6 +5,7 @@
   import { getCommonTimezones, getCurrentTimezone } from '$lib/utils/date';
   import type { NotificationDay, NotificationPreferences } from '$lib/types/notification';
   import { pushNotificationManager } from '$lib/services/pushNotificationManager';
+  import '$lib/components/tactile/neumorphic.css';
 
   // Component state
   let isLoading = false;
@@ -240,7 +241,7 @@
         </p>
 
         <!-- Email Notifications -->
-        <div class="p-4 border-2 border-stone-200 dark:border-stone-700 rounded-lg">
+        <div class="neu-raised-sm p-4">
           <label class="flex items-start space-x-3 cursor-pointer">
             <input
               type="checkbox"
@@ -265,7 +266,7 @@
         </div>
 
         <!-- Browser/PWA Notifications -->
-        <div class="p-4 border-2 border-stone-200 dark:border-stone-700 rounded-lg">
+        <div class="neu-raised-sm p-4">
           <label class="flex items-start space-x-3 cursor-pointer">
             <input
               type="checkbox"
@@ -336,7 +337,7 @@
             id="timezone-select"
             bind:value={selectedTimezone}
             on:change={clearMessages}
-            class="w-full px-4 py-3 min-h-[44px] text-base rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            class="w-full px-4 py-3 min-h-[44px] text-base rounded-2xl neu-pressed text-stone-900 dark:text-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             {#each timezoneOptions as timezone}
               <option value={timezone.value}>{timezone.label}</option>
@@ -358,7 +359,7 @@
               type="time"
               bind:value={selectedNotificationTime}
               on:change={clearMessages}
-              class="flex-1 px-4 py-3 min-h-[44px] text-base rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="flex-1 px-4 py-3 min-h-[44px] text-base rounded-2xl neu-pressed text-stone-900 dark:text-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             />
             <div class="flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
