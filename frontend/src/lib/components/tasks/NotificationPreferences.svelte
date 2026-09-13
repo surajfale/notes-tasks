@@ -228,7 +228,7 @@
       <span
         class="inline-block h-4 w-4 transform rounded-full bg-stone-50 shadow-md transition-transform duration-200
                {enabled ? 'translate-x-6' : 'translate-x-1'}"
-      />
+      ></span>
     </button>
   </div>
 

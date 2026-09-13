@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { authStore, currentUser } from '$lib/stores/auth';
-  import { themeStore } from '$lib/stores/theme';
+  import { themeStore, type ThemeState } from '$lib/stores/theme';
   import { authRepository } from '$lib/repositories/auth.repository';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
@@ -28,7 +28,7 @@
   });
 
   // Theme state
-  let theme = { mode: 'light' as 'light' | 'dark', accentColor: '#6750A4' };
+  let theme: ThemeState = { mode: 'light', accentColor: '#D97706' };
   themeStore.subscribe(value => {
     theme = value;
   });
@@ -47,24 +47,8 @@
   let isDeletingAccount = false;
   let deleteError = '';
 
-  // Predefined accent colors (Material Design 3 palette)
-  const accentColors = [
-    { name: 'Purple', value: '#6750A4' },
-    { name: 'Blue', value: '#1976D2' },
-    { name: 'Teal', value: '#00897B' },
-    { name: 'Green', value: '#43A047' },
-    { name: 'Orange', value: '#FB8C00' },
-    { name: 'Red', value: '#E53935' },
-    { name: 'Pink', value: '#D81B60' },
-    { name: 'Indigo', value: '#3949AB' }
-  ];
-
   function toggleTheme() {
     themeStore.toggleMode();
-  }
-
-  function selectAccentColor(color: string) {
-    themeStore.setAccentColor(color);
   }
 
   async function handlePasswordChange() {
@@ -222,31 +206,10 @@
       </div>
     </div>
 
-    <!-- Accent Color Picker -->
-    <div>
-      <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-        Accent Color
-      </label>
-      <div class="grid grid-cols-4 sm:grid-cols-8 gap-3">
-        {#each accentColors as color}
-          <button
-            type="button"
-            on:click={() => selectAccentColor(color.value)}
-            class="w-12 h-12 rounded-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-400 {theme.accentColor === color.value ? 'ring-2 ring-offset-2 ring-stone-900 dark:ring-stone-100' : ''}"
-            style="background-color: {color.value}"
-            title={color.name}
-            aria-label={`Select ${color.name} accent color`}
-          >
-            {#if theme.accentColor === color.value}
-              <svg class="w-6 h-6 mx-auto text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-              </svg>
-            {/if}
-          </button>
-        {/each}
-      </div>
-    </div>
+    <p class="text-sm text-stone-500 dark:text-stone-400">
+      Accent color now comes from your chosen Style below — Focus, Vivid, and Terminal
+      each pair their own curated accent with their look.
+    </p>
   </Card>
 
   <!-- Notification Settings Section -->

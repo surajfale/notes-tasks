@@ -178,7 +178,7 @@
             class="w-10 h-10 rounded-lg transition-all {color === colorOption ? 'ring-2 ring-offset-2 ring-stone-900 dark:ring-stone-100 scale-110' : 'hover:scale-105'}"
             style="background-color: {colorOption}"
             aria-label="Select color {colorOption}"
-          />
+          ></button>
         {/each}
       </div>
     </div>

@@ -594,7 +594,7 @@
                font-sans text-base leading-relaxed"
         on:input
         on:keydown={handleKeyDown}
-      />
+      ></textarea>
     {:else}
       <div class="w-full px-4 py-3 min-h-[200px]">
         {#if value.trim()}
