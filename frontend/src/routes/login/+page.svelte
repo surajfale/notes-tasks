@@ -1,7 +1,9 @@
 <script lang="ts">
   import { authStore } from '$lib/stores/auth';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import { safeRedirectPath } from '$lib/utils/deepLink';
   import { validateLoginForm } from '$lib/utils/validation';
   import { ErrorMessage, Button, Input } from '$lib/components/ui';
   import '$lib/components/tactile/neumorphic.css';
@@ -57,8 +59,9 @@
       const success = await authStore.login(username, password);
       
       if (success) {
-        // Redirect to home page on successful login
-        goto('/');
+        // Back to where the user was headed (e.g. a task opened from a
+        // reminder email), else home. Same-site paths only.
+        goto(safeRedirectPath($page.url.searchParams.get('redirect')) ?? '/');
       }
     } finally {
       isSubmitting = false;
