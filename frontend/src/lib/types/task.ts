@@ -2,7 +2,33 @@
 
 export type TaskPriority = 1 | 2 | 3; // 1=low, 2=normal, 3=high
 
-export type NotificationTiming = 'same_day' | '1_day_before' | '2_days_before';
+/** How a reminder repeats. `hourly`/`daily`/`weekly`/`monthly` use `interval` ("every N"). */
+export type ReminderFrequency = 'none' | 'hourly' | 'daily' | 'weekly' | 'monthly';
+
+/** ISO weekday: 1 = Monday ... 7 = Sunday. */
+export type IsoWeekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+/**
+ * A custom reminder on a task. The server computes the schedule
+ * (backend/src/services/reminders.js); `nextFireAt` / `lastFiredAt` are
+ * server-owned and only present on saved reminders.
+ */
+export interface TaskReminder {
+  _id?: string;
+  /** First occurrence (ISO instant). */
+  startAt: string;
+  /** IANA timezone the reminder was set in; repeats follow its wall clock. */
+  timezone: string;
+  repeat: {
+    frequency: ReminderFrequency;
+    interval: number;
+    /** Weekly only; empty means the weekday of `startAt`. */
+    weekdays: IsoWeekday[];
+  };
+  channels: { email: boolean; push: boolean };
+  nextFireAt?: string | null;
+  lastFiredAt?: string | null;
+}
 
 export interface ChecklistItem {
   _id?: string;
@@ -21,9 +47,7 @@ export interface Task {
   isCompleted: boolean;
   priority: TaskPriority;
   checklistItems: ChecklistItem[];
-  notificationEnabled: boolean;
-  notificationTimings: NotificationTiming[];
-  notificationsSent?: NotificationTiming[];
+  reminders: TaskReminder[];
   createdAt: string;
   updatedAt: string;
 }
@@ -35,15 +59,11 @@ export interface CreateTaskData {
   priority?: TaskPriority;
   listId?: string;
   checklistItems?: ChecklistItem[];
-  notificationEnabled?: boolean;
-  notificationTimings?: NotificationTiming[];
+  reminders?: TaskReminder[];
 }
 
 export interface UpdateTaskData extends Partial<CreateTaskData> {
   isCompleted?: boolean;
-  checklistItems?: ChecklistItem[];
-  notificationEnabled?: boolean;
-  notificationTimings?: NotificationTiming[];
 }
 
 export interface TaskFilters {

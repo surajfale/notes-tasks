@@ -31,9 +31,7 @@ function createNotificationStore() {
           preferences: {
             emailNotificationsEnabled: response.emailNotificationsEnabled,
             browserNotificationsEnabled: response.browserNotificationsEnabled || false,
-            notificationDays: response.notificationDays,
-            timezone: response.timezone,
-            notificationTime: response.notificationTime || '09:00'
+            timezone: response.timezone
           },
           isLoading: false,
           error: null
@@ -71,9 +69,7 @@ function createNotificationStore() {
           preferences: {
             emailNotificationsEnabled: response.emailNotificationsEnabled,
             browserNotificationsEnabled: response.browserNotificationsEnabled || false,
-            notificationDays: response.notificationDays,
-            timezone: response.timezone,
-            notificationTime: response.notificationTime || '09:00'
+            timezone: response.timezone
           },
           isLoading: false,
           error: null

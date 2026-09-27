@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { THEME_PALETTES } = require('../config/themes');
+const { FREQUENCIES, MAX_INTERVAL, MAX_REMINDERS_PER_TASK, isValidTimezone } = require('../services/reminders');
 
 const validate = (schema) => {
   return (req, res, next) => {
@@ -26,6 +27,40 @@ const validate = (schema) => {
     next();
   };
 };
+
+const objectId = Joi.string().pattern(/^[0-9a-fA-F]{24}$/);
+
+// One custom reminder (see services/reminders.js). nextFireAt/lastFiredAt are
+// server-owned; clients echo them back from the task they loaded, so they're
+// accepted here and ignored (mergeReminders never reads them).
+const reminder = Joi.object({
+  _id: objectId.optional(),
+  startAt: Joi.date().iso().required(),
+  timezone: Joi.string()
+    .max(64)
+    .required()
+    .custom((value, helpers) => (isValidTimezone(value) ? value : helpers.error('any.invalid'))),
+  repeat: Joi.object({
+    frequency: Joi.string().valid(...FREQUENCIES).default('none'),
+    interval: Joi.number().integer().min(1).default(1),
+    weekdays: Joi.array().items(Joi.number().integer().min(1).max(7)).max(7).unique().default([]),
+  }).default({ frequency: 'none' }).custom((value, helpers) => {
+    const max = MAX_INTERVAL[value.frequency];
+    return value.interval > max
+      ? helpers.message(`repeat.interval cannot exceed ${max} for ${value.frequency}`)
+      : value;
+  }),
+  channels: Joi.object({
+    email: Joi.boolean().default(false),
+    push: Joi.boolean().default(false),
+  }).required().custom((value, helpers) => (
+    value.email || value.push ? value : helpers.message('Choose at least one channel (email or browser)')
+  )),
+  nextFireAt: Joi.any().strip(),
+  lastFiredAt: Joi.any().strip(),
+});
+
+const reminders = Joi.array().items(reminder).max(MAX_REMINDERS_PER_TASK);
 
 // Validation schemas
 const schemas = {
@@ -88,60 +123,26 @@ const schemas = {
   }).min(1),
 
   createTask: Joi.object({
-    listId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional(),
+    listId: objectId.optional(),
     title: Joi.string().max(200).required(),
     description: Joi.string().max(5000).allow('').optional(),
     dueAt: Joi.date().iso().optional(),
     reminderAt: Joi.date().iso().optional(),
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
-    notificationEnabled: Joi.boolean().optional(),
-    notificationTimings: Joi.array()
-      .items(Joi.string().valid('same_day', '1_day_before', '2_days_before'))
-      .max(3)
-      .unique()
-      .when('notificationEnabled', {
-        is: true,
-        then: Joi.array().min(1).required(),
-        otherwise: Joi.array().optional(),
-      }),
-  }).custom((value, helpers) => {
-    // Validate that dueAt is required when notifications are enabled
-    if (value.notificationEnabled && !value.dueAt) {
-      return helpers.error('any.custom', {
-        message: 'dueAt is required when notificationEnabled is true',
-      });
-    }
-    return value;
+    reminders: reminders.optional(),
   }),
 
   updateTask: Joi.object({
-    listId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).allow(null).optional(),
+    listId: objectId.allow(null).optional(),
     title: Joi.string().max(200).optional(),
     description: Joi.string().max(5000).allow('').optional(),
     dueAt: Joi.date().iso().allow(null).optional(),
     reminderAt: Joi.date().iso().allow(null).optional(),
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
-    notificationEnabled: Joi.boolean().optional(),
-    notificationTimings: Joi.array()
-      .items(Joi.string().valid('same_day', '1_day_before', '2_days_before'))
-      .max(3)
-      .unique()
-      .when('notificationEnabled', {
-        is: true,
-        then: Joi.array().min(1).required(),
-        otherwise: Joi.array().optional(),
-      }),
-  }).min(1).custom((value, helpers) => {
-    // Validate that dueAt is required when notifications are enabled
-    if (value.notificationEnabled && value.dueAt === null) {
-      return helpers.error('any.custom', {
-        message: 'Cannot enable notifications when dueAt is null',
-      });
-    }
-    return value;
-  }),
+    reminders: reminders.optional(),
+  }).min(1),
 
   enhanceContent: Joi.object({
     content: Joi.string().required().min(1).max(10000),
@@ -151,12 +152,6 @@ const schemas = {
 
   updateNotificationPreferences: Joi.object({
     emailNotificationsEnabled: Joi.boolean().optional(),
-    notificationDays: Joi.array()
-      .items(Joi.string().valid('same_day', '1_day_before', '2_days_before'))
-      .min(1)
-      .max(3)
-      .unique()
-      .optional(),
     timezone: Joi.string().max(50).optional(),
   }).min(1),
 };

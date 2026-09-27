@@ -1,13 +1,14 @@
 // Notification preference type definitions
-
-export type NotificationDay = 'same_day' | '1_day_before' | '2_days_before';
+//
+// These are account-level switches. What gets sent, and when, is set per
+// task as reminders (see TaskReminder in ./task.ts).
 
 export interface NotificationPreferences {
+  /** Master switch for reminder emails (also flipped by the email unsubscribe link). */
   emailNotificationsEnabled: boolean;
+  /** Master switch for browser push; requires a push subscription on this account. */
   browserNotificationsEnabled: boolean;
-  notificationDays: NotificationDay[];
   timezone: string;
-  notificationTime: string; // HH:MM format (24-hour)
 }
 
 export interface NotificationPreferencesResponse extends NotificationPreferences {
@@ -20,7 +21,5 @@ export interface NotificationPreferencesResponse extends NotificationPreferences
 export interface UpdateNotificationPreferencesData {
   emailNotificationsEnabled?: boolean;
   browserNotificationsEnabled?: boolean;
-  notificationDays?: NotificationDay[];
   timezone?: string;
-  notificationTime?: string;
 }

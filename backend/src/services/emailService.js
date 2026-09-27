@@ -231,10 +231,14 @@ class EmailService {
    * @param {string} [notificationData.replyTo] - Reply-to address
    * @param {Array} [notificationData.tags] - Email tags for categorization
    * @param {Object} [notificationData.headers] - Custom headers
+   * @param {boolean} [notificationData.skipDuplicateCheck] - Skip the 24h (task, type)
+   *   duplicate check. For callers that dedupe per occurrence themselves (repeating
+   *   reminders can legitimately fire several times a day).
+   * @param {Object} [notificationData.metadata] - Extra fields stored on the NotificationLog
    * @returns {Promise<{success: boolean, emailId?: string, logId?: string, error?: string}>}
    */
   async sendTaskNotification(notificationData) {
-    const { userId, taskId, notificationType, ...emailOptions } = notificationData;
+    const { userId, taskId, notificationType, skipDuplicateCheck = false, metadata = {}, ...emailOptions } = notificationData;
 
     // Validate required notification fields
     if (!userId || !taskId || !notificationType) {
@@ -244,7 +248,7 @@ class EmailService {
     }
 
     // Check if notification was already sent recently (prevent duplicates)
-    try {
+    if (!skipDuplicateCheck) try {
       const alreadySent = await NotificationLog.hasNotificationBeenSent(userId, taskId, notificationType, 24);
       if (alreadySent) {
         const message = `Notification already sent for task ${taskId}, type ${notificationType} within last 24 hours`;
@@ -282,7 +286,8 @@ class EmailService {
         emailId: emailResult.emailId || 'unknown',
         status: emailResult.success ? 'sent' : 'failed',
         errorMessage: emailResult.success ? null : emailResult.error,
-        retryCount: 0
+        retryCount: 0,
+        metadata
       };
 
       const log = await NotificationLog.logNotification(logData);

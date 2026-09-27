@@ -127,30 +127,27 @@ async function syncNote(item: StoredItem<Note>, operation: SyncOperation): Promi
 }
 
 /**
- * Sync a single task
+ * Sync a single task. Sends every user-editable field: checklist items and
+ * reminders edited offline used to be dropped here.
  */
 async function syncTask(item: StoredItem<Task>, operation: SyncOperation): Promise<void> {
   const task = item.data;
-  
+  const fields = {
+    title: task.title,
+    description: task.description,
+    dueAt: task.dueAt,
+    priority: task.priority,
+    listId: task.listId,
+    checklistItems: task.checklistItems ?? [],
+    reminders: task.reminders ?? []
+  };
+
   switch (operation) {
     case 'create':
-      await tasksRepository.create({
-        title: task.title,
-        description: task.description,
-        dueAt: task.dueAt,
-        priority: task.priority,
-        listId: task.listId
-      });
+      await tasksRepository.create(fields);
       break;
     case 'update':
-      await tasksRepository.update(task._id, {
-        title: task.title,
-        description: task.description,
-        dueAt: task.dueAt,
-        priority: task.priority,
-        listId: task.listId,
-        isCompleted: task.isCompleted
-      });
+      await tasksRepository.update(task._id, { ...fields, isCompleted: task.isCompleted });
       break;
     case 'delete':
       await tasksRepository.delete(task._id);

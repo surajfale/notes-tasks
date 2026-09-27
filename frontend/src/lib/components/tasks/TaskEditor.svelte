@@ -6,13 +6,14 @@
   import ListSelector from '$lib/components/lists/ListSelector.svelte';
   import ChecklistEditor from '$lib/components/tasks/ChecklistEditor.svelte';
   import DueDatePicker from '$lib/components/ui/DueDatePicker.svelte';
-  import NotificationPreferences from '$lib/components/tasks/NotificationPreferences.svelte';
+  import ReminderEditor from '$lib/components/tasks/ReminderEditor.svelte';
   import '$lib/components/tactile/neumorphic.css';
 
   import { listsStore } from '$lib/stores/lists';
   import { aiRepository } from '$lib/repositories/ai.repository';
-  import type { Task, CreateTaskData, UpdateTaskData, TaskPriority, ChecklistItem, NotificationTiming } from '$lib/types/task';
-  import { validateTaskForm, validateNotificationPreferences } from '$lib/utils/validation';
+  import type { Task, CreateTaskData, UpdateTaskData, TaskPriority, ChecklistItem, TaskReminder } from '$lib/types/task';
+  import { validateTaskForm } from '$lib/utils/validation';
+  import { validateReminder } from '$lib/utils/reminders';
   import { formatDateForInput, parseDateInput } from '$lib/utils/date';
 
   export let task: Task | null = null;
@@ -33,12 +34,13 @@
   let listId = task?.listId || '';
   let checklistItems: ChecklistItem[] = task?.checklistItems || [];
   
-  // Notification state - handle missing fields gracefully
-  // Default to disabled notifications for tasks without notification fields
-  let notificationEnabled = task?.notificationEnabled ?? false;
-  let notificationTimings: NotificationTiming[] = Array.isArray(task?.notificationTimings) 
-    ? task.notificationTimings 
-    : [];
+  // Reminders are edited as copies so Cancel leaves the task untouched.
+  let reminders: TaskReminder[] = (task?.reminders ?? []).map((r) => ({
+    ...r,
+    repeat: { ...r.repeat, weekdays: [...r.repeat.weekdays] },
+    channels: { ...r.channels }
+  }));
+  let reminderErrors: Record<number, string> = {};
 
   // AI enhancement state
   let enhancing = false;
@@ -54,43 +56,18 @@
   function validateForm(): boolean {
     const result = validateTaskForm({ title, description });
     errors = result.errors;
-    
-    // Validate notification preferences
-    const notificationError = validateNotificationPreferences(
-      notificationEnabled,
-      notificationTimings,
-      dueAtDate
-    );
-    
-    if (notificationError) {
-      errors = { ...errors, notifications: notificationError };
-      return false;
-    }
-    
-    return result.isValid;
+
+    reminderErrors = {};
+    reminders.forEach((reminder, index) => {
+      const error = validateReminder(reminder);
+      if (error) reminderErrors[index] = error;
+    });
+
+    return result.isValid && Object.keys(reminderErrors).length === 0;
   }
 
   function handleDueDateChange(date: Date | null) {
     dueAtDate = date;
-    
-    // If due date is cleared, disable notifications
-    if (!date) {
-      notificationEnabled = false;
-      notificationTimings = [];
-    }
-  }
-
-  function handleNotificationEnabledChange(enabled: boolean) {
-    notificationEnabled = enabled;
-    if (!enabled) {
-      notificationTimings = [];
-    }
-    clearError('notifications');
-  }
-
-  function handleNotificationTimingsChange(timings: NotificationTiming[]) {
-    notificationTimings = timings;
-    clearError('notifications');
   }
 
   function handleSubmit() {
@@ -121,8 +98,7 @@
         isCompleted: item.isCompleted,
         order: index,
       })),
-      notificationEnabled,
-      notificationTimings,
+      reminders,
     };
 
     dispatch('submit', data);
@@ -377,19 +353,13 @@
     </div>
   </div>
 
-  <!-- Notification Preferences -->
-  <div role="region" aria-labelledby="notification-section-label">
-    <h2 id="notification-section-label" class="sr-only">Email Notification Preferences</h2>
-    <NotificationPreferences
-      dueDate={dueAtDate}
-      enabled={notificationEnabled}
-      selectedTimings={notificationTimings}
-      on:enabledChange={(e) => handleNotificationEnabledChange(e.detail)}
-      on:timingsChange={(e) => handleNotificationTimingsChange(e.detail)}
-      disabled={enhancing || isSubmitting}
-      error={errors.notifications}
-    />
-  </div>
+  <!-- Reminders (email / browser, once or repeating) -->
+  <ReminderEditor
+    bind:reminders
+    dueDate={dueAtDate}
+    disabled={enhancing || isSubmitting}
+    errors={reminderErrors}
+  />
 
   <!-- Checklist Items -->
   <ChecklistEditor

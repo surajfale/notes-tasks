@@ -223,10 +223,13 @@ class PushNotificationService {
    * @param {string} notificationData.notificationType - Type of notification
    * @param {Object} notificationData.pushSubscription - Push subscription object
    * @param {Object} notificationData.payload - Notification payload
+   * @param {boolean} [notificationData.skipDuplicateCheck] - Skip the 24h (task, type)
+   *   duplicate check; see emailService.sendTaskNotification.
+   * @param {Object} [notificationData.metadata] - Extra fields stored on the NotificationLog
    * @returns {Promise<{success: boolean, logId?: string, error?: string, subscriptionExpired?: boolean}>}
    */
   async sendTaskPushNotification(notificationData) {
-    const { userId, taskId, notificationType, pushSubscription, payload } = notificationData;
+    const { userId, taskId, notificationType, pushSubscription, payload, skipDuplicateCheck = false, metadata = {} } = notificationData;
 
     // Validate required fields
     if (!userId || !taskId || !notificationType || !pushSubscription) {
@@ -236,7 +239,7 @@ class PushNotificationService {
     }
 
     // Check if notification was already sent recently (prevent duplicates)
-    try {
+    if (!skipDuplicateCheck) try {
       const alreadySent = await NotificationLog.hasNotificationBeenSent(
         userId,
         taskId,
@@ -271,6 +274,7 @@ class PushNotificationService {
         errorMessage: pushResult.success ? null : pushResult.error,
         retryCount: 0,
         metadata: {
+          ...metadata,
           subscriptionExpired: pushResult.subscriptionExpired || false,
           circuitBreakerOpen: pushResult.circuitBreakerOpen || false
         }

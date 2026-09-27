@@ -1,4 +1,50 @@
 const mongoose = require('mongoose');
+const {
+  FREQUENCIES,
+  MAX_INTERVAL,
+  MAX_REMINDERS_PER_TASK,
+  isValidTimezone,
+  computeNextFireAt,
+} = require('../services/reminders');
+
+const reminderSchema = new mongoose.Schema({
+  // First occurrence, as a UTC instant.
+  startAt: { type: Date, required: true },
+  // IANA zone the reminder was set in; repeats follow its wall clock.
+  timezone: {
+    type: String,
+    required: true,
+    validate: { validator: isValidTimezone, message: 'Invalid timezone' },
+  },
+  repeat: {
+    frequency: { type: String, enum: FREQUENCIES, default: 'none' },
+    interval: { type: Number, default: 1, min: 1 },
+    // ISO weekdays (1 = Monday ... 7 = Sunday); weekly only.
+    weekdays: { type: [{ type: Number, min: 1, max: 7 }], default: [] },
+  },
+  channels: {
+    email: { type: Boolean, default: true },
+    push: { type: Boolean, default: false },
+  },
+  // Server-owned: recomputed on every save (pre-save hook below) and
+  // advanced by the scheduler after each occurrence. null = no more
+  // occurrences.
+  nextFireAt: { type: Date, default: null },
+  lastFiredAt: { type: Date, default: null },
+});
+
+// Cross-field rules: the interval cap depends on the frequency, and there
+// must be at least one channel to deliver on.
+reminderSchema.pre('validate', function (next) {
+  const frequency = this.repeat?.frequency || 'none';
+  if ((this.repeat?.interval || 1) > MAX_INTERVAL[frequency]) {
+    this.invalidate('repeat.interval', `Repeat interval cannot exceed ${MAX_INTERVAL[frequency]} for ${frequency}`);
+  }
+  if (!this.channels?.email && !this.channels?.push) {
+    this.invalidate('channels', 'Choose at least one channel (email or browser)');
+  }
+  next();
+});
 
 const taskSchema = new mongoose.Schema(
   {
@@ -87,36 +133,15 @@ const taskSchema = new mongoose.Schema(
         message: 'Cannot have more than 50 checklist items',
       },
     },
-    // Notification preference fields
-    notificationEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    notificationTimings: {
-      type: [String],
+    // Custom reminders (see services/reminders.js for the recurrence rules
+    // and services/reminderScheduler.js for delivery). Replaces the old
+    // global "N days before the due date" notifications.
+    reminders: {
+      type: [reminderSchema],
       default: [],
-      enum: ['same_day', '1_day_before', '2_days_before'],
       validate: {
-        validator: function (timings) {
-          return timings.length <= 3;
-        },
-        message: 'Cannot have more than 3 notification timings',
-      },
-    },
-    // Notification tracking fields
-    lastNotificationSent: {
-      type: Date,
-      index: true,
-    },
-    notificationsSent: {
-      type: [String],
-      default: [],
-      enum: ['same_day', '1_day_before', '2_days_before'],
-      validate: {
-        validator: function (notifications) {
-          return notifications.length <= 3;
-        },
-        message: 'Cannot have more than 3 notification types',
+        validator: (reminders) => reminders.length <= MAX_REMINDERS_PER_TASK,
+        message: `Cannot have more than ${MAX_REMINDERS_PER_TASK} reminders`,
       },
     },
   },
@@ -130,19 +155,17 @@ taskSchema.index({ userId: 1, listId: 1, dueAt: 1 });
 taskSchema.index({ userId: 1, isCompleted: 1 });
 taskSchema.index({ userId: 1, priority: -1, dueAt: 1 });
 taskSchema.index({ userId: 1, tags: 1 });
-taskSchema.index({ userId: 1, dueAt: 1, lastNotificationSent: 1 });
+// The reminder scheduler's per-minute query: due reminders on open tasks.
+taskSchema.index({ 'reminders.nextFireAt': 1, isCompleted: 1 });
 
-// Middleware to reset notification tracking when due date changes
+// Keep each reminder's nextFireAt in step with its rule. Runs on create,
+// update and completion toggles alike (they all go through save()), so the
+// scheduler never needs to know why a reminder changed.
 taskSchema.pre('save', function (next) {
-  if (this.isModified('dueAt')) {
-    // Reset notification tracking when due date changes
-    this.lastNotificationSent = undefined;
-    this.notificationsSent = [];
-    
-    // If due date is removed, disable notifications
-    if (!this.dueAt) {
-      this.notificationEnabled = false;
-      this.notificationTimings = [];
+  if (this.isModified('reminders') || this.isModified('isCompleted')) {
+    const now = new Date();
+    for (const reminder of this.reminders) {
+      reminder.nextFireAt = computeNextFireAt(reminder, now);
     }
   }
   next();

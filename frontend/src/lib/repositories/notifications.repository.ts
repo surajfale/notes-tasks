@@ -56,9 +56,7 @@ export const notificationsRepository = {
     return {
       emailNotificationsEnabled: true,
       browserNotificationsEnabled: false,
-      notificationDays: ['1_day_before'],
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-      notificationTime: '09:00'
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
     };
   },
 

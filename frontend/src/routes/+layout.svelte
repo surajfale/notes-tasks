@@ -34,14 +34,21 @@
   $: syncThemeFromUser(user);
   
   // Check if current route is active
-  function isActive(path: string): boolean {
+  // Reactive (`$:`) rather than a plain function: templates only re-render
+  // when a variable they reference changes, and a plain function's reads of
+  // $page are invisible to them — so after client-side navigation the
+  // sidebar and bottom nav kept highlighting the previous page. Re-creating
+  // the function whenever $page changes gives both a new reference to
+  // re-render on.
+  $: currentPath = $page.url.pathname;
+  $: isActive = (path: string): boolean => {
     // Special case for home - only match exact path
     if (path === '/') {
-      return $page.url.pathname === '/';
+      return currentPath === '/';
     }
     // For other routes, match exact path or sub-paths
-    return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
-  }
+    return currentPath === path || currentPath.startsWith(path + '/');
+  };
   
   // Toggle sidebar on mobile
   function toggleSidebar() {
@@ -416,8 +423,9 @@
       <div class="app-canvas flex-1 flex flex-col overflow-hidden bg-stone-50 dark:bg-stone-900">
 
         <!-- Page content. Bottom padding on mobile clears the fixed bottom nav, the floating
-             create button that sits above it, and the safe area. -->
-        <main class="flex-1 overflow-y-auto pb-[calc(9rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+             create button that sits above it, and the safe area; on desktop it lets the
+             end of the page scroll clear of the fixed ShortcutHint strip. -->
+        <main class="flex-1 overflow-y-auto pb-[calc(9rem+env(safe-area-inset-bottom,0px))] md:pb-16">
           <ErrorBoundary>
             <slot />
           </ErrorBoundary>
