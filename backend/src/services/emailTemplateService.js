@@ -157,6 +157,8 @@ class EmailTemplateService {
    * @private
    */
   formatDate(date, timezone = 'UTC') {
+    // Reminders can be set on tasks without a due date.
+    if (!date) return 'No due date';
     try {
       const dateObj = new Date(date);
       
@@ -210,12 +212,12 @@ class EmailTemplateService {
         dueDate: formattedDueDate,
         priority: priorityInfo.text,
         priorityLevel: priorityInfo.level,
-        listName: list ? list.name : '',
+        listName: list ? list.title : '',
         taskLink,
         unsubscribeLink,
         supportLink,
         greeting: notificationCopy.emailGreeting(userName),
-        introText: notificationCopy.emailIntro(),
+        introText: notificationCopy.emailIntro(notificationType),
         closingText: notificationCopy.emailClosing()
       };
 
@@ -223,7 +225,7 @@ class EmailTemplateService {
       const htmlContent = this.renderTemplate(template, templateData);
 
       // Generate plain text version
-      const textContent = this.generatePlainTextVersion(templateData);
+      const textContent = this.generatePlainTextVersion({ ...templateData, notificationType });
 
       // Generate subject line
       const subject = notificationCopy.emailSubject(task, notificationType);
@@ -254,7 +256,7 @@ class EmailTemplateService {
    */
   generatePlainTextVersion(data) {
     let text = `${data.greeting || `Hello ${data.userName},`}\n\n`;
-    text += `${notificationCopy.plainTextIntro()}\n\n`;
+    text += `${notificationCopy.plainTextIntro(data.notificationType)}\n\n`;
     text += `Task: ${data.taskTitle}\n`;
 
     if (data.taskDescription) {

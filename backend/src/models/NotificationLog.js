@@ -18,8 +18,10 @@ const notificationLogSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Notification type is required'],
       enum: {
-        values: ['same_day', '1_day_before', '2_days_before', 'overdue'],
-        message: 'Notification type must be one of: same_day, 1_day_before, 2_days_before, overdue'
+        // 'reminder' = a custom per-task reminder. The others belong to the
+        // retired global schedule and are kept so historical logs stay valid.
+        values: ['reminder', 'same_day', '1_day_before', '2_days_before', 'overdue'],
+        message: 'Notification type must be one of: reminder, same_day, 1_day_before, 2_days_before, overdue'
       },
       index: true,
     },

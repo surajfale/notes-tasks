@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const { mergeReminders } = require('../services/reminders');
 
 // @desc    Get all user's tasks
 // @route   GET /api/tasks?listId=&isCompleted=&priority=
@@ -63,8 +64,7 @@ const createTask = async (req, res, next) => {
       priority, 
       tags, 
       checklistItems,
-      notificationEnabled,
-      notificationTimings
+      reminders
     } = req.body;
 
     const task = await Task.create({
@@ -78,8 +78,7 @@ const createTask = async (req, res, next) => {
       priority,
       tags,
       checklistItems: checklistItems || [],
-      notificationEnabled: notificationEnabled || false,
-      notificationTimings: notificationTimings || [],
+      reminders: mergeReminders([], reminders || []),
     });
 
     res.status(201).json(task);
@@ -117,24 +116,20 @@ const updateTask = async (req, res, next) => {
       priority, 
       tags, 
       checklistItems,
-      notificationEnabled,
-      notificationTimings
+      reminders
     } = req.body;
 
     if (listId !== undefined) task.listId = listId;
     if (title !== undefined) task.title = title;
     if (description !== undefined) task.description = description;
-    // Note: When dueAt changes, the Task model's pre-save middleware
-    // automatically resets lastNotificationSent and notificationsSent
     if (dueAt !== undefined) task.dueAt = dueAt;
     if (reminderAt !== undefined) task.reminderAt = reminderAt;
-    // Note: Completed tasks are excluded from notification processing
-    // by the notification scheduler, so no need to reset notification fields
+    // Completing a task stops its reminders: the scheduler only looks at
+    // open tasks, and reopening one recomputes them from now (Task pre-save).
     if (isCompleted !== undefined) task.isCompleted = isCompleted;
     if (priority !== undefined) task.priority = priority;
     if (tags !== undefined) task.tags = tags;
-    if (notificationEnabled !== undefined) task.notificationEnabled = notificationEnabled;
-    if (notificationTimings !== undefined) task.notificationTimings = notificationTimings;
+    if (reminders !== undefined) task.reminders = mergeReminders(task.reminders, reminders);
     if (checklistItems !== undefined) {
       task.checklistItems = checklistItems;
       

@@ -28,28 +28,27 @@ connectDB();
 // Initialize notification cron jobs
 if (process.env.NODE_ENV !== 'test') {
   const cron = require('node-cron');
-  const { startNotificationScheduler } = require('./services/notificationScheduler');
+  const { runDueReminders } = require('./services/reminderScheduler');
   const { cleanupOldNotificationLogs } = require('./services/notificationCleanupJob');
 
-  // Start notification cron job
-  // Run every hour to check each user's preferred notification time
-  const cronSchedule = process.env.NOTIFICATION_CRON_SCHEDULE || '0 * * * *'; // Default: Every hour
+  // Reminder delivery: every minute, send reminders whose time has come.
+  // Each reminder carries its own timezone, so the cron's timezone only
+  // matters for the cleanup job below.
+  const reminderSchedule = process.env.REMINDER_CRON_SCHEDULE || '* * * * *';
   const timezone = process.env.NOTIFICATION_TIMEZONE || 'UTC';
 
-  cron.schedule(cronSchedule, async () => {
-    logger.info('Starting scheduled notification processing...');
+  cron.schedule(reminderSchedule, async () => {
     try {
-      await startNotificationScheduler();
-      logger.info('Scheduled notification processing completed successfully');
+      await runDueReminders();
     } catch (error) {
-      logger.error('Error in scheduled notification processing:', error);
+      logger.error('Error in reminder scheduler tick:', error);
     }
   }, {
     scheduled: true,
     timezone: timezone
   });
 
-  logger.info(`Notification cron job scheduled: ${cronSchedule} (${timezone}) - checks hourly for user-specific times`);
+  logger.info(`Reminder scheduler running: ${reminderSchedule}`);
 
   // Start cleanup cron job (weekly on Sunday at 2 AM)
   const cleanupSchedule = process.env.NOTIFICATION_CLEANUP_CRON_SCHEDULE || '0 2 * * 0';

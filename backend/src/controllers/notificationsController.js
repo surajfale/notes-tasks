@@ -16,7 +16,6 @@ const getPreferences = async (req, res, next) => {
       preferences = await NotificationPreference.create({
         userId: req.user._id,
         emailNotificationsEnabled: true,
-        notificationDays: ['1_day_before'],
         timezone: 'UTC',
       });
     }
@@ -35,9 +34,7 @@ const updatePreferences = async (req, res, next) => {
     const {
       emailNotificationsEnabled,
       browserNotificationsEnabled,
-      notificationDays,
-      timezone,
-      notificationTime
+      timezone
     } = req.body;
 
     let preferences = await NotificationPreference.findOne({
@@ -50,9 +47,7 @@ const updatePreferences = async (req, res, next) => {
         userId: req.user._id,
         emailNotificationsEnabled: emailNotificationsEnabled !== undefined ? emailNotificationsEnabled : true,
         browserNotificationsEnabled: browserNotificationsEnabled !== undefined ? browserNotificationsEnabled : false,
-        notificationDays: notificationDays || ['1_day_before'],
         timezone: timezone || 'UTC',
-        notificationTime: notificationTime || '09:00',
       });
     } else {
       // Update existing preferences
@@ -62,14 +57,8 @@ const updatePreferences = async (req, res, next) => {
       if (browserNotificationsEnabled !== undefined) {
         preferences.browserNotificationsEnabled = browserNotificationsEnabled;
       }
-      if (notificationDays !== undefined) {
-        preferences.notificationDays = notificationDays;
-      }
       if (timezone !== undefined) {
         preferences.timezone = timezone;
-      }
-      if (notificationTime !== undefined) {
-        preferences.notificationTime = notificationTime;
       }
 
       await preferences.save();
@@ -105,7 +94,6 @@ const updatePushSubscription = async (req, res, next) => {
         userId: req.user._id,
         emailNotificationsEnabled: true,
         browserNotificationsEnabled: true,
-        notificationDays: ['1_day_before'],
         timezone: 'UTC',
         pushSubscription: subscription
       });
