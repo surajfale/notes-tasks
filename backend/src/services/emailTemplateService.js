@@ -3,7 +3,7 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const logger = require('../utils/logger');
 const { generateDeepLinkToken } = require('../middleware/deepLinkAuth');
-const personaCopy = require('./personaCopy');
+const notificationCopy = require('./notificationCopy');
 
 class EmailTemplateService {
   constructor() {
@@ -203,7 +203,6 @@ class EmailTemplateService {
       
       // Prepare template data
       const userName = user.displayName || user.name || 'there';
-      const persona = user.uiPersona;
       const templateData = {
         userName,
         taskTitle: task.title,
@@ -215,19 +214,19 @@ class EmailTemplateService {
         taskLink,
         unsubscribeLink,
         supportLink,
-        greeting: personaCopy.emailGreeting(persona, userName),
-        introText: personaCopy.emailIntro(persona),
-        closingText: personaCopy.emailClosing(persona)
+        greeting: notificationCopy.emailGreeting(userName),
+        introText: notificationCopy.emailIntro(),
+        closingText: notificationCopy.emailClosing()
       };
 
       // Render HTML content
       const htmlContent = this.renderTemplate(template, templateData);
 
       // Generate plain text version
-      const textContent = this.generatePlainTextVersion({ ...templateData, persona });
+      const textContent = this.generatePlainTextVersion(templateData);
 
       // Generate subject line
-      const subject = personaCopy.emailSubject(persona, task, notificationType);
+      const subject = notificationCopy.emailSubject(task, notificationType);
       
       logger.debug('Generated task notification email', {
         userId: user._id,
@@ -255,7 +254,7 @@ class EmailTemplateService {
    */
   generatePlainTextVersion(data) {
     let text = `${data.greeting || `Hello ${data.userName},`}\n\n`;
-    text += `${personaCopy.plainTextIntro(data.persona)}\n\n`;
+    text += `${notificationCopy.plainTextIntro()}\n\n`;
     text += `Task: ${data.taskTitle}\n`;
 
     if (data.taskDescription) {
@@ -270,7 +269,7 @@ class EmailTemplateService {
     }
 
     text += `\nView Task: ${data.taskLink}\n\n`;
-    text += `${personaCopy.plainTextSignoff(data.persona)}\n\n`;
+    text += `${notificationCopy.plainTextSignoff()}\n\n`;
     text += `---\n`;
     text += `Task Management System\n`;
     text += `Need help? Contact support: ${data.supportLink}\n\n`;

@@ -106,7 +106,7 @@ async function getTasksRequiringNotification(currentDate) {
         { browserNotificationsEnabled: true }
       ],
       notificationDays: { $exists: true, $ne: [] }
-    }).populate('userId', 'email displayName uiPersona');
+    }).populate('userId', 'email displayName');
     
     if (usersWithNotifications.length === 0) {
       return [];
