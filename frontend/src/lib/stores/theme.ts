@@ -3,18 +3,58 @@ import { browser } from '$app/environment';
 
 export type ThemeMode = 'light' | 'dark';
 
+/**
+ * The three selectable color themes. Each is a neutral scale + a three-stop
+ * brand gradient, defined in app.css under `[data-theme='...']`; this map
+ * only carries what JS needs: a display label, the gradient stops (for
+ * swatches), and the flat accent used to generate `--primary-*` shades.
+ * The accent is picked per theme for text contrast rather than taken from a
+ * gradient stop (e.g. ember's orange stop is too light for primary text).
+ */
+export type ThemePalette = 'aurora' | 'ember' | 'lagoon';
+
+export const THEME_PALETTES: Record<
+  ThemePalette,
+  { label: string; description: string; accent: string; gradient: [string, string, string] }
+> = {
+  aurora: {
+    label: 'Aurora',
+    description: 'Indigo to pink on cool ink.',
+    accent: '#7C3AED',
+    gradient: ['#6366F1', '#A855F7', '#EC4899']
+  },
+  ember: {
+    label: 'Ember',
+    description: 'Amber to rose on warm graphite.',
+    accent: '#EA580C',
+    gradient: ['#F59E0B', '#F97316', '#E11D48']
+  },
+  lagoon: {
+    label: 'Lagoon',
+    description: 'Mint to blue on slate.',
+    accent: '#0284C7',
+    gradient: ['#10B981', '#06B6D4', '#3B82F6']
+  }
+};
+
+export const PALETTE_OPTIONS = Object.keys(THEME_PALETTES) as ThemePalette[];
+export const DEFAULT_PALETTE: ThemePalette = 'aurora';
+
 export interface ThemeState {
   mode: ThemeMode;
+  palette: ThemePalette;
+  /** Derived from `palette`; kept on the state for consumers like ThemeColorManager. */
   accentColor: string;
 }
 
 const THEME_MODE_KEY = 'theme-mode';
-const ACCENT_COLOR_KEY = 'accent-color';
-// Matches the Focus persona's own curated accent (stores/persona.ts's
-// PERSONA_ACCENTS) — color is now derived from persona, not chosen
-// independently, so this is just what a fresh install starts with before
-// persona.ts's own init call overrides it for the stored/default persona.
-const DEFAULT_ACCENT_COLOR = '#0F766E';
+const THEME_PALETTE_KEY = 'theme-palette';
+// Keys from the retired persona/accent-picker system, cleared on init.
+const LEGACY_KEYS = ['accent-color', 'ui-persona'];
+
+function isPalette(value: unknown): value is ThemePalette {
+  return typeof value === 'string' && value in THEME_PALETTES;
+}
 
 // Helper functions for localStorage
 function getStoredThemeMode(): ThemeMode {
@@ -33,11 +73,10 @@ function getStoredThemeMode(): ThemeMode {
   return 'light';
 }
 
-function getStoredAccentColor(): string {
-  if (!browser) return DEFAULT_ACCENT_COLOR;
-
-  const stored = localStorage.getItem(ACCENT_COLOR_KEY);
-  return stored || DEFAULT_ACCENT_COLOR;
+function getStoredPalette(): ThemePalette {
+  if (!browser) return DEFAULT_PALETTE;
+  const stored = localStorage.getItem(THEME_PALETTE_KEY);
+  return isPalette(stored) ? stored : DEFAULT_PALETTE;
 }
 
 function setStoredThemeMode(mode: ThemeMode): void {
@@ -45,9 +84,9 @@ function setStoredThemeMode(mode: ThemeMode): void {
   localStorage.setItem(THEME_MODE_KEY, mode);
 }
 
-function setStoredAccentColor(color: string): void {
+function setStoredPalette(palette: ThemePalette): void {
   if (!browser) return;
-  localStorage.setItem(ACCENT_COLOR_KEY, color);
+  localStorage.setItem(THEME_PALETTE_KEY, palette);
 }
 
 // Helper function to convert hex to RGB
@@ -73,15 +112,17 @@ function mixColors(color1: { r: number; g: number; b: number }, color2: { r: num
 }
 
 // Apply theme to document
-function applyThemeToDocument(mode: ThemeMode, accentColor: string): void {
+function applyThemeToDocument(mode: ThemeMode, palette: ThemePalette): void {
   if (!browser) return;
 
   // Apply theme mode class to html element
   const html = document.documentElement;
   html.classList.remove('light', 'dark');
   html.classList.add(mode);
+  html.setAttribute('data-theme', palette);
 
   // Convert accent color to RGB
+  const accentColor = THEME_PALETTES[palette].accent;
   const rgb = hexToRgb(accentColor);
   if (!rgb) return;
 
@@ -103,19 +144,20 @@ function applyThemeToDocument(mode: ThemeMode, accentColor: string): void {
   html.style.setProperty('--primary-900', mixColors(rgb, black, 0.6));
 }
 
+function stateFor(mode: ThemeMode, palette: ThemePalette): ThemeState {
+  return { mode, palette, accentColor: THEME_PALETTES[palette].accent };
+}
+
 function createThemeStore() {
   // Initialize with stored values
   const initialMode = getStoredThemeMode();
-  const initialAccentColor = getStoredAccentColor();
+  const initialPalette = getStoredPalette();
 
-  const { subscribe, set, update } = writable<ThemeState>({
-    mode: initialMode,
-    accentColor: initialAccentColor
-  });
+  const { subscribe, set, update } = writable<ThemeState>(stateFor(initialMode, initialPalette));
 
   // Apply initial theme
   if (browser) {
-    applyThemeToDocument(initialMode, initialAccentColor);
+    applyThemeToDocument(initialMode, initialPalette);
   }
 
   return {
@@ -126,22 +168,24 @@ function createThemeStore() {
      * Should be called on app startup
      */
     initialize(): void {
-      const mode = getStoredThemeMode();
-      const accentColor = getStoredAccentColor();
+      if (browser) LEGACY_KEYS.forEach((key) => localStorage.removeItem(key));
 
-      set({ mode, accentColor });
-      applyThemeToDocument(mode, accentColor);
+      const mode = getStoredThemeMode();
+      const palette = getStoredPalette();
+
+      set(stateFor(mode, palette));
+      applyThemeToDocument(mode, palette);
     },
 
     /**
      * Toggle between light and dark mode
      */
     toggleMode(): void {
-      update(state => {
+      update((state) => {
         const newMode: ThemeMode = state.mode === 'light' ? 'dark' : 'light';
         setStoredThemeMode(newMode);
-        applyThemeToDocument(newMode, state.accentColor);
-        return { ...state, mode: newMode };
+        applyThemeToDocument(newMode, state.palette);
+        return stateFor(newMode, state.palette);
       });
     },
 
@@ -149,24 +193,21 @@ function createThemeStore() {
      * Set theme mode explicitly
      */
     setMode(mode: ThemeMode): void {
-      update(state => {
+      update((state) => {
         setStoredThemeMode(mode);
-        applyThemeToDocument(mode, state.accentColor);
-        return { ...state, mode };
+        applyThemeToDocument(mode, state.palette);
+        return stateFor(mode, state.palette);
       });
     },
 
     /**
-     * Set accent color. Not exposed as a free picker in Settings anymore —
-     * called by stores/persona.ts whenever the persona changes, since each
-     * of the 3 personas now owns one curated accent (PERSONA_ACCENTS) rather
-     * than accent being a separate, independently-chosen axis.
+     * Switch color theme (Settings). Persisted per device in localStorage.
      */
-    setAccentColor(color: string): void {
-      update(state => {
-        setStoredAccentColor(color);
-        applyThemeToDocument(state.mode, color);
-        return { ...state, accentColor: color };
+    setPalette(palette: ThemePalette): void {
+      update((state) => {
+        setStoredPalette(palette);
+        applyThemeToDocument(state.mode, palette);
+        return stateFor(state.mode, palette);
       });
     },
 
@@ -175,13 +216,12 @@ function createThemeStore() {
      */
     reset(): void {
       const mode: ThemeMode = 'light';
-      const accentColor = DEFAULT_ACCENT_COLOR;
 
       setStoredThemeMode(mode);
-      setStoredAccentColor(accentColor);
-      applyThemeToDocument(mode, accentColor);
+      setStoredPalette(DEFAULT_PALETTE);
+      applyThemeToDocument(mode, DEFAULT_PALETTE);
 
-      set({ mode, accentColor });
+      set(stateFor(mode, DEFAULT_PALETTE));
     }
   };
 }

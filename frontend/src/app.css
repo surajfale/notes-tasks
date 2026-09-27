@@ -14,279 +14,172 @@ body {
 }
 
 /* ==========================================================================
-   Persona tokens
+   Theme tokens
    ==========================================================================
-   Three selectable personas (stores/persona.ts), applied via a
-   `data-persona` attribute on <html>. Each persona swaps the neutral
-   (`stone-*`) palette and font families via CSS custom properties consumed
-   by tailwind.config.js, then re-skins Tailwind's own radius/shadow/heading
-   utility classes with attribute-scoped overrides below — this reaches the
-   whole existing component library without editing every component file,
-   since those utilities (rounded-lg, shadow, font-serif, ...) are already
-   used consistently throughout. Accent color and light/dark mode (theme.ts)
-   are a separate, independent axis layered on top of whichever persona is
-   active.
-
-   - focus:    minimal/neutral SaaS — restrained, dense, hairline borders.
-   - vivid:    bold & colorful — rounded, playful, shadows tinted by accent.
-   - terminal: dark/techy — sharp corners, monospace, glow instead of blur.
+   One structural look (font, radius, elevation) with three selectable color
+   themes — aurora (default), ember, lagoon — applied via a `data-theme`
+   attribute on <html> (stores/theme.ts). Each theme defines:
+     - the neutral scale (`--stone-*`, consumed by tailwind.config.js), and
+     - a three-stop brand gradient (`--brand-from/via/to`, as "r g b").
+   The flat `--primary-*` shades are generated in theme.ts from the gradient's
+   middle stop, so plain `text-primary-*` / `ring-primary-*` utilities stay
+   on-hue. Light/dark mode is the independent `.dark` class axis.
    ========================================================================== */
 
-:root {
-	/* Default ("focus" persona) neutral scale — warm stone, paired with its
-	   own deep-teal accent (PERSONA_ACCENTS in stores/persona.ts). Warm paper
-	   neutrals + a cool, calm accent keep the page quiet while still giving
-	   active/primary states a clear, non-shouty signal. */
-	--stone-50: 250 248 246;
-	--stone-100: 242 238 234;
-	--stone-200: 228 221 213;
-	--stone-300: 199 189 177;
-	--stone-400: 163 150 135;
-	--stone-500: 120 108 94;
-	--stone-600: 90 80 68;
-	--stone-700: 66 58 49;
-	--stone-800: 41 36 30;
-	--stone-900: 26 23 19;
-	--stone-950: 16 14 11;
+:root,
+[data-theme='aurora'] {
+	/* Cool ink neutrals — barely-blue, so the gradient is the only color. */
+	--stone-50: 247 248 252;
+	--stone-100: 239 241 247;
+	--stone-200: 224 228 238;
+	--stone-300: 197 203 218;
+	--stone-400: 148 156 178;
+	--stone-500: 104 112 136;
+	--stone-600: 76 83 105;
+	--stone-700: 55 61 80;
+	--stone-800: 30 34 48;
+	--stone-900: 17 20 31;
+	--stone-950: 9 11 19;
+
+	--brand-from: 99 102 241; /* indigo */
+	--brand-via: 168 85 247; /* violet */
+	--brand-to: 236 72 153; /* pink */
 
 	--font-sans: 'Public Sans';
 	--font-mono: 'IBM Plex Mono';
 }
 
-[data-persona='vivid'] {
-	/* Warm, violet-tinted neutral — never fully desaturated. */
-	--stone-50: 248 246 255;
-	--stone-100: 240 236 253;
-	--stone-200: 221 213 247;
-	--stone-300: 190 176 236;
-	--stone-400: 149 133 214;
-	--stone-500: 117 102 187;
-	--stone-600: 92 79 156;
-	--stone-700: 71 61 121;
-	--stone-800: 46 39 80;
-	--stone-900: 28 23 51;
-	--stone-950: 16 13 31;
+[data-theme='ember'] {
+	/* Warm graphite neutrals. */
+	--stone-50: 250 249 247;
+	--stone-100: 243 241 238;
+	--stone-200: 229 226 221;
+	--stone-300: 204 199 192;
+	--stone-400: 160 154 146;
+	--stone-500: 115 110 103;
+	--stone-600: 87 82 76;
+	--stone-700: 64 60 55;
+	--stone-800: 38 35 32;
+	--stone-900: 23 21 19;
+	--stone-950: 13 12 11;
 
-	--font-sans: 'Nunito Sans';
-	--font-mono: 'IBM Plex Mono';
+	--brand-from: 245 158 11; /* amber */
+	--brand-via: 249 115 22; /* orange */
+	--brand-to: 225 29 72; /* rose */
 }
 
-[data-persona='terminal'] {
-	/* Navy-tinted neutral — pale enough to stay usable in light mode, dark
-	   enough at the top of the scale to read as a "terminal" in dark mode. */
-	--stone-50: 243 245 248;
-	--stone-100: 230 234 240;
-	--stone-200: 204 211 224;
-	--stone-300: 163 174 198;
-	--stone-400: 118 131 161;
-	--stone-500: 87 96 128;
-	--stone-600: 67 74 99;
-	--stone-700: 47 52 70;
-	--stone-800: 28 31 44;
-	--stone-900: 18 20 29;
-	--stone-950: 11 14 20;
+[data-theme='lagoon'] {
+	/* Slate neutrals. */
+	--stone-50: 248 250 252;
+	--stone-100: 241 245 249;
+	--stone-200: 226 232 240;
+	--stone-300: 203 213 225;
+	--stone-400: 148 163 184;
+	--stone-500: 100 116 139;
+	--stone-600: 71 85 105;
+	--stone-700: 51 65 85;
+	--stone-800: 30 41 59;
+	--stone-900: 15 23 42;
+	--stone-950: 2 6 23;
 
-	--font-sans: 'IBM Plex Sans';
-	--font-mono: 'JetBrains Mono';
+	--brand-from: 16 185 129; /* emerald */
+	--brand-via: 6 182 212; /* cyan */
+	--brand-to: 59 130 246; /* blue */
 }
 
-/* Headings reuse the app's existing `font-serif` utility class (PageHeader,
-   card titles, auth screens, ...) — repurposed per persona instead of
-   introducing a second heading utility that would need per-component edits. */
-[data-persona='focus'] .font-serif {
+:root {
+	--brand-gradient: linear-gradient(
+		135deg,
+		rgb(var(--brand-from)),
+		rgb(var(--brand-via)),
+		rgb(var(--brand-to))
+	);
+}
+
+/* Headings reuse the existing `font-serif` utility (PageHeader, card titles,
+   auth screens) rather than a second heading class needing per-component
+   edits. */
+.font-serif {
 	font-family: var(--font-sans), sans-serif;
 	font-weight: 700;
 	letter-spacing: -0.01em;
 }
 
-[data-persona='vivid'] .font-serif {
-	font-family: 'Baloo 2', var(--font-sans), sans-serif;
-	font-weight: 700;
-}
-
-[data-persona='terminal'] .font-serif {
-	font-family: var(--font-mono), monospace;
-	font-weight: 600;
-	letter-spacing: -0.01em;
-}
-
-/* Radius: restrained (focus) -> rounded/playful (vivid) -> sharp (terminal).
-   rounded-full is intentionally left alone everywhere (avatars, dots, pills
-   that are meant to be circular regardless of persona). */
-[data-persona='focus'] .rounded {
+/* Radius: restrained, applied uniformly. rounded-full is left alone
+   (avatars, dots, pills meant to be circular). */
+.rounded {
 	border-radius: 4px;
 }
-[data-persona='focus'] .rounded-md {
+.rounded-md {
 	border-radius: 6px;
 }
-[data-persona='focus'] .rounded-lg {
+.rounded-lg {
 	border-radius: 8px;
 }
-[data-persona='focus'] .rounded-xl {
+.rounded-xl {
 	border-radius: 10px;
 }
-[data-persona='focus'] .rounded-2xl {
+.rounded-2xl {
 	border-radius: 12px;
 }
-[data-persona='focus'] .rounded-t {
+.rounded-t {
 	border-radius: 6px 6px 0 0;
 }
-[data-persona='focus'] .rounded-b {
+.rounded-b {
 	border-radius: 0 0 6px 6px;
 }
 
-[data-persona='vivid'] .rounded {
-	border-radius: 12px;
+/* ---- Brand gradient: the signature ------------------------------------- */
+
+/* Solid primary fills (CTAs, the "New" button, logo tile, avatar) render
+   as the brand gradient. Done here, once, instead of swapping the class in
+   every component — the flat primary color stays as the background-color
+   fallback underneath. */
+.bg-primary-500,
+.bg-primary-600 {
+	background-image: var(--brand-gradient);
 }
-[data-persona='vivid'] .rounded-md {
-	border-radius: 16px;
-}
-[data-persona='vivid'] .rounded-lg {
-	border-radius: 20px;
-}
-[data-persona='vivid'] .rounded-xl {
-	border-radius: 24px;
-}
-[data-persona='vivid'] .rounded-2xl {
-	border-radius: 28px;
-}
-[data-persona='vivid'] .rounded-t {
-	border-radius: 16px 16px 0 0;
-}
-[data-persona='vivid'] .rounded-b {
-	border-radius: 0 0 16px 16px;
+.bg-primary-600:hover,
+.hover\:bg-primary-700:hover {
+	background-image: var(--brand-gradient);
+	filter: brightness(1.08) saturate(1.1);
 }
 
-[data-persona='terminal'] .rounded,
-[data-persona='terminal'] .rounded-md,
-[data-persona='terminal'] .rounded-lg,
-[data-persona='terminal'] .rounded-xl,
-[data-persona='terminal'] .rounded-2xl {
+.text-brand-gradient {
+	background-image: var(--brand-gradient);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+/* Page canvas: soft aurora glow from the three gradient stops. Fixed-size
+   radial layers (not viewport-relative) so it stays subtle on big screens. */
+.app-canvas {
+	background-image:
+		radial-gradient(900px 500px at 10% -10%, rgb(var(--brand-from) / 0.13), transparent 60%),
+		radial-gradient(800px 500px at 100% 0%, rgb(var(--brand-to) / 0.12), transparent 60%),
+		radial-gradient(700px 400px at 60% 110%, rgb(var(--brand-via) / 0.08), transparent 60%);
+}
+.dark .app-canvas {
+	background-image:
+		radial-gradient(900px 500px at 10% -10%, rgb(var(--brand-from) / 0.18), transparent 60%),
+		radial-gradient(800px 500px at 100% 0%, rgb(var(--brand-to) / 0.15), transparent 60%),
+		radial-gradient(700px 400px at 60% 110%, rgb(var(--brand-via) / 0.11), transparent 60%);
+}
+
+/* Active sidebar item: a gradient rail on the left of the pressed pill. */
+.nav-active {
+	position: relative;
+}
+.nav-active::before {
+	content: '';
+	position: absolute;
+	left: 4px;
+	top: 22%;
+	bottom: 22%;
+	width: 3px;
 	border-radius: 3px;
-}
-[data-persona='terminal'] .rounded-t {
-	border-radius: 3px 3px 0 0;
-}
-[data-persona='terminal'] .rounded-b {
-	border-radius: 0 0 3px 3px;
-}
-
-/* Shadow: each persona commits to one elevation language rather than
-   Tailwind's default gradation, applied uniformly across the shadow-*
-   scale used in this codebase. */
-[data-persona='focus'] .shadow,
-[data-persona='focus'] .shadow-sm,
-[data-persona='focus'] .shadow-md,
-[data-persona='focus'] .shadow-lg,
-[data-persona='focus'] .shadow-xl,
-[data-persona='focus'] .shadow-2xl {
-	box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 1px rgb(0 0 0 / 0.04);
-}
-
-[data-persona='vivid'] .shadow,
-[data-persona='vivid'] .shadow-sm,
-[data-persona='vivid'] .shadow-md,
-[data-persona='vivid'] .shadow-lg,
-[data-persona='vivid'] .shadow-xl,
-[data-persona='vivid'] .shadow-2xl {
-	box-shadow: 0 14px 30px -18px rgb(var(--primary-500, 117 102 187) / 0.45);
-}
-
-[data-persona='terminal'] .shadow,
-[data-persona='terminal'] .shadow-sm,
-[data-persona='terminal'] .shadow-md,
-[data-persona='terminal'] .shadow-lg,
-[data-persona='terminal'] .shadow-xl,
-[data-persona='terminal'] .shadow-2xl {
-	box-shadow: 0 0 0 1px rgb(var(--primary-500, 87 96 128) / 0.3);
-}
-
-/* Neumorphic surfaces (tactile/neumorphic.css): .neu-raised, .neu-pressed
-   and friends set border-radius and box-shadow directly rather than through
-   the rounded and shadow utilities overridden above, so without this they'd
-   render identically in every persona — silently erasing Vivid's bold/round
-   identity and Terminal's sharp/glow one on every neumorphic surface. Same
-   attribute-scoped override trick as above, applied to the neu- classes.
-   Focus gets no override here: true soft neumorphism (low-contrast pastel,
-   see neumorphic.css's own design-intent note) is the persona it actually
-   fits, so its defaults stay as-is. */
-
-[data-persona='vivid'] .neu-raised {
-	border-radius: 28px;
-	box-shadow:
-		10px 10px 24px rgb(var(--primary-500, 117 102 187) / 0.35),
-		-8px -8px 18px rgba(255, 255, 255, 0.85);
-}
-[data-persona='vivid'].dark .neu-raised {
-	box-shadow:
-		10px 10px 24px rgb(var(--primary-500, 117 102 187) / 0.45),
-		-6px -6px 14px rgb(var(--stone-700) / 0.16);
-}
-[data-persona='vivid'] .neu-raised-sm,
-[data-persona='vivid'] .neu-pressed {
-	border-radius: 20px;
-}
-[data-persona='vivid'] .neu-raised-sm {
-	box-shadow:
-		6px 6px 14px rgb(var(--primary-500, 117 102 187) / 0.3),
-		-5px -5px 12px rgba(255, 255, 255, 0.85);
-}
-[data-persona='vivid'].dark .neu-raised-sm {
-	box-shadow:
-		6px 6px 14px rgb(var(--primary-500, 117 102 187) / 0.4),
-		-4px -4px 10px rgb(var(--stone-700) / 0.16);
-}
-[data-persona='vivid'] .neu-pressed {
-	box-shadow:
-		inset 4px 4px 10px rgb(var(--primary-500, 117 102 187) / 0.28),
-		inset -4px -4px 8px rgba(255, 255, 255, 0.85);
-}
-[data-persona='vivid'].dark .neu-pressed {
-	box-shadow:
-		inset 4px 4px 10px rgb(var(--primary-500, 117 102 187) / 0.38),
-		inset -3px -3px 6px rgb(var(--stone-700) / 0.16);
-}
-[data-persona='vivid'] .neu-interactive:hover,
-[data-persona='vivid'] .neu-interactive:focus-visible {
-	box-shadow:
-		12px 12px 26px rgb(var(--primary-500, 117 102 187) / 0.4),
-		-10px -10px 20px rgba(255, 255, 255, 0.9);
-}
-[data-persona='vivid'].dark .neu-interactive:hover,
-[data-persona='vivid'].dark .neu-interactive:focus-visible {
-	box-shadow:
-		12px 12px 26px rgb(var(--primary-500, 117 102 187) / 0.5),
-		-8px -8px 16px rgb(var(--stone-700) / 0.16);
-}
-[data-persona='vivid'] .neu-dragging {
-	box-shadow:
-		16px 16px 34px rgb(var(--primary-500, 117 102 187) / 0.45),
-		-14px -14px 28px rgba(255, 255, 255, 0.9) !important;
-}
-
-/* Terminal drops soft neumorphism altogether — a flat surface plus a glow
-   ring (same primary-500-driven look its pre-existing .shadow override
-   already used) instead of an embossed pastel blur, since that blur is the
-   opposite of what a "dark/techy, sharp corners" persona is going for. */
-[data-persona='terminal'] .neu-raised,
-[data-persona='terminal'] .neu-raised-sm {
-	border-radius: 4px;
-	box-shadow: 0 0 0 1px rgb(var(--primary-500, 87 96 128) / 0.35);
-}
-[data-persona='terminal'] .neu-pressed {
-	border-radius: 4px;
-	box-shadow: inset 0 0 0 1px rgb(var(--primary-500, 87 96 128) / 0.45);
-}
-[data-persona='terminal'] .neu-interactive:hover,
-[data-persona='terminal'] .neu-interactive:focus-visible {
-	box-shadow:
-		0 0 0 1.5px rgb(var(--primary-500, 87 96 128) / 0.6),
-		0 0 12px rgb(var(--primary-500, 87 96 128) / 0.25);
-}
-[data-persona='terminal'] .neu-dragging {
-	box-shadow:
-		0 0 0 2px rgb(var(--primary-500, 87 96 128) / 0.7),
-		0 0 20px rgb(var(--primary-500, 87 96 128) / 0.35) !important;
+	background-image: var(--brand-gradient);
 }
 
 * {

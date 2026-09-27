@@ -2,7 +2,7 @@
   import type { ViewLayout } from '$lib/utils/viewLayout';
   import '$lib/components/tactile/neumorphic.css';
 
-  // Displays the currently-effective layout (persona default, or the
+  // Displays the currently-effective layout (page default, or the
   // user's manual override) and reports a choice back via onChange —
   // the caller owns persisting the override (see routes/notes,
   // routes/tasks +page.svelte).

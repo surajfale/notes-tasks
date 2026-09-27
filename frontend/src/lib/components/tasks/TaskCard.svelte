@@ -6,11 +6,9 @@
   import { tasksStore } from '$lib/stores/tasks';
   import { listsStore } from '$lib/stores/lists';
   import { isTaskPending } from '$lib/stores/syncStatus';
-  import { personaStore } from '$lib/stores/persona';
   import { formatDueDate, isPastDate } from '$lib/utils/date';
   import { getTagColor } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types/task';
-  import type { UiPersona } from '$lib/types/user';
   import '$lib/components/tactile/neumorphic.css';
 
   export let task: Task;
@@ -22,11 +20,7 @@
   let showDeleteConfirm = false;
   let isTogglingComplete = false;
 
-  // Vivid persona: small confetti burst when a task is marked complete.
-  let persona: UiPersona = 'focus';
-  personaStore.subscribe((value) => {
-    persona = value;
-  });
+  // Small confetti burst when a task is marked complete.
   let showCelebration = false;
 
   // Get list info if task has a listId
@@ -76,7 +70,7 @@
     isTogglingComplete = true;
     try {
       await tasksStore.toggleComplete(task._id, next);
-      if (next && persona === 'vivid') {
+      if (next) {
         showCelebration = true;
         setTimeout(() => {
           showCelebration = false;
@@ -134,7 +128,6 @@
         disabled={isTogglingComplete}
         label={task.isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
         accent="tasks"
-        glyph={persona === 'terminal' ? 'terminal' : 'check'}
         onToggle={handleToggleComplete}
       />
       {#if showCelebration}
@@ -289,7 +282,7 @@
 </div>
 
 <style>
-  /* Vivid persona only (see showCelebration in the script block) — a brief
+  /* See showCelebration in the script block — a brief
      radial confetti burst around the checkbox. Neutralized automatically by
      app.css's prefers-reduced-motion rule (zeros animation-duration). */
   .celebration {

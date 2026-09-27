@@ -10,7 +10,7 @@
  * from the app's own `--stone-*` tokens (app.css) rather than a hardcoded
  * palette — that's what lets a neumorphic card sit on the app's actual
  * page background without looking like a mismatched gray box, and makes
- * it automatically follow whichever of the three personas (each of which
+ * it automatically follow whichever of the three color themes (each of which
  * redefines --stone-*) is active. The funky palette stays hardcoded and
  * is spent entirely on STATE: a gradient + glow only appears on
  * completed/pinned/active elements and the AI-thinking shimmer. Plain
@@ -32,12 +32,16 @@
 .neu-raised {
   background: rgb(var(--stone-50));
   border-radius: 20px;
+  /* Hairline highlight so cards read as crisp glass edges rather than soft
+     blobs against the aurora canvas (app.css .app-canvas). */
+  border: 1px solid rgb(255 255 255 / 0.6);
   box-shadow:
     8px 8px 16px rgb(var(--stone-300) / 0.55),
     -8px -8px 16px rgba(255, 255, 255, 0.85);
 }
 .dark .neu-raised {
   background: rgb(var(--stone-900));
+  border-color: rgb(255 255 255 / 0.05);
   box-shadow:
     8px 8px 16px rgba(0, 0, 0, 0.55),
     -6px -6px 14px rgb(var(--stone-700) / 0.12);

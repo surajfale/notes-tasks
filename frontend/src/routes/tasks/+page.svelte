@@ -9,10 +9,8 @@
   import ViewLayoutToggle from '$lib/components/ui/ViewLayoutToggle.svelte';
   import { LoadingOverlay, ErrorMessage, PageHeader, EmptyState } from '$lib/components/ui';
   import '$lib/components/tactile/neumorphic.css';
-  import { personaStore } from '$lib/stores/persona';
   import { getStoredLayout, setStoredLayout, type ViewLayout } from '$lib/utils/viewLayout';
   import type { TaskFilters, TaskPriority } from '$lib/types/task';
-  import type { UiPersona } from '$lib/types/user';
 
   const LAYOUT_STORAGE_KEY = 'tasks-view-layout';
 
@@ -22,15 +20,10 @@
   let selectedPriority: TaskPriority | '' = '';
   let showFilters = false;
 
-  // View layout: defaults from the active persona (vivid -> grid, everyone
-  // else -> dense list), overridable by hand and remembered per-browser.
-  let persona: UiPersona = 'focus';
-  personaStore.subscribe((value) => {
-    persona = value;
-  });
+  // View layout: dense list by default, overridable by hand and remembered
+  // per-browser.
   let manualLayout: ViewLayout | null = null;
-  let defaultLayout: ViewLayout;
-  $: defaultLayout = persona === 'vivid' ? 'grid' : 'list';
+  const defaultLayout: ViewLayout = 'list';
   let layout: ViewLayout;
   $: layout = manualLayout ?? defaultLayout;
 
