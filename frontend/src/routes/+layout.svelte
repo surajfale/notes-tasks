@@ -34,14 +34,21 @@
   $: syncThemeFromUser(user);
   
   // Check if current route is active
-  function isActive(path: string): boolean {
+  // Reactive (`$:`) rather than a plain function: templates only re-render
+  // when a variable they reference changes, and a plain function's reads of
+  // $page are invisible to them — so after client-side navigation the
+  // sidebar and bottom nav kept highlighting the previous page. Re-creating
+  // the function whenever $page changes gives both a new reference to
+  // re-render on.
+  $: currentPath = $page.url.pathname;
+  $: isActive = (path: string): boolean => {
     // Special case for home - only match exact path
     if (path === '/') {
-      return $page.url.pathname === '/';
+      return currentPath === '/';
     }
     // For other routes, match exact path or sub-paths
-    return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
-  }
+    return currentPath === path || currentPath.startsWith(path + '/');
+  };
   
   // Toggle sidebar on mobile
   function toggleSidebar() {
