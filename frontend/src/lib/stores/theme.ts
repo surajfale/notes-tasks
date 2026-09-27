@@ -14,7 +14,7 @@ const ACCENT_COLOR_KEY = 'accent-color';
 // PERSONA_ACCENTS) — color is now derived from persona, not chosen
 // independently, so this is just what a fresh install starts with before
 // persona.ts's own init call overrides it for the stored/default persona.
-const DEFAULT_ACCENT_COLOR = '#D97706';
+const DEFAULT_ACCENT_COLOR = '#4F46E5';
 
 // Helper functions for localStorage
 function getStoredThemeMode(): ThemeMode {
