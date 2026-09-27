@@ -37,8 +37,7 @@ describe('TaskCard', () => {
     priority: 2,
     isCompleted: false,
     checklistItems: [],
-    notificationEnabled: false,
-    notificationTimings: [],
+    reminders: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };

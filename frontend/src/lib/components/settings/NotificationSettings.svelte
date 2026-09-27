@@ -2,8 +2,7 @@
   import { onMount } from 'svelte';
   import { notificationStore } from '$lib/stores/notifications';
   import { Button, Card, LoadingSpinner, ErrorMessage } from '$lib/components/ui';
-  import { getCommonTimezones, getCurrentTimezone } from '$lib/utils/date';
-  import type { NotificationDay, NotificationPreferences } from '$lib/types/notification';
+  import type { NotificationPreferences } from '$lib/types/notification';
   import { pushNotificationManager } from '$lib/services/pushNotificationManager';
   import '$lib/components/tactile/neumorphic.css';
 
@@ -17,35 +16,10 @@
   // Form state
   let emailNotificationsEnabled = true;
   let browserNotificationsEnabled = false;
-  let selectedNotificationDays: NotificationDay[] = ['1_day_before'];
-  let selectedTimezone = getCurrentTimezone();
-  let selectedNotificationTime = '09:00'; // Default 9 AM
   let browserNotificationPermission: NotificationPermission = 'default';
 
   // Original values for change detection
   let originalPreferences: NotificationPreferences | null = null;
-
-  // Notification day options
-  const notificationDayOptions: Array<{ value: NotificationDay; label: string; description: string }> = [
-    {
-      value: 'same_day',
-      label: 'Same day',
-      description: 'Get notified on the day the task is due'
-    },
-    {
-      value: '1_day_before',
-      label: '1 day before',
-      description: 'Get notified one day before the task is due'
-    },
-    {
-      value: '2_days_before',
-      label: '2 days before',
-      description: 'Get notified two days before the task is due'
-    }
-  ];
-
-  // Timezone options
-  const timezoneOptions = getCommonTimezones();
 
   // Subscribe to notification store
   $: {
@@ -54,9 +28,6 @@
       const prefs = $notificationStore.preferences;
       emailNotificationsEnabled = prefs.emailNotificationsEnabled;
       browserNotificationsEnabled = prefs.browserNotificationsEnabled || false;
-      selectedNotificationDays = [...prefs.notificationDays];
-      selectedTimezone = prefs.timezone;
-      selectedNotificationTime = prefs.notificationTime || '09:00';
       originalPreferences = { ...prefs };
     }
     
@@ -72,10 +43,7 @@
     if (originalPreferences) {
       hasChanges = 
         emailNotificationsEnabled !== originalPreferences.emailNotificationsEnabled ||
-        browserNotificationsEnabled !== (originalPreferences.browserNotificationsEnabled || false) ||
-        selectedTimezone !== originalPreferences.timezone ||
-        selectedNotificationTime !== (originalPreferences.notificationTime || '09:00') ||
-        !arraysEqual(selectedNotificationDays, originalPreferences.notificationDays);
+        browserNotificationsEnabled !== (originalPreferences.browserNotificationsEnabled || false);
     }
   }
 
@@ -88,22 +56,6 @@
     }
   });
 
-  function arraysEqual<T>(a: T[], b: T[]): boolean {
-    if (a.length !== b.length) return false;
-    return a.every((val, i) => val === b[i]);
-  }
-
-  function handleNotificationDayChange(day: NotificationDay, checked: boolean) {
-    if (checked) {
-      if (!selectedNotificationDays.includes(day)) {
-        selectedNotificationDays = [...selectedNotificationDays, day];
-      }
-    } else {
-      selectedNotificationDays = selectedNotificationDays.filter(d => d !== day);
-    }
-    clearMessages();
-  }
-
   function clearMessages() {
     error = '';
     success = '';
@@ -113,33 +65,22 @@
   async function handleSave() {
     if (!hasChanges) return;
 
-    // Validation
-    if (emailNotificationsEnabled && selectedNotificationDays.length === 0) {
-      error = 'Please select at least one notification timing option when email notifications are enabled.';
-      return;
-    }
-
     clearMessages();
     isSaving = true;
 
     try {
       const updatedPreferences: Partial<NotificationPreferences> = {
         emailNotificationsEnabled,
-        browserNotificationsEnabled,
-        notificationDays: selectedNotificationDays,
-        timezone: selectedTimezone,
-        notificationTime: selectedNotificationTime
+        browserNotificationsEnabled
       };
 
       await notificationStore.updatePreferences(updatedPreferences);
       
       // Update original preferences to reflect saved state
       originalPreferences = {
+        ...originalPreferences!,
         emailNotificationsEnabled,
-        browserNotificationsEnabled,
-        notificationDays: [...selectedNotificationDays],
-        timezone: selectedTimezone,
-        notificationTime: selectedNotificationTime
+        browserNotificationsEnabled
       };
       
       success = 'Notification preferences saved successfully!';
@@ -154,9 +95,6 @@
     if (originalPreferences) {
       emailNotificationsEnabled = originalPreferences.emailNotificationsEnabled;
       browserNotificationsEnabled = originalPreferences.browserNotificationsEnabled || false;
-      selectedNotificationDays = [...originalPreferences.notificationDays];
-      selectedTimezone = originalPreferences.timezone;
-      selectedNotificationTime = originalPreferences.notificationTime || '09:00';
     }
     clearMessages();
   }
@@ -190,8 +128,8 @@
         browserNotificationPermission = Notification.permission;
 
         if (subscribed) {
-          success = 'Browser push notifications enabled! You will receive notifications even when the app is closed.';
           clearMessages();
+          success = 'Browser push notifications enabled! You will receive notifications even when the app is closed.';
         } else {
           if (Notification.permission === 'denied') {
             error = 'Browser notification permission was denied. Please enable it in your browser settings.';
@@ -209,8 +147,8 @@
       // User wants to disable browser notifications
       try {
         await pushNotificationManager.unsubscribe();
-        success = 'Browser push notifications disabled.';
         clearMessages();
+        success = 'Browser push notifications disabled.';
       } catch (err: any) {
         console.error('Unsubscribe error:', err);
         // Still allow disabling even if unsubscribe fails
@@ -220,8 +158,8 @@
 </script>
 
 <Card class="mb-6">
-  <h2 class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-4">
-    Email Notifications
+  <h2 id="notifications" class="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-4">
+    Notifications
   </h2>
 
   {#if isLoading && !originalPreferences}
@@ -237,7 +175,8 @@
           Notification Channels
         </h3>
         <p class="text-sm text-stone-600 dark:text-stone-400">
-          Choose how you want to receive task reminders
+          Account-wide switches for where reminders can reach you. You set each reminder's
+          time, repeat and channels on the task itself (open a task, then <em>Reminders</em>).
         </p>
 
         <!-- Email Notifications -->
@@ -259,7 +198,7 @@
                 </div>
               </div>
               <div class="text-sm text-stone-500 dark:text-stone-400 mt-1">
-                Receive email reminders at your scheduled time, even when the app is closed
+                Allow reminder emails, even when the app is closed
               </div>
             </div>
           </label>
@@ -298,81 +237,6 @@
           </label>
         </div>
       </div>
-
-      <!-- Notification Timing Options -->
-      {#if emailNotificationsEnabled}
-        <div>
-          <!-- svelte-ignore a11y-label-has-associated-control -->
-          <label class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-3">
-            When to send notifications
-          </label>
-          <div class="space-y-3">
-            {#each notificationDayOptions as option}
-              <label class="flex items-start space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedNotificationDays.includes(option.value)}
-                  on:change={(e) => handleNotificationDayChange(option.value, e.currentTarget.checked)}
-                  class="w-5 h-5 text-primary-600 bg-stone-100 border-stone-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-stone-800 focus:ring-2 dark:bg-stone-700 dark:border-stone-600 mt-0.5"
-                />
-                <div>
-                  <div class="text-sm font-medium text-stone-900 dark:text-stone-100">
-                    {option.label}
-                  </div>
-                  <div class="text-sm text-stone-500 dark:text-stone-400">
-                    {option.description}
-                  </div>
-                </div>
-              </label>
-            {/each}
-          </div>
-        </div>
-
-        <!-- Timezone Selection -->
-        <div>
-          <label for="timezone-select" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-            Timezone
-          </label>
-          <select
-            id="timezone-select"
-            bind:value={selectedTimezone}
-            on:change={clearMessages}
-            class="w-full px-4 py-3 min-h-[44px] text-base rounded-2xl neu-pressed text-stone-900 dark:text-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-          >
-            {#each timezoneOptions as timezone}
-              <option value={timezone.value}>{timezone.label}</option>
-            {/each}
-          </select>
-          <p class="mt-2 text-sm text-stone-500 dark:text-stone-400">
-            Notifications will be sent based on your selected timezone
-          </p>
-        </div>
-
-        <!-- Notification Time Selection -->
-        <div>
-          <label for="notification-time" class="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-            Notification Time
-          </label>
-          <div class="flex items-center gap-3">
-            <input
-              id="notification-time"
-              type="time"
-              bind:value={selectedNotificationTime}
-              on:change={clearMessages}
-              class="flex-1 px-4 py-3 min-h-[44px] text-base rounded-2xl neu-pressed text-stone-900 dark:text-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-            />
-            <div class="flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span class="hidden sm:inline">24-hour format</span>
-            </div>
-          </div>
-          <p class="mt-2 text-sm text-stone-500 dark:text-stone-400">
-            Choose what time you want to receive email notifications (in your timezone)
-          </p>
-        </div>
-      {/if}
 
       <!-- Error Message -->
       {#if error}

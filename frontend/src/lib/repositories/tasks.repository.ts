@@ -13,17 +13,17 @@ import type {
 } from '$lib/types/task';
 
 /**
- * Normalize task to ensure all notification fields exist
- * Handles tasks created before notification feature was added
+ * Normalize a task from the API (or older offline storage) so `reminders`
+ * is always an array. Retired notification fields from before reminders
+ * are dropped.
  * @param task - Task object from API
- * @returns Normalized task with notification fields
+ * @returns Normalized task
  */
 function normalizeTask(task: any): Task {
+  const { notificationEnabled, notificationTimings, notificationsSent, lastNotificationSent, ...rest } = task;
   return {
-    ...task,
-    notificationEnabled: task.notificationEnabled ?? false,
-    notificationTimings: Array.isArray(task.notificationTimings) ? task.notificationTimings : [],
-    notificationsSent: Array.isArray(task.notificationsSent) ? task.notificationsSent : undefined,
+    ...rest,
+    reminders: Array.isArray(task.reminders) ? task.reminders : [],
   };
 }
 
@@ -66,7 +66,7 @@ export const tasksRepository = {
     const query = buildQueryString(filters);
     const tasks = await apiClient.get<Task[]>(`${API_ENDPOINTS.TASKS.BASE}${query}`);
     
-    // Ensure notification fields exist on all tasks
+    // Ensure reminders exist on all tasks
     return tasks.map(task => normalizeTask(task));
   },
 
@@ -99,8 +99,7 @@ export const tasksRepository = {
         listId: data.listId,
         isCompleted: false,
         checklistItems: data.checklistItems || [],
-        notificationEnabled: data.notificationEnabled || false,
-        notificationTimings: data.notificationTimings || [],
+        reminders: data.reminders || [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };

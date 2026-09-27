@@ -5,7 +5,6 @@
   import Button from '$lib/components/ui/Button.svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
   import TaskEditor from '$lib/components/tasks/TaskEditor.svelte';
-  import NotificationDisplay from '$lib/components/tasks/NotificationDisplay.svelte';
   import '$lib/components/tactile/neumorphic.css';
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
@@ -135,14 +134,6 @@
         Mark as {isCompleted ? 'incomplete' : 'complete'}
       </label>
     </div>
-
-    <!-- Notification Status Display -->
-    <NotificationDisplay
-      enabled={data.task.notificationEnabled || false}
-      timings={data.task.notificationTimings || []}
-      sentNotifications={data.task.notificationsSent || []}
-      dueDate={data.task.dueAt}
-    />
 
     <TaskEditor
       task={data.task}

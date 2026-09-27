@@ -423,8 +423,9 @@
       <div class="app-canvas flex-1 flex flex-col overflow-hidden bg-stone-50 dark:bg-stone-900">
 
         <!-- Page content. Bottom padding on mobile clears the fixed bottom nav, the floating
-             create button that sits above it, and the safe area. -->
-        <main class="flex-1 overflow-y-auto pb-[calc(9rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+             create button that sits above it, and the safe area; on desktop it lets the
+             end of the page scroll clear of the fixed ShortcutHint strip. -->
+        <main class="flex-1 overflow-y-auto pb-[calc(9rem+env(safe-area-inset-bottom,0px))] md:pb-16">
           <ErrorBoundary>
             <slot />
           </ErrorBoundary>

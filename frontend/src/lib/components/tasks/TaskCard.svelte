@@ -9,6 +9,7 @@
   import { formatDueDate, isPastDate } from '$lib/utils/date';
   import { getTagColor } from '$lib/utils/tagColors';
   import type { Task } from '$lib/types/task';
+  import { describeRepeat, formatReminderTime, nextReminderAt } from '$lib/utils/reminders';
   import '$lib/components/tactile/neumorphic.css';
 
   export let task: Task;
@@ -43,26 +44,14 @@
   $: dueDateText = task.dueAt ? formatDueDate(task.dueAt) : '';
   $: isOverdue = task.dueAt && isPastDate(task.dueAt) && !task.isCompleted;
 
-  // Notification display logic
-  $: hasNotifications = task.notificationEnabled && task.notificationTimings && task.notificationTimings.length > 0;
-  
-  // Format notification timings for display
-  function formatNotificationTiming(timing: string): string {
-    switch (timing) {
-      case 'same_day':
-        return 'Same day';
-      case '1_day_before':
-        return '1 day before';
-      case '2_days_before':
-        return '2 days before';
-      default:
-        return timing;
-    }
-  }
-  
-  $: notificationTimingsText = hasNotifications 
-    ? task.notificationTimings.map(formatNotificationTiming).join(', ')
-    : '';
+  // Reminders: count badge, and the soonest upcoming one (hidden once the
+  // task is done, since completed tasks don't send reminders).
+  $: reminders = task.reminders ?? [];
+  $: hasReminders = reminders.length > 0;
+  $: nextReminder = task.isCompleted ? null : nextReminderAt(reminders);
+  $: remindersTitle = reminders
+    .map((r) => `${formatReminderTime(r.startAt)} (${describeRepeat(r)})`)
+    .join('\n');
 
   async function handleToggleComplete(next: boolean) {
     if (isTogglingComplete) return;
@@ -150,16 +139,17 @@
           <div class="flex items-center gap-2 flex-shrink-0">
             <!-- Pending badge -->
             <PendingBadge show={$hasPendingChanges} size="sm" />
-            <!-- Notification indicator -->
-            {#if hasNotifications}
-              <span 
-                class="px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                title="Notifications: {notificationTimingsText}"
+            <!-- Reminder indicator -->
+            {#if hasReminders}
+              <span
+                class="px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap flex items-center gap-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300"
+                title="Reminders:\n{remindersTitle}"
+                aria-label="{reminders.length} reminder{reminders.length === 1 ? '' : 's'}"
               >
                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span class="hidden sm:inline">{task.notificationTimings.length}</span>
+                <span class="hidden sm:inline">{reminders.length}</span>
               </span>
             {/if}
             <!-- Priority indicator -->
@@ -211,8 +201,8 @@
           </div>
         {/if}
 
-        <!-- Due date and notifications -->
-        {#if task.dueAt || hasNotifications}
+        <!-- Due date and next reminder -->
+        {#if task.dueAt || nextReminder}
           <div class="flex flex-col gap-2">
             {#if task.dueAt}
               <div class="flex items-center gap-1 text-sm {isOverdue ? 'text-red-600 dark:text-red-400 font-medium' : 'text-stone-600 dark:text-stone-400'}">
@@ -222,12 +212,12 @@
                 <span>{dueDateText}</span>
               </div>
             {/if}
-            {#if hasNotifications}
-              <div class="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400">
+            {#if nextReminder}
+              <div class="flex items-center gap-1 text-sm text-primary-600 dark:text-primary-400">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span>Reminders: {notificationTimingsText}</span>
+                <span>Next reminder: {formatReminderTime(nextReminder)}</span>
               </div>
             {/if}
           </div>
