@@ -11,7 +11,9 @@ export type ThemeMode = 'light' | 'dark';
  * The accent is picked per theme for text contrast rather than taken from a
  * gradient stop (e.g. ember's orange stop is too light for primary text).
  */
-export type ThemePalette = 'aurora' | 'ember' | 'lagoon';
+import type { ThemePalette } from '$lib/types/theme';
+
+export type { ThemePalette };
 
 export const THEME_PALETTES: Record<
   ThemePalette,
@@ -201,7 +203,9 @@ function createThemeStore() {
     },
 
     /**
-     * Switch color theme (Settings). Persisted per device in localStorage.
+     * Apply a color theme and cache it on this device. For a user's choice,
+     * call themeSync.ts's chooseThemePalette() instead, which also saves it
+     * to their account.
      */
     setPalette(palette: ThemePalette): void {
       update((state) => {

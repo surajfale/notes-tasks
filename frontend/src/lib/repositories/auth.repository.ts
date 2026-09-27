@@ -11,6 +11,7 @@ import type {
   ForgotPasswordData,
   ResetPasswordData
 } from '$lib/types/user';
+import type { ThemePalette } from '$lib/types/theme';
 
 /**
  * Authentication repository for handling auth-related API calls
@@ -48,6 +49,15 @@ export const authRepository = {
    */
   async getCurrentUser(): Promise<User> {
     return apiClient.get<User>(API_ENDPOINTS.AUTH.ME);
+  },
+
+  /**
+   * Save the account's color theme so it follows the user across devices.
+   * @param themePalette - The color theme to store
+   * @returns Promise resolving to the updated user
+   */
+  async updateTheme(themePalette: ThemePalette): Promise<{ user: User }> {
+    return apiClient.put<{ user: User }>(API_ENDPOINTS.AUTH.THEME, { themePalette });
   },
 
   /**

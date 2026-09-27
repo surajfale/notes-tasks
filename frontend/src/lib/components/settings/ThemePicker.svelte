@@ -1,11 +1,12 @@
 <script lang="ts">
   import { themeStore, THEME_PALETTES, PALETTE_OPTIONS } from '$lib/stores/theme';
+  import { chooseThemePalette } from '$lib/stores/themeSync';
   import '$lib/components/tactile/neumorphic.css';
 </script>
 
-<!-- Color theme picker: each option previews its own brand gradient. Purely
-     cosmetic and stored per device (stores/theme.ts), independent of the
-     light/dark toggle. -->
+<!-- Color theme picker: each option previews its own brand gradient. Saved to
+     the account so it follows the user across devices (stores/themeSync.ts);
+     independent of the per-device light/dark toggle. -->
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-label="Color theme">
   {#each PALETTE_OPTIONS as value}
     {@const option = THEME_PALETTES[value]}
@@ -14,7 +15,7 @@
       type="button"
       role="radio"
       aria-checked={selected}
-      on:click={() => themeStore.setPalette(value)}
+      on:click={() => chooseThemePalette(value)}
       class="text-left p-4 transition-all duration-150
              {selected ? 'neu-pressed' : 'neu-raised-sm neu-interactive'}"
     >

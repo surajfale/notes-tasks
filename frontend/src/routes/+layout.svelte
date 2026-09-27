@@ -5,6 +5,7 @@
   import { goto, beforeNavigate } from '$app/navigation';
   import { authStore, isAuthenticated, currentUser } from '$lib/stores/auth';
   import { themeStore } from '$lib/stores/theme';
+  import { syncThemeFromUser } from '$lib/stores/themeSync';
   import { listsStore } from '$lib/stores/lists';
   import { isPublicRoute, isAuthOnlyRoute } from '../hooks.client';
   import OfflineIndicator from '$lib/components/sync/OfflineIndicator.svelte';
@@ -27,6 +28,10 @@
   $: theme = $themeStore;
   $: lists = Array.isArray($listsStore.items) ? $listsStore.items : [];
   let commandPaletteOpen = false;
+
+  // Adopt the signed-in account's color theme (or push a choice made
+  // offline) whenever the current user changes.
+  $: syncThemeFromUser(user);
   
   // Check if current route is active
   function isActive(path: string): boolean {

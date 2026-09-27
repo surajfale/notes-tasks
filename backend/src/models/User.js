@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { THEME_PALETTES, DEFAULT_THEME_PALETTE } = require('../config/themes');
 
 const userSchema = new mongoose.Schema(
   {
@@ -28,6 +29,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       maxlength: [50, 'Display name cannot exceed 50 characters'],
+    },
+    // Color theme (see config/themes.js), synced so it follows the account
+    // across devices. Light/dark mode is deliberately not stored here — it
+    // stays per device, following each device's system preference.
+    themePalette: {
+      type: String,
+      enum: THEME_PALETTES,
+      default: DEFAULT_THEME_PALETTE,
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,

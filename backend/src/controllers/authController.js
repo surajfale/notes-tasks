@@ -5,6 +5,17 @@ const Note = require('../models/Note');
 const Task = require('../models/Task');
 const List = require('../models/List');
 
+// Public shape of a user in API responses — never includes passwordHash or
+// reset tokens.
+const toUserResponse = (user) => ({
+  _id: user._id,
+  username: user.username,
+  email: user.email,
+  displayName: user.displayName,
+  themePalette: user.themePalette,
+  createdAt: user.createdAt,
+});
+
 // Generate JWT token
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -80,13 +91,7 @@ const register = async (req, res, next) => {
 
     res.status(201).json({
       token,
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        displayName: user.displayName,
-        createdAt: user.createdAt,
-      },
+      user: toUserResponse(user),
     });
   } catch (error) {
     next(error);
@@ -129,13 +134,7 @@ const login = async (req, res, next) => {
 
     res.json({
       token,
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        displayName: user.displayName,
-        createdAt: user.createdAt,
-      },
+      user: toUserResponse(user),
     });
   } catch (error) {
     next(error);
@@ -148,14 +147,25 @@ const login = async (req, res, next) => {
 const getMe = async (req, res, next) => {
   try {
     res.json({
-      user: {
-        _id: req.user._id,
-        username: req.user.username,
-        email: req.user.email,
-        displayName: req.user.displayName,
-        createdAt: req.user.createdAt,
-      },
+      user: toUserResponse(req.user),
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update the account's color theme
+// @route   PUT /api/auth/theme
+// @access  Private
+const updateTheme = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { themePalette: req.body.themePalette },
+      { new: true, runValidators: true }
+    );
+
+    res.json({ user: toUserResponse(user) });
   } catch (error) {
     next(error);
   }
@@ -306,6 +316,7 @@ module.exports = {
   register,
   login,
   getMe,
+  updateTheme,
   changePassword,
   deleteAccount,
   forgotPassword,

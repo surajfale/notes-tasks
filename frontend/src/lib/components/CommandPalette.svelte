@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { themeStore, THEME_PALETTES, PALETTE_OPTIONS } from '$lib/stores/theme';
+  import { chooseThemePalette } from '$lib/stores/themeSync';
   import '$lib/components/tactile/neumorphic.css';
   import { tick } from 'svelte';
 
@@ -32,7 +33,7 @@
       id: `palette-${palette}`,
       label: `Color theme: ${THEME_PALETTES[palette].label}`,
       hint: 'Theme',
-      run: () => themeStore.setPalette(palette)
+      run: () => chooseThemePalette(palette)
     }))
   ];
 
