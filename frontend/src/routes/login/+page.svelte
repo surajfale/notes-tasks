@@ -5,7 +5,7 @@
   import { onMount } from 'svelte';
   import { safeRedirectPath } from '$lib/utils/deepLink';
   import { validateLoginForm } from '$lib/utils/validation';
-  import { ErrorMessage, Button, Input } from '$lib/components/ui';
+  import { ErrorMessage, Button, Input, PersonalUseNotice } from '$lib/components/ui';
   import '$lib/components/tactile/neumorphic.css';
 
   // Form state
@@ -88,6 +88,8 @@
         Sign in to your account to continue
       </p>
     </div>
+
+    <PersonalUseNotice variant="login" />
 
     <!-- Login Form -->
     <form

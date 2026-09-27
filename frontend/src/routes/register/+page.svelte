@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import type { RegisterData } from '$lib/types/user';
   import { validateRegisterForm } from '$lib/utils/validation';
-  import { ErrorMessage, Button, Input } from '$lib/components/ui';
+  import { ErrorMessage, Button, Input, PersonalUseNotice } from '$lib/components/ui';
   import '$lib/components/tactile/neumorphic.css';
 
   // Form state
@@ -21,6 +21,8 @@
     displayName?: string;
   } = {};
   let isSubmitting = false;
+  // Personal-use acknowledgement: page-local only, never sent to the API.
+  let acknowledged = false;
 
   // Subscribe to auth store for error messages
   let authError: string | null = null;
@@ -57,6 +59,7 @@
    */
   async function handleSubmit(event: Event) {
     event.preventDefault();
+    if (!acknowledged) return;
     
     // Clear previous errors
     authStore.clearError();
@@ -192,8 +195,12 @@
         />
       {/if}
 
+      <!-- Personal-use notice. The checkbox only gates this form; nothing
+           about it (or the visitor's age) is sent or stored. -->
+      <PersonalUseNotice variant="register" bind:acknowledged disabled={isSubmitting || authLoading} />
+
       <!-- Submit Button -->
-      <Button type="submit" variant="primary" fullWidth loading={isSubmitting || authLoading}>
+      <Button type="submit" variant="primary" fullWidth loading={isSubmitting || authLoading} disabled={!acknowledged}>
         {isSubmitting || authLoading ? 'Creating account...' : 'Create Account'}
       </Button>
 
