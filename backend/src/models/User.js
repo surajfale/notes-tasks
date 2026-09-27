@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { THEME_PALETTES, DEFAULT_THEME_PALETTE } = require('../config/themes');
 
 const userSchema = new mongoose.Schema(
   {
@@ -29,20 +30,13 @@ const userSchema = new mongoose.Schema(
       trim: true,
       maxlength: [50, 'Display name cannot exceed 50 characters'],
     },
-    // Visual/behavioral persona: drives Tailwind token overrides on the frontend
-    // (neutral palette, fonts, radius/shadow) plus persona-specific UI features
-    // (Focus: shortcuts strip, Vivid: completion celebration, Terminal: command palette)
-    // and notification copy tone. See frontend stores/persona.ts.
-    uiPersona: {
+    // Color theme (see config/themes.js), synced so it follows the account
+    // across devices. Light/dark mode is deliberately not stored here — it
+    // stays per device, following each device's system preference.
+    themePalette: {
       type: String,
-      enum: ['focus', 'vivid', 'terminal'],
-      default: 'focus',
-    },
-    // True once the user has been through (or explicitly skipped) the persona
-    // onboarding step, so it isn't shown again on every login.
-    personaOnboarded: {
-      type: Boolean,
-      default: false,
+      enum: THEME_PALETTES,
+      default: DEFAULT_THEME_PALETTE,
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,

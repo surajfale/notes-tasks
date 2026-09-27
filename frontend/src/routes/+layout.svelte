@@ -5,7 +5,7 @@
   import { goto, beforeNavigate } from '$app/navigation';
   import { authStore, isAuthenticated, currentUser } from '$lib/stores/auth';
   import { themeStore } from '$lib/stores/theme';
-  import { personaStore } from '$lib/stores/persona';
+  import { syncThemeFromUser } from '$lib/stores/themeSync';
   import { listsStore } from '$lib/stores/lists';
   import { isPublicRoute, isAuthOnlyRoute } from '../hooks.client';
   import OfflineIndicator from '$lib/components/sync/OfflineIndicator.svelte';
@@ -14,8 +14,7 @@
   import { ErrorBoundary, DisclaimerBanner } from '$lib/components/ui';
   import QuickCreateMenu from '$lib/components/QuickCreateMenu.svelte';
   import MobileBottomNav from '$lib/components/MobileBottomNav.svelte';
-  import PersonaOnboarding from '$lib/components/PersonaOnboarding.svelte';
-  import FocusShortcutHint from '$lib/components/FocusShortcutHint.svelte';
+  import ShortcutHint from '$lib/components/ShortcutHint.svelte';
   import CommandPalette from '$lib/components/CommandPalette.svelte';
 
   // Reactive state
@@ -28,16 +27,11 @@
   $: authenticated = $isAuthenticated;
   $: theme = $themeStore;
   $: lists = Array.isArray($listsStore.items) ? $listsStore.items : [];
-  $: persona = $personaStore;
   let commandPaletteOpen = false;
 
-  // Keep the persona store (and the data-persona attribute it drives) in
-  // sync with whichever account is currently logged in.
-  $: personaStore.syncFromUser(user?.uiPersona);
-
-  // First-time users (or anyone who hasn't been through it yet) pick a
-  // persona before using the rest of the app.
-  $: needsPersonaOnboarding = authenticated && user != null && user.personaOnboarded === false;
+  // Adopt the signed-in account's color theme (or push a choice made
+  // offline) whenever the current user changes.
+  $: syncThemeFromUser(user);
   
   // Check if current route is active
   function isActive(path: string): boolean {
@@ -76,20 +70,19 @@
     }
   }
 
-  // Focus persona: n/t/"/" shortcuts for new note, new task, and jumping to
-  // the page's search field. Gated to the focus persona so the other
-  // personas don't get shortcuts they were never told about.
+  // Global keyboard shortcuts (advertised by ShortcutHint): Cmd/Ctrl+K
+  // toggles the command palette; n/t/"/" open a new note, a new task, or
+  // jump to the page's search field.
   function handleGlobalKeydown(e: KeyboardEvent) {
     if (!authenticated || isCurrentPagePublic) return;
 
-    // Terminal persona: Cmd/Ctrl+K toggles the command palette.
-    if (persona === 'terminal' && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       commandPaletteOpen = !commandPaletteOpen;
       return;
     }
 
-    if (persona !== 'focus') return;
+    if (commandPaletteOpen) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
 
     const target = e.target as HTMLElement | null;
@@ -191,11 +184,7 @@
     <SyncStatusIndicator />
   {/if}
 
-  {#if needsPersonaOnboarding && !isCurrentPagePublic}
-    <PersonaOnboarding />
-  {/if}
-
-  {#if persona === 'terminal' && authenticated && !isCurrentPagePublic}
+  {#if authenticated && !isCurrentPagePublic}
     <CommandPalette bind:open={commandPaletteOpen} />
   {/if}
 
@@ -262,7 +251,7 @@
             <a
               href="/"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/') ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/') ? 'neu-pressed nav-active text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,7 +263,7 @@
             <a
               href="/notes"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/notes') ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/notes') ? 'neu-pressed nav-active text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +275,7 @@
             <a
               href="/tasks"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/tasks') ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/tasks') ? 'neu-pressed nav-active text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,7 +287,7 @@
             <a
               href="/links"
               data-sveltekit-preload-data="hover"
-              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/links') ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
+              class="hidden md:flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/links') ? 'neu-pressed nav-active text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -321,7 +310,7 @@
                         goto(`/notes?listId=${list._id}`);
                         closeSidebar();
                       }}
-                      class="w-full flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all text-left {$page.url.searchParams.get('listId') === list._id ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
+                      class="w-full flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all text-left {$page.url.searchParams.get('listId') === list._id ? 'neu-pressed nav-active text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
                     >
                       <span 
                         class="w-5 h-5 rounded flex items-center justify-center text-sm flex-shrink-0"
@@ -382,7 +371,7 @@
             <a
               href="/lists"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/lists') && !$page.url.pathname.includes('/lists/') ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/lists') && !$page.url.pathname.includes('/lists/') ? 'neu-pressed nav-active text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -395,7 +384,7 @@
             <a
               href="/settings"
               data-sveltekit-preload-data="hover"
-              class="flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/settings') ? 'neu-pressed text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
+              class="flex items-center space-x-3 px-2.5 py-2 rounded-xl text-sm font-medium transition-all {isActive('/settings') ? 'neu-pressed nav-active text-primary-600 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60'}"
               on:click={closeSidebar}
             >
               <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -424,7 +413,7 @@
       </aside>
       
       <!-- Main content area -->
-      <div class="flex-1 flex flex-col overflow-hidden bg-stone-50 dark:bg-stone-900">
+      <div class="app-canvas flex-1 flex flex-col overflow-hidden bg-stone-50 dark:bg-stone-900">
 
         <!-- Page content. Bottom padding on mobile clears the fixed bottom nav, the floating
              create button that sits above it, and the safe area. -->
@@ -447,22 +436,7 @@
       <!-- Mobile: bottom tab bar (Home/Notes/Tasks/Links + More, which opens the sidebar as a drawer) -->
       <MobileBottomNav {isActive} onMore={toggleSidebar} moreOpen={isMobile && sidebarOpen} />
 
-      {#if persona === 'focus'}
-        <FocusShortcutHint />
-      {/if}
-
-      {#if persona === 'terminal'}
-        <button
-          type="button"
-          on:click={() => (commandPaletteOpen = true)}
-          class="hidden md:flex items-center gap-1.5 fixed bottom-4 left-4 z-20 px-3 py-2 rounded
-                 bg-stone-900 dark:bg-stone-950 border border-stone-700 text-stone-300 text-xs font-mono
-                 hover:border-stone-500 transition-colors"
-        >
-          <kbd class="px-1 py-0.5 rounded border border-stone-600 text-[10px]">⌘K</kbd>
-          commands
-        </button>
-      {/if}
+      <ShortcutHint onOpenCommandPalette={() => (commandPaletteOpen = true)} />
 
     </div>
 

@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { THEME_PALETTES } = require('../config/themes');
 
 const validate = (schema) => {
   return (req, res, next) => {
@@ -43,6 +44,10 @@ const schemas = {
   changePassword: Joi.object({
     currentPassword: Joi.string().required(),
     newPassword: Joi.string().min(8).max(128).required(),
+  }),
+
+  updateTheme: Joi.object({
+    themePalette: Joi.string().valid(...THEME_PALETTES).required(),
   }),
 
   forgotPassword: Joi.object({
@@ -142,10 +147,6 @@ const schemas = {
     content: Joi.string().required().min(1).max(10000),
     contentType: Joi.string().valid('note', 'task').required(),
     tone: Joi.string().valid('concise', 'detailed', 'professional', 'casual').optional().default('casual'),
-  }),
-
-  updatePersona: Joi.object({
-    uiPersona: Joi.string().valid('focus', 'vivid', 'terminal').required(),
   }),
 
   updateNotificationPreferences: Joi.object({

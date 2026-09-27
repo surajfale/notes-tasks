@@ -172,7 +172,7 @@ function createAuthStore() {
 
     /**
      * Merge a partial update into the current user (e.g. after a
-     * profile/persona change that doesn't warrant a full re-fetch).
+     * profile change that doesn't warrant a full re-fetch).
      * No-ops if there's no authenticated user.
      */
     updateUser(partial: Partial<User>): void {

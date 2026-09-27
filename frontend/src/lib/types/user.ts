@@ -1,14 +1,14 @@
 // User type definitions
 
-export type UiPersona = 'focus' | 'vivid' | 'terminal';
+import type { ThemePalette } from './theme';
 
 export interface User {
   _id: string;
   username: string;
   email: string;
   displayName: string;
-  uiPersona?: UiPersona;
-  personaOnboarded?: boolean;
+  /** Account-synced color theme; absent from older API responses. */
+  themePalette?: ThemePalette;
   createdAt: string;
   updatedAt: string;
 }

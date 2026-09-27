@@ -7,11 +7,11 @@ import type {
   LoginCredentials,
   RegisterData,
   User,
-  UiPersona,
   ChangePasswordData,
   ForgotPasswordData,
   ResetPasswordData
 } from '$lib/types/user';
+import type { ThemePalette } from '$lib/types/theme';
 
 /**
  * Authentication repository for handling auth-related API calls
@@ -52,13 +52,12 @@ export const authRepository = {
   },
 
   /**
-   * Update the user's UI persona (visual/behavioral style) and mark
-   * persona onboarding as complete.
-   * @param uiPersona - The persona to switch to
+   * Save the account's color theme so it follows the user across devices.
+   * @param themePalette - The color theme to store
    * @returns Promise resolving to the updated user
    */
-  async updatePersona(uiPersona: UiPersona): Promise<{ user: User }> {
-    return apiClient.put<{ user: User }>(API_ENDPOINTS.AUTH.PERSONA, { uiPersona });
+  async updateTheme(themePalette: ThemePalette): Promise<{ user: User }> {
+    return apiClient.put<{ user: User }>(API_ENDPOINTS.AUTH.THEME, { themePalette });
   },
 
   /**

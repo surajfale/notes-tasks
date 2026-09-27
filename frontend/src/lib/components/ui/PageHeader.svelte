@@ -5,7 +5,7 @@
 
 <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8">
   <div class="min-w-0">
-    <h1 class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
+    <h1 class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-gradient w-fit">
       {title}
     </h1>
     {#if $$slots.description}

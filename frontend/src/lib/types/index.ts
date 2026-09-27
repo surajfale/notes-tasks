@@ -1,6 +1,7 @@
 // Central export for all type definitions
 
 export * from './user';
+export * from './theme';
 export * from './note';
 export * from './task';
 export * from './list';

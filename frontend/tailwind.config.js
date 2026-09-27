@@ -9,8 +9,8 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				// Persona-driven: app.css redefines --font-sans/--font-mono per
-				// data-persona value. Fallback stack covers pre-hydration paint.
+				// app.css defines --font-sans/--font-mono. Fallback stack covers
+				// pre-hydration paint.
 				sans: [
 					'var(--font-sans)',
 					'-apple-system',

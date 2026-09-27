@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const rateLimit = require('express-rate-limit');
-const { register, login, getMe, updatePersona, changePassword, deleteAccount, forgotPassword, resetPassword } = require('../controllers/authController');
+const { register, login, getMe, updateTheme, changePassword, deleteAccount, forgotPassword, resetPassword } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { validate, schemas } = require('../middleware/validation');
 
@@ -39,7 +39,7 @@ router.post('/reset-password', authLimiter, validate(schemas.resetPassword), res
 
 // Protected routes
 router.get('/me', protect, getMe);
-router.put('/persona', protect, validate(schemas.updatePersona), updatePersona);
+router.put('/theme', protect, validate(schemas.updateTheme), updateTheme);
 router.put('/password', protect, validate(schemas.changePassword), changePassword);
 router.delete('/account', protect, deleteAccount);
 

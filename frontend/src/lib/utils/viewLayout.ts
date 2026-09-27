@@ -1,8 +1,8 @@
 /**
  * Small helper for persisting a user's manual grid/list view choice,
- * separately from the persona-driven default (see routes/notes and
+ * separately from the page default (see routes/notes and
  * routes/tasks +page.svelte). A stored value always wins over the
- * persona default once the user has explicitly toggled it.
+ * default once the user has explicitly toggled it.
  */
 
 import { browser } from '$app/environment';
