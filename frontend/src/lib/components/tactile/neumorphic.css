@@ -71,6 +71,22 @@
     inset -3px -3px 6px rgb(var(--stone-700) / 0.12);
 }
 
+/* Soft edge for full-height chrome (sidebar) and the mobile bottom bar:
+   the neumorphic replacement for a hard 1px border, so navigation sits on
+   the same surface as the cards instead of reading as a separate panel. */
+.neu-edge-right {
+  box-shadow: 4px 0 16px rgb(var(--stone-300) / 0.35);
+}
+.dark .neu-edge-right {
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.45);
+}
+.neu-edge-top {
+  box-shadow: 0 -4px 16px rgb(var(--stone-300) / 0.35);
+}
+.dark .neu-edge-top {
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.45);
+}
+
 /* Applied while a card is being dragged — a deeper version of neu-raised
    so the "lifted off the surface" read gets stronger, not just scaled. */
 .neu-dragging {
