@@ -67,7 +67,7 @@ describe('themeStore', () => {
     const state = get(themeStore);
 
     expect(state.mode).toBe('light');
-    expect(state.accentColor).toBe('#4F46E5');
+    expect(state.accentColor).toBe('#0F766E');
   });
 
   it('should toggle between light and dark mode', async () => {
@@ -126,7 +126,7 @@ describe('themeStore', () => {
     const state = get(themeStore);
 
     expect(state.mode).toBe('light');
-    expect(state.accentColor).toBe('#4F46E5');
+    expect(state.accentColor).toBe('#0F766E');
   });
 
   it('should load stored theme mode on initialize', async () => {
