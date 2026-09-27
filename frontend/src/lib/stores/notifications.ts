@@ -97,6 +97,20 @@ function createNotificationStore() {
     },
 
     /**
+     * Unsubscribe from reminder emails via an email footer link. Reflects the
+     * change in loaded preferences (if this device is signed in to that
+     * account) so Settings shows it without a reload.
+     */
+    async unsubscribeByToken(token: string): Promise<void> {
+      await notificationsRepository.unsubscribeByToken(token);
+      update(state => (
+        state.preferences
+          ? { ...state, preferences: { ...state.preferences, emailNotificationsEnabled: false } }
+          : state
+      ));
+    },
+
+    /**
      * Clear error state
      */
     clearError(): void {

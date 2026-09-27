@@ -5,16 +5,21 @@ const {
   updatePreferences,
   updatePushSubscription,
   removePushSubscription,
-  getVapidPublicKey
+  getVapidPublicKey,
+  unsubscribeByToken
 } = require('../controllers/notificationsController');
 const { protect } = require('../middleware/auth');
 const { validate, schemas } = require('../middleware/validation');
-const { publicLimiter } = require('../middleware/rateLimiters');
+const { publicLimiter, deepLinkLimiter } = require('../middleware/rateLimiters');
 
 // Public routes (no authentication required)
 router
   .route('/vapid-public-key')
   .get(publicLimiter, getVapidPublicKey);
+
+// Email footer "unsubscribe" link: authenticated by the signed token in the
+// URL, not a session (see unsubscribeByToken).
+router.post('/unsubscribe/:token', deepLinkLimiter, unsubscribeByToken);
 
 // Protected routes (authentication required)
 router.use(protect);

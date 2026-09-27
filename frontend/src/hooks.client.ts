@@ -53,7 +53,18 @@ if (typeof window !== 'undefined') {
 /**
  * Public routes that don't require authentication
  */
-export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password', '/tactile-demo'];
+export const PUBLIC_ROUTES = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/tactile-demo',
+  // Reminder-email landing page: forwards to the task itself (via login with
+  // a redirect when signed out), so it must not be bounced to a bare /login.
+  '/tasks/link',
+  // Email footer unsubscribe: must work without signing in.
+  '/notifications/unsubscribe'
+];
 
 /**
  * Auth-only routes that should redirect authenticated users

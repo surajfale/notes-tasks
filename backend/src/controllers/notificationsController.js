@@ -1,6 +1,46 @@
 const NotificationPreference = require('../models/NotificationPreference');
 const pushNotificationService = require('../services/pushNotificationService');
 const logger = require('../utils/logger');
+const { validateDeepLinkToken } = require('../middleware/deepLinkAuth');
+
+// taskId value that marks a deep-link token as an unsubscribe token (see
+// emailTemplateService.generateUnsubscribeLink).
+const UNSUBSCRIBE_PURPOSE = 'unsubscribe';
+
+// @desc    Turn off reminder emails from the link in an email footer
+// @route   POST /api/notifications/unsubscribe/:token
+// @access  Public (signed unsubscribe token; the account comes from the token)
+//
+// POST, not GET: email security scanners pre-fetch every link in a message,
+// so a GET would unsubscribe people without them ever clicking. The
+// frontend page (/notifications/unsubscribe/:token) asks for confirmation
+// and then POSTs here. Expired-but-correctly-signed tokens are accepted;
+// the only thing a token can do is switch emails *off*, which the user can
+// undo in Settings.
+const unsubscribeByToken = async (req, res, next) => {
+  try {
+    const decoded = validateDeepLinkToken(req.params.token, { ignoreExpiration: true });
+    if (!decoded || decoded.taskId !== UNSUBSCRIBE_PURPOSE) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_UNSUBSCRIBE_LINK',
+          message: 'This unsubscribe link is invalid.',
+        },
+      });
+    }
+
+    await NotificationPreference.findOneAndUpdate(
+      { userId: decoded.userId },
+      { $set: { emailNotificationsEnabled: false } },
+      { upsert: true, setDefaultsOnInsert: true }
+    );
+
+    logger.info('User unsubscribed from reminder emails via email link', { userId: decoded.userId });
+    res.json({ success: true, emailNotificationsEnabled: false });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // @desc    Get user's notification preferences
 // @route   GET /api/notifications/preferences
@@ -183,4 +223,5 @@ module.exports = {
   updatePushSubscription,
   removePushSubscription,
   getVapidPublicKey,
+  unsubscribeByToken,
 };
