@@ -28,7 +28,7 @@
   });
 
   // Theme state
-  let theme: ThemeState = { mode: 'light', accentColor: '#4F46E5' };
+  let theme: ThemeState = { mode: 'light', accentColor: '#0F766E' };
   themeStore.subscribe(value => {
     theme = value;
   });

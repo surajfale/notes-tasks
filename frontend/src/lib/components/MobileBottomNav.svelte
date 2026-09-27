@@ -30,8 +30,8 @@
 </script>
 
 <nav
-  class="neu-surface md:hidden fixed bottom-0 left-0 right-0 z-[45]"
-  style="padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -4px 16px rgb(var(--stone-300) / 0.35);"
+  class="neu-surface neu-edge-top md:hidden fixed bottom-0 left-0 right-0 z-[45]"
+  style="padding-bottom: env(safe-area-inset-bottom, 0px);"
   aria-label="Primary"
 >
   <div class="grid grid-cols-5 gap-1 px-1.5 py-1.5">

@@ -30,17 +30,16 @@ const DEFAULT_PERSONA: UiPersona = 'focus';
 /**
  * Each persona's one curated accent — picked from real, validated palette
  * matches (ui-ux-pro-max skill data) rather than an arbitrary hex:
- * - focus: indigo on cool slate neutrals — calm, low-distraction
- *   productivity look; white-on-accent contrast ~6.3:1.
- * - vivid: electric violet on Vivid's violet-tinted neutral base — a
- *   cohesive monochrome duotone (accent-tinted shadows stay on-hue);
- *   white-on-accent contrast ~5.7:1.
+ * - focus: deep teal on warm-stone neutrals — calm, paper-like, and
+ *   clearly distinct from the other two personas; white-on-accent ~5.5:1.
+ * - vivid: hot coral against Vivid's violet-tinted neutral base — a punchy
+ *   red-pink/lavender duotone; white-on-accent ~4.7:1.
  * - terminal: matrix green, the closest thing to a canonical terminal accent
  *   (appeared in 3 of 4 dark developer-tool palettes queried).
  */
 const PERSONA_ACCENTS: Record<UiPersona, string> = {
-  focus: '#4F46E5',
-  vivid: '#7C3AED',
+  focus: '#0F766E',
+  vivid: '#E11D48',
   terminal: '#22C55E'
 };
 

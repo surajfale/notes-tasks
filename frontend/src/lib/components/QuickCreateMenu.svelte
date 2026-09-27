@@ -85,7 +85,7 @@
       on:click={toggle}
       aria-haspopup="true"
       aria-expanded={open}
-      class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium
+      class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-medium shadow-md
              bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-150"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

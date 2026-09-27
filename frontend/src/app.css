@@ -33,21 +33,21 @@ body {
    ========================================================================== */
 
 :root {
-	/* Default ("focus" persona) neutral scale — cool slate, paired with its
-	   own indigo accent (PERSONA_ACCENTS in stores/persona.ts). A calm,
-	   low-distraction "serious productivity tool" pairing; the cool gray keeps
-	   the indigo reading as the only color on screen. */
-	--stone-50: 248 250 252;
-	--stone-100: 241 245 249;
-	--stone-200: 226 232 240;
-	--stone-300: 203 213 225;
-	--stone-400: 148 163 184;
-	--stone-500: 100 116 139;
-	--stone-600: 71 85 105;
-	--stone-700: 51 65 85;
-	--stone-800: 30 41 59;
-	--stone-900: 15 23 42;
-	--stone-950: 2 6 23;
+	/* Default ("focus" persona) neutral scale — warm stone, paired with its
+	   own deep-teal accent (PERSONA_ACCENTS in stores/persona.ts). Warm paper
+	   neutrals + a cool, calm accent keep the page quiet while still giving
+	   active/primary states a clear, non-shouty signal. */
+	--stone-50: 250 248 246;
+	--stone-100: 242 238 234;
+	--stone-200: 228 221 213;
+	--stone-300: 199 189 177;
+	--stone-400: 163 150 135;
+	--stone-500: 120 108 94;
+	--stone-600: 90 80 68;
+	--stone-700: 66 58 49;
+	--stone-800: 41 36 30;
+	--stone-900: 26 23 19;
+	--stone-950: 16 14 11;
 
 	--font-sans: 'Public Sans';
 	--font-mono: 'IBM Plex Mono';
