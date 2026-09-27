@@ -30,16 +30,17 @@ const DEFAULT_PERSONA: UiPersona = 'focus';
 /**
  * Each persona's one curated accent — picked from real, validated palette
  * matches (ui-ux-pro-max skill data) rather than an arbitrary hex:
- * - focus: amber, matching the "Notes & Writing App" reference palette and
- *   the app's own accent-links hue.
- * - vivid: rose, a bold pink duotone against Vivid's violet-tinted neutral
- *   base (the "Creative Agency" pairing) — its boldest, most "Vivid" option.
+ * - focus: indigo on cool slate neutrals — calm, low-distraction
+ *   productivity look; white-on-accent contrast ~6.3:1.
+ * - vivid: electric violet on Vivid's violet-tinted neutral base — a
+ *   cohesive monochrome duotone (accent-tinted shadows stay on-hue);
+ *   white-on-accent contrast ~5.7:1.
  * - terminal: matrix green, the closest thing to a canonical terminal accent
  *   (appeared in 3 of 4 dark developer-tool palettes queried).
  */
 const PERSONA_ACCENTS: Record<UiPersona, string> = {
-  focus: '#D97706',
-  vivid: '#DB2777',
+  focus: '#4F46E5',
+  vivid: '#7C3AED',
   terminal: '#22C55E'
 };
 

@@ -28,7 +28,7 @@
       value: 'focus',
       name: 'Focus',
       tagline: 'Minimal, dense, quiet. Keyboard shortcuts front and center.',
-      swatches: ['#f2eeea', '#29241e', PERSONA_ACCENTS.focus]
+      swatches: ['#f1f5f9', '#1e293b', PERSONA_ACCENTS.focus]
     },
     {
       value: 'vivid',
