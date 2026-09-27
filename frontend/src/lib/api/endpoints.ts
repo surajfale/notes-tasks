@@ -51,6 +51,7 @@ export const API_ENDPOINTS = {
   NOTIFICATIONS: {
     PREFERENCES: '/api/notifications/preferences',
     PUSH_SUBSCRIPTION: '/api/notifications/push-subscription',
-    VAPID_PUBLIC_KEY: '/api/notifications/vapid-public-key'
+    VAPID_PUBLIC_KEY: '/api/notifications/vapid-public-key',
+    UNSUBSCRIBE: (token: string) => `/api/notifications/unsubscribe/${encodeURIComponent(token)}`
   }
 } as const;

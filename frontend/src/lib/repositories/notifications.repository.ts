@@ -91,6 +91,16 @@ export const notificationsRepository = {
   },
 
   /**
+   * Turn off reminder emails using the signed token from an email's
+   * unsubscribe link. Works signed out: the token identifies the account.
+   * Errors propagate as ApiError so the page can tell a bad link
+   * (400 INVALID_UNSUBSCRIBE_LINK) from a network failure.
+   */
+  async unsubscribeByToken(token: string): Promise<{ success: boolean; emailNotificationsEnabled: boolean }> {
+    return apiClient.post(API_ENDPOINTS.NOTIFICATIONS.UNSUBSCRIBE(token), undefined, { requiresAuth: false });
+  },
+
+  /**
    * Get VAPID public key for push notifications
    * @returns Promise resolving to VAPID public key
    */

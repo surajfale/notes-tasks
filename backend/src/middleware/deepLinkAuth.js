@@ -28,12 +28,16 @@ const generateDeepLinkToken = (userId, taskId, expiresInHours = 24) => {
 /**
  * Validate and decode a deep link token
  * @param {string} token - Deep link token to validate
+ * @param {Object} [options]
+ * @param {boolean} [options.ignoreExpiration=false] - Accept a correctly signed
+ *   but expired token (used for unsubscribe links, which must keep working
+ *   for as long as the email sits in someone's inbox)
  * @returns {Object} Decoded token payload or null if invalid
  */
-const validateDeepLinkToken = (token) => {
+const validateDeepLinkToken = (token, { ignoreExpiration = false } = {}) => {
   try {
     const deepLinkSecret = process.env.DEEP_LINK_SECRET || process.env.JWT_SECRET;
-    const decoded = jwt.verify(token, deepLinkSecret);
+    const decoded = jwt.verify(token, deepLinkSecret, { algorithms: ['HS256'], ignoreExpiration });
     
     // Verify token type
     if (decoded.type !== 'deep_link') {
