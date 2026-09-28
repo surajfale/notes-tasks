@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Note = require('../models/Note');
 const Task = require('../models/Task');
 const List = require('../models/List');
+const { registrationMode, checkRegistration } = require('../config/registration');
 
 // Public shape of a user in API responses — never includes passwordHash or
 // reset tokens.
@@ -28,7 +29,16 @@ const generateToken = (userId) => {
 // @access  Public
 const register = async (req, res, next) => {
   try {
-    const { username, email, password, displayName } = req.body;
+    const { username, email, password, displayName, inviteCode } = req.body;
+
+    // Invite-only / closed sign-up (config/registration.js). Checked first so
+    // nothing about existing accounts is revealed to an uninvited caller.
+    const registration = checkRegistration(inviteCode);
+    if (!registration.allowed) {
+      return res.status(403).json({
+        error: { code: registration.code, message: registration.message },
+      });
+    }
 
     // Check account limit
     const maxAccounts = parseInt(process.env.MAX_ACCOUNTS) || 10;
@@ -139,6 +149,13 @@ const login = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+// @desc    Whether sign-up is open, invite-only or closed (drives the sign-up UI)
+// @route   GET /api/auth/registration-status
+// @access  Public
+const getRegistrationStatus = (req, res) => {
+  res.json({ mode: registrationMode() });
 };
 
 // @desc    Get current user
@@ -314,6 +331,7 @@ const resetPassword = async (req, res, next) => {
 
 module.exports = {
   register,
+  getRegistrationStatus,
   login,
   getMe,
   updateTheme,

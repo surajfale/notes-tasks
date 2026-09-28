@@ -6,6 +6,7 @@ import type {
   AuthResponse,
   LoginCredentials,
   RegisterData,
+  RegistrationMode,
   User,
   ChangePasswordData,
   ForgotPasswordData,
@@ -35,6 +36,14 @@ export const authRepository = {
    * @param data - Registration data (username, email, password, displayName)
    * @returns Promise resolving to auth response with token and user
    */
+  /**
+   * Whether sign-up is open, invite-only or closed. Only decides what the
+   * sign-up UI shows; the server enforces it on register.
+   */
+  async getRegistrationStatus(): Promise<{ mode: RegistrationMode }> {
+    return apiClient.get<{ mode: RegistrationMode }>(API_ENDPOINTS.AUTH.REGISTRATION_STATUS, { requiresAuth: false });
+  },
+
   async register(data: RegisterData): Promise<AuthResponse> {
     return apiClient.post<AuthResponse>(
       API_ENDPOINTS.AUTH.REGISTER,

@@ -9,7 +9,7 @@ import { writable, derived } from 'svelte/store';
 import { authRepository } from '$lib/repositories/auth.repository';
 import { tokenStorage } from '$lib/storage/token';
 import { ApiError } from '$lib/types/error';
-import type { User, LoginCredentials, RegisterData } from '$lib/types/user';
+import type { User, LoginCredentials, RegisterData, RegistrationMode } from '$lib/types/user';
 
 /**
  * Fetch the current user, retrying once after a short delay for anything
@@ -152,6 +152,20 @@ function createAuthStore() {
         const errorMessage = error.message || 'Registration failed';
         set({ user: null, isLoading: false, error: errorMessage });
         return false;
+      }
+    },
+
+    /**
+     * Who may sign up right now ('open' | 'invite' | 'closed'). Not kept in
+     * state; the sign-in/sign-up pages read it when they load. Falls back to
+     * 'invite' if the server can't be reached, so the form stays usable and
+     * the server still has the final say.
+     */
+    async getRegistrationMode(): Promise<RegistrationMode> {
+      try {
+        return (await authRepository.getRegistrationStatus()).mode;
+      } catch {
+        return 'invite';
       }
     },
 

@@ -69,6 +69,8 @@ const schemas = {
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(128).required(),
     displayName: Joi.string().max(50).optional(),
+    // Required only in invite mode; checked in authController.register.
+    inviteCode: Joi.string().max(200).allow('').optional(),
   }),
 
   login: Joi.object({
