@@ -28,7 +28,12 @@ export interface RegisterData {
   email: string;
   password: string;
   displayName: string;
+  /** Required when sign-up is invite-only (RegistrationMode 'invite'). */
+  inviteCode?: string;
 }
+
+/** Who may sign up; set on the server (backend/src/config/registration.js). */
+export type RegistrationMode = 'open' | 'invite' | 'closed';
 
 export interface ChangePasswordData {
   currentPassword: string;

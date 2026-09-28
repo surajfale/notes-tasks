@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/api/auth/login',
     REGISTER: '/api/auth/register',
+    REGISTRATION_STATUS: '/api/auth/registration-status',
     ME: '/api/auth/me',
     THEME: '/api/auth/theme',
     PASSWORD: '/api/auth/password',

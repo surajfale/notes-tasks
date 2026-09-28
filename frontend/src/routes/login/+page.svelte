@@ -4,6 +4,7 @@
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { safeRedirectPath } from '$lib/utils/deepLink';
+  import type { RegistrationMode } from '$lib/types/user';
   import { validateLoginForm } from '$lib/utils/validation';
   import { ErrorMessage, Button, Input, PersonalUseNotice } from '$lib/components/ui';
   import '$lib/components/tactile/neumorphic.css';
@@ -23,7 +24,11 @@
     authLoading = state.isLoading;
   });
 
+  // Hide the sign-up link when the server isn't accepting new accounts.
+  let registrationMode: RegistrationMode | null = null;
+
   onMount(() => {
+    authStore.getRegistrationMode().then((mode) => (registrationMode = mode));
     return () => {
       unsubscribe();
     };
@@ -149,7 +154,8 @@
         {isSubmitting || authLoading ? 'Signing in...' : 'Sign in'}
       </Button>
 
-      <!-- Register Link -->
+      <!-- Register Link (hidden when sign-up is closed) -->
+      {#if registrationMode !== null && registrationMode !== 'closed'}
       <div class="text-center">
         <p class="text-sm text-stone-600 dark:text-stone-400">
           Don't have an account?
@@ -158,6 +164,7 @@
           </a>
         </p>
       </div>
+      {/if}
     </form>
   </div>
 </div>

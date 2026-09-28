@@ -2,7 +2,7 @@
   import { authStore } from '$lib/stores/auth';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import type { RegisterData } from '$lib/types/user';
+  import type { RegisterData, RegistrationMode } from '$lib/types/user';
   import { validateRegisterForm } from '$lib/utils/validation';
   import { ErrorMessage, Button, Input, PersonalUseNotice } from '$lib/components/ui';
   import '$lib/components/tactile/neumorphic.css';
@@ -19,7 +19,12 @@
     password?: string;
     confirmPassword?: string;
     displayName?: string;
+    inviteCode?: string;
   } = {};
+  // Invite code (only asked for when sign-up is invite-only).
+  let inviteCode = '';
+  // null while loading; the server enforces this, the page only adapts to it.
+  let registrationMode: RegistrationMode | null = null;
   let isSubmitting = false;
   // Personal-use acknowledgement: page-local only, never sent to the API.
   let acknowledged = false;
@@ -34,6 +39,7 @@
   });
 
   onMount(() => {
+    authStore.getRegistrationMode().then((mode) => (registrationMode = mode));
     return () => {
       unsubscribe();
     };
@@ -51,6 +57,10 @@
       displayName
     });
     validationErrors = result.errors;
+    if (registrationMode === 'invite' && !inviteCode.trim()) {
+      validationErrors = { ...validationErrors, inviteCode: 'Enter the invite code you were given' };
+      return false;
+    }
     return result.isValid;
   }
 
@@ -77,7 +87,8 @@
         username: username.trim(),
         email: email.trim(),
         password,
-        displayName: displayName.trim()
+        displayName: displayName.trim(),
+        ...(registrationMode === 'invite' ? { inviteCode: inviteCode.trim() } : {})
       };
 
       const success = await authStore.register(registerData);
@@ -107,11 +118,33 @@
       <h1 class="font-serif text-2xl sm:text-3xl font-bold text-center text-stone-900 dark:text-stone-100">
         Create Account
       </h1>
-      <p class="mt-2 text-center text-sm sm:text-base text-stone-600 dark:text-stone-400">
-        Sign up to start organizing your notes and tasks
-      </p>
+      {#if registrationMode !== 'closed'}
+        <p class="mt-2 text-center text-sm sm:text-base text-stone-600 dark:text-stone-400">
+          Sign up to start organizing your notes and tasks
+        </p>
+      {/if}
     </div>
 
+    {#if registrationMode === null}
+      <div class="neu-raised p-8 flex justify-center" aria-busy="true">
+        <div class="h-6 w-6 rounded-full border-2 border-stone-300 border-t-primary-600 animate-spin" aria-hidden="true"></div>
+        <span class="sr-only">Loading…</span>
+      </div>
+    {:else if registrationMode === 'closed'}
+      <!-- Sign-up is closed on the server (backend/src/config/registration.js) -->
+      <div class="neu-raised p-6 sm:p-8 text-center space-y-4">
+        <h2 class="text-lg font-semibold text-stone-900 dark:text-stone-100">Sign-up is closed</h2>
+        <p class="text-sm text-stone-600 dark:text-stone-400">
+          This is a personal learning project and isn't taking new accounts.
+        </p>
+        <a
+          href="/login"
+          class="inline-block font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+        >
+          Already have an account? Sign in
+        </a>
+      </div>
+    {:else}
     <!-- Registration Form -->
     <form
       on:submit={handleSubmit}
@@ -183,6 +216,21 @@
           error={validationErrors.confirmPassword}
           placeholder="Confirm your password"
         />
+
+        {#if registrationMode === 'invite'}
+          <Input
+            id="inviteCode"
+            name="inviteCode"
+            type="text"
+            label="Invite code"
+            autocomplete="off"
+            bind:value={inviteCode}
+            on:input={() => clearFieldError('inviteCode')}
+            disabled={isSubmitting || authLoading}
+            error={validationErrors.inviteCode}
+            placeholder="Code from the owner of this app"
+          />
+        {/if}
       </div>
 
       <!-- Error Message from Auth Store -->
@@ -214,5 +262,6 @@
         </p>
       </div>
     </form>
+    {/if}
   </div>
 </div>

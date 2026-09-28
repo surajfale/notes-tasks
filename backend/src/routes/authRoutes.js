@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const rateLimit = require('express-rate-limit');
-const { register, login, getMe, updateTheme, changePassword, deleteAccount, forgotPassword, resetPassword } = require('../controllers/authController');
+const { register, getRegistrationStatus, login, getMe, updateTheme, changePassword, deleteAccount, forgotPassword, resetPassword } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { validate, schemas } = require('../middleware/validation');
+const { publicLimiter } = require('../middleware/rateLimiters');
 
 // Rate limiting for auth routes
 // More lenient in development, stricter in production
@@ -32,6 +33,7 @@ const authLimiter = rateLimit({
 });
 
 // Public routes
+router.get('/registration-status', publicLimiter, getRegistrationStatus);
 router.post('/register', authLimiter, validate(schemas.register), register);
 router.post('/login', authLimiter, validate(schemas.login), login);
 router.post('/forgot-password', authLimiter, validate(schemas.forgotPassword), forgotPassword);
