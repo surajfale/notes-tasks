@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+# pnpm is the package manager (pnpm-lock.yaml); keep npm/yarn lockfiles out
 package-lock.json
 yarn.lock
 
