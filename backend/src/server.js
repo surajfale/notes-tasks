@@ -69,6 +69,22 @@ if (process.env.NODE_ENV !== 'test') {
   logger.info(`Notification cleanup job scheduled: ${cleanupSchedule} (${timezone}), keeping ${cleanupDaysToKeep} days`);
 }
 
+// Behind a reverse proxy (Railway, etc.) req.ip is the proxy's address
+// unless Express is told how many hops to trust; without it every client
+// shares one rate-limit bucket. Set TRUST_PROXY to the hop count (usually 1)
+// ONLY when actually behind a proxy, or clients can spoof X-Forwarded-For.
+if (process.env.TRUST_PROXY) {
+  const hops = Number(process.env.TRUST_PROXY);
+  app.set('trust proxy', Number.isInteger(hops) ? hops : process.env.TRUST_PROXY);
+}
+
+// Plain key=value query strings only: no ?a[$ne]=x objects reaching filters.
+app.set('query parser', 'simple');
+
+if (process.env.NODE_ENV === 'production' && !process.env.DEEP_LINK_SECRET) {
+  logger.warn('DEEP_LINK_SECRET is not set; email deep/unsubscribe links are signed with JWT_SECRET. Set a separate secret.');
+}
+
 // Security middleware
 app.use(helmet());
 
@@ -78,10 +94,16 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
 
-    // In development, allow all localhost origins
+    // In development, allow any port on localhost (exact hostname match:
+    // a prefix check would also allow http://localhost.evil.com)
     if (process.env.NODE_ENV === 'development') {
-      if (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
-        return callback(null, true);
+      try {
+        const { protocol, hostname } = new URL(origin);
+        if (protocol === 'http:' && (hostname === 'localhost' || hostname === '127.0.0.1')) {
+          return callback(null, true);
+        }
+      } catch {
+        // Malformed Origin: fall through to the allowlist (and rejection)
       }
     }
 
@@ -99,8 +121,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Body parser middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Largest legitimate body is an AI enhance request (10k chars) or a task
+// with 50 checklist items; 1mb leaves lots of headroom.
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 
 // Request logging
 if (process.env.NODE_ENV === 'development') {

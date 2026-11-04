@@ -75,11 +75,14 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Default error
-  res.status(err.statusCode || 500).json({
+  // Default error. Unexpected (5xx) errors get a generic message: their
+  // text can include driver/library internals. They're logged above.
+  const statusCode = err.statusCode || 500;
+  const isServerError = statusCode >= 500;
+  res.status(statusCode).json({
     error: {
-      code: err.code || 'SERVER_ERROR',
-      message: err.message || 'Internal server error',
+      code: isServerError ? 'SERVER_ERROR' : err.code || 'ERROR',
+      message: isServerError ? 'Internal server error' : err.message,
     },
   });
 };

@@ -20,6 +20,10 @@ const toUserResponse = (user) => ({
   createdAt: user.createdAt,
 });
 
+// Reset tokens are stored hashed, so a database leak doesn't hand out
+// working password-reset links. The raw token only ever lives in the email.
+const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+
 // Generate JWT token
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -271,7 +275,7 @@ const forgotPassword = async (req, res, next) => {
 
     // Generate token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetPasswordToken = resetToken;
+    user.resetPasswordToken = hashResetToken(resetToken);
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
     await user.save();
@@ -311,7 +315,7 @@ const resetPassword = async (req, res, next) => {
     const { token, newPassword } = req.body;
 
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: hashResetToken(token),
       resetPasswordExpires: { $gt: Date.now() }
     });
 

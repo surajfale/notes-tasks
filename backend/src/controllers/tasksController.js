@@ -1,13 +1,16 @@
 const Task = require('../models/Task');
 const { listBelongsToUser, listNotFound } = require('../utils/listOwnership');
 const { mergeReminders } = require('../services/reminders');
+const { queryString } = require('../utils/query');
 
 // @desc    Get all user's tasks
 // @route   GET /api/tasks?listId=&isCompleted=&priority=
 // @access  Private
 const getTasks = async (req, res, next) => {
   try {
-    const { listId, isCompleted, priority } = req.query;
+    const listId = queryString(req.query.listId);
+    const isCompleted = queryString(req.query.isCompleted);
+    const priority = queryString(req.query.priority);
 
     const filter = { userId: req.user._id };
 

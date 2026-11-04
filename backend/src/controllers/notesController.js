@@ -1,4 +1,5 @@
 const Note = require('../models/Note');
+const { queryString, escapeRegex } = require('../utils/query');
 const { listBelongsToUser, listNotFound } = require('../utils/listOwnership');
 
 // @desc    Get all user's notes
@@ -6,7 +7,10 @@ const { listBelongsToUser, listNotFound } = require('../utils/listOwnership');
 // @access  Private
 const getNotes = async (req, res, next) => {
   try {
-    const { listId, isArchived, tags, search } = req.query;
+    const listId = queryString(req.query.listId);
+    const isArchived = queryString(req.query.isArchived);
+    const tags = queryString(req.query.tags);
+    const search = queryString(req.query.search);
     
     const filter = { userId: req.user._id };
     
@@ -15,9 +19,11 @@ const getNotes = async (req, res, next) => {
     if (tags) filter.tags = { $in: tags.split(',') };
     
     if (search) {
+      // Literal text search: user input is never interpreted as a regex.
+      const pattern = escapeRegex(search.slice(0, 200));
       filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { body: { $regex: search, $options: 'i' } },
+        { title: { $regex: pattern, $options: 'i' } },
+        { body: { $regex: pattern, $options: 'i' } },
       ];
     }
     

@@ -2,9 +2,12 @@ const Joi = require('joi');
 const { THEME_PALETTES } = require('../config/themes');
 const { FREQUENCIES, MAX_INTERVAL, MAX_REMINDERS_PER_TASK, isValidTimezone } = require('../services/reminders');
 
+// Validates req.body and REPLACES it with the validated value, so unknown
+// fields are dropped and Joi defaults/conversions apply. Controllers must
+// only ever see what a schema explicitly allows.
 const validate = (schema) => {
   return (req, res, next) => {
-    const { error } = schema.validate(req.body, {
+    const { error, value } = schema.validate(req.body, {
       abortEarly: false,
       stripUnknown: true,
     });
@@ -24,6 +27,7 @@ const validate = (schema) => {
       });
     }
 
+    req.body = value;
     next();
   };
 };
@@ -63,6 +67,19 @@ const reminder = Joi.object({
 const linkUrl = Joi.string().max(2048).uri({ scheme: ['http', 'https'] });
 
 const reminders = Joi.array().items(reminder).max(MAX_REMINDERS_PER_TASK);
+
+const tags = Joi.array().items(Joi.string().max(30)).max(20);
+
+const checklistItems = Joi.array()
+  .items(
+    Joi.object({
+      _id: objectId.optional(),
+      text: Joi.string().max(255).required(),
+      isCompleted: Joi.boolean().default(false),
+      order: Joi.number().integer().min(0).default(0),
+    })
+  )
+  .max(50);
 
 // Validation schemas
 const schemas = {
@@ -111,7 +128,7 @@ const schemas = {
   }).min(1),
 
   createNote: Joi.object({
-    listId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional(),
+    listId: objectId.allow(null).optional(),
     title: Joi.string().max(200).required(),
     body: Joi.string().max(2000).allow('').optional(),
     tags: Joi.array().items(Joi.string().max(30)).max(20).optional(),
@@ -127,13 +144,15 @@ const schemas = {
   }).min(1),
 
   createTask: Joi.object({
-    listId: objectId.optional(),
+    listId: objectId.allow(null).optional(),
     title: Joi.string().max(200).required(),
     description: Joi.string().max(5000).allow('').optional(),
-    dueAt: Joi.date().iso().optional(),
-    reminderAt: Joi.date().iso().optional(),
+    dueAt: Joi.date().iso().allow(null).optional(),
+    reminderAt: Joi.date().iso().allow(null).optional(),
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
+    tags: tags.optional(),
+    checklistItems: checklistItems.optional(),
     reminders: reminders.optional(),
   }),
 
@@ -145,6 +164,8 @@ const schemas = {
     reminderAt: Joi.date().iso().allow(null).optional(),
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
+    tags: tags.optional(),
+    checklistItems: checklistItems.optional(),
     reminders: reminders.optional(),
   }).min(1),
 
@@ -153,7 +174,7 @@ const schemas = {
   createLink: Joi.object({
     url: linkUrl.required(),
     title: Joi.string().max(200).allow('').optional(),
-    tags: Joi.array().items(Joi.string().max(30)).max(20).optional(),
+    tags: tags.optional(),
     listId: objectId.allow(null, '').optional(),
   }),
 
@@ -173,8 +194,26 @@ const schemas = {
 
   updateNotificationPreferences: Joi.object({
     emailNotificationsEnabled: Joi.boolean().optional(),
-    timezone: Joi.string().max(50).optional(),
+    browserNotificationsEnabled: Joi.boolean().optional(),
+    timezone: Joi.string()
+      .max(64)
+      .custom((value, helpers) => (isValidTimezone(value) ? value : helpers.error('any.invalid')))
+      .optional(),
   }).min(1),
+
+  // A browser PushSubscription (subscription.toJSON()). The endpoint is a
+  // URL the server will POST to, so it must be https; the address itself is
+  // checked at send time (pushNotificationService uses the SSRF-safe agent).
+  pushSubscription: Joi.object({
+    subscription: Joi.object({
+      endpoint: Joi.string().max(2048).uri({ scheme: ['https'] }).required(),
+      expirationTime: Joi.number().allow(null).optional(),
+      keys: Joi.object({
+        p256dh: Joi.string().max(256).required(),
+        auth: Joi.string().max(64).required(),
+      }).required(),
+    }).required(),
+  }),
 };
 
 module.exports = { validate, schemas };

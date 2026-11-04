@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { escapeHtml, renderLinks } from '$lib/utils/markdownSafety';
+
   export let content: string = '';
   export let maxLength: number = 0; // 0 means no truncation
   export let className: string = '';
@@ -6,7 +8,7 @@
   // Convert markdown table to HTML
   function convertTableToHtml(tableMarkdown: string): string {
     const lines = tableMarkdown.trim().split('\n');
-    if (lines.length < 2) return tableMarkdown;
+    if (lines.length < 2) return escapeHtml(tableMarkdown);
 
     // Parse table rows
     const rows = lines.map(line =>
@@ -19,7 +21,7 @@
     const hasHeaderSeparator = lines[1] && lines[1].includes('---');
 
     if (!hasHeaderSeparator || rows.length < 2) {
-      return tableMarkdown; // Not a valid table
+      return escapeHtml(tableMarkdown); // Not a valid table
     }
 
     // Build HTML table. Wrapped in a scrollable div — a table can't be
@@ -31,7 +33,7 @@
     // Header row
     tableHtml += '<thead class="bg-stone-100 dark:bg-stone-800"><tr>';
     rows[0].forEach(cell => {
-      tableHtml += `<th class="border border-stone-300 dark:border-stone-600 px-4 py-2 text-left font-semibold">${cell}</th>`;
+      tableHtml += `<th class="border border-stone-300 dark:border-stone-600 px-4 py-2 text-left font-semibold">${escapeHtml(cell)}</th>`;
     });
     tableHtml += '</tr></thead>';
 
@@ -40,7 +42,7 @@
     for (let i = 2; i < rows.length; i++) {
       tableHtml += '<tr class="hover:bg-stone-50 dark:hover:bg-stone-800">';
       rows[i].forEach(cell => {
-        tableHtml += `<td class="border border-stone-300 dark:border-stone-600 px-4 py-2">${cell}</td>`;
+        tableHtml += `<td class="border border-stone-300 dark:border-stone-600 px-4 py-2">${escapeHtml(cell)}</td>`;
       });
       tableHtml += '</tr>';
     }
@@ -74,9 +76,7 @@
     });
 
     // Escape HTML
-    html = html.replace(/&/g, '&amp;')
-               .replace(/</g, '&lt;')
-               .replace(/>/g, '&gt;');
+    html = escapeHtml(html);
 
     // Headers (must be before bold)
     html = html.replace(/^### (.*$)/gim, '<h3 class="text-base font-semibold mt-2 mb-1">$1</h3>');
@@ -93,7 +93,7 @@
     html = html.replace(/`(.+?)`/g, '<code class="bg-stone-100 dark:bg-stone-700 px-1 py-0.5 rounded text-xs font-mono">$1</code>');
 
     // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
+    html = renderLinks(html, 'text-primary-600 dark:text-primary-400 hover:underline');
 
     // Process lists line by line to maintain proper structure
     const lines = html.split('\n');

@@ -1,6 +1,7 @@
 const Link = require('../models/Link');
 const List = require('../models/List');
 const { safeGet } = require('../utils/safeFetch');
+const { queryString, escapeRegex } = require('../utils/query');
 const cheerio = require('cheerio');
 const { AppError } = require('../middleware/errorHandler');
 
@@ -67,7 +68,10 @@ async function fetchMetadata(url) {
 // @access  Private
 exports.getLinks = async (req, res, next) => {
     try {
-        const { listId, isArchived, tags, search } = req.query;
+        const listId = queryString(req.query.listId);
+        const isArchived = queryString(req.query.isArchived);
+        const tags = queryString(req.query.tags);
+        const search = queryString(req.query.search);
 
         const query = { userId: req.user._id };
 
@@ -92,10 +96,12 @@ exports.getLinks = async (req, res, next) => {
 
         // Search
         if (search) {
+            // Literal text search: user input is never interpreted as a regex.
+            const pattern = escapeRegex(search.slice(0, 200));
             query.$or = [
-                { title: { $regex: search, $options: 'i' } },
-                { url: { $regex: search, $options: 'i' } },
-                { tags: { $in: [new RegExp(search, 'i')] } }
+                { title: { $regex: pattern, $options: 'i' } },
+                { url: { $regex: pattern, $options: 'i' } },
+                { tags: { $in: [new RegExp(pattern, 'i')] } }
             ];
         }
 

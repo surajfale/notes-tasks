@@ -141,4 +141,4 @@ async function safeGet(rawUrl, config = {}) {
   });
 }
 
-module.exports = { safeGet, assertAllowedUrl, isBlockedAddress, safeLookup };
+module.exports = { safeGet, assertAllowedUrl, isBlockedAddress, safeLookup, httpsAgent };
