@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-package-lock.json
+# package-lock.json IS committed: reproducible installs + Dependabot/npm audit
 yarn.lock
 
 # Environment variables

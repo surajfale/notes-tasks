@@ -25,7 +25,7 @@ In the Netlify dashboard, go to **Site settings** → **Environment variables** 
 | Variable Name | Value | Description |
 |---------------|-------|-------------|
 | `VITE_API_BASE_URL` | `https://your-backend.railway.app/api` | Your backend API URL |
-| `NODE_VERSION` | `20` | Node.js version (already in netlify.toml) |
+| `NODE_VERSION` | `24` | Node.js version (already in netlify.toml) |
 
 **Important**: Replace `https://your-backend.railway.app/api` with your actual backend API URL.
 
