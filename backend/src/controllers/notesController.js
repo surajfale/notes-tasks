@@ -1,4 +1,5 @@
 const Note = require('../models/Note');
+const { listBelongsToUser, listNotFound } = require('../utils/listOwnership');
 
 // @desc    Get all user's notes
 // @route   GET /api/notes?listId=&isArchived=&tags=&search=
@@ -60,6 +61,8 @@ const createNote = async (req, res, next) => {
   try {
     const { listId, title, body, tags, isArchived } = req.body;
 
+    if (!(await listBelongsToUser(listId, req.user._id))) return listNotFound(res);
+
     const note = await Note.create({
       userId: req.user._id,
       listId,
@@ -95,6 +98,8 @@ const updateNote = async (req, res, next) => {
     }
 
     const { listId, title, body, tags, isArchived } = req.body;
+
+    if (listId !== undefined && !(await listBelongsToUser(listId, req.user._id))) return listNotFound(res);
 
     if (listId !== undefined) note.listId = listId;
     if (title !== undefined) note.title = title;

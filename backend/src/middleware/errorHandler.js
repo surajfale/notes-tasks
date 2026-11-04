@@ -1,5 +1,15 @@
 const logger = require('../utils/logger');
 
+// Operational error with an HTTP status, for `next(new AppError(...))`.
+class AppError extends Error {
+  constructor(message, statusCode = 500, code) {
+    super(message);
+    this.name = 'AppError';
+    this.statusCode = statusCode;
+    this.code = code || (statusCode === 404 ? 'NOT_FOUND' : statusCode === 403 ? 'FORBIDDEN' : 'ERROR');
+  }
+}
+
 const errorHandler = (err, req, res, next) => {
   logger.error('Error:', {
     message: err.message,
@@ -84,4 +94,4 @@ const notFound = (req, res, next) => {
   });
 };
 
-module.exports = { errorHandler, notFound };
+module.exports = { errorHandler, notFound, AppError };

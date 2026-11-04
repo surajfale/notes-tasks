@@ -213,14 +213,6 @@ Query parameters for GET `/api/tasks`:
 
 **Note**: See [Email Notifications Documentation](../docs/EMAIL_NOTIFICATIONS.md) for setup and configuration.
 
-### Admin Endpoints
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/admin/notifications/stats` | Get notification statistics | Yes (Admin) |
-| GET | `/api/admin/notifications/health` | Get email service health | Yes (Admin) |
-| POST | `/api/admin/notifications/circuit-breaker/reset` | Reset circuit breaker | Yes (Admin) |
-
 ## API Usage Examples
 
 ### Register User

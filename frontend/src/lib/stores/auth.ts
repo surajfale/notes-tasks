@@ -8,6 +8,7 @@
 import { writable, derived } from 'svelte/store';
 import { authRepository } from '$lib/repositories/auth.repository';
 import { tokenStorage } from '$lib/storage/token';
+import { claimOfflineData, clearOfflineData } from '$lib/storage/offlineOwner';
 import { ApiError } from '$lib/types/error';
 import type { User, LoginCredentials, RegisterData, RegistrationMode } from '$lib/types/user';
 
@@ -93,6 +94,7 @@ function createAuthStore() {
 
       try {
         const user = await fetchCurrentUserWithRetry();
+        await claimOfflineData(user._id, { adoptUnowned: true });
         set({ user, isLoading: false, error: null });
         hasInitialized = true;
       } catch (error: any) {
@@ -123,7 +125,9 @@ function createAuthStore() {
       try {
         const credentials: LoginCredentials = { username, password };
         const { token, user } = await authRepository.login(credentials);
-        
+
+        // Wipe another account's offline data before the token is live.
+        await claimOfflineData(user._id);
         tokenStorage.setToken(token);
         set({ user, isLoading: false, error: null });
         return true;
@@ -144,7 +148,8 @@ function createAuthStore() {
 
       try {
         const { token, user } = await authRepository.register(data);
-        
+
+        await claimOfflineData(user._id);
         tokenStorage.setToken(token);
         set({ user, isLoading: false, error: null });
         return true;
@@ -170,11 +175,14 @@ function createAuthStore() {
     },
 
     /**
-     * Logout the current user by clearing token and resetting state
+     * Logout the current user: clear the token, then this browser's offline
+     * cache (including unsynced edits) so the next account can't see or
+     * upload it. Token goes first so no sync can run with it meanwhile.
      */
-    logout(): void {
+    logout(): Promise<void> {
       tokenStorage.clearToken();
       set({ user: null, isLoading: false, error: null });
+      return clearOfflineData();
     },
 
     /**

@@ -16,7 +16,6 @@ const tasksRoutes = require('./routes/tasksRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const notificationsRoutes = require('./routes/notificationsRoutes');
 const deepLinkRoutes = require('./routes/deepLinkRoutes');
-const notificationAdminRoutes = require('./routes/notificationAdminRoutes');
 const linksRoutes = require('./routes/linksRoutes');
 
 // Initialize express app
@@ -148,7 +147,6 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/tasks', deepLinkRoutes);
 app.use('/api/links', linksRoutes);
-app.use('/api/admin/notifications', notificationAdminRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

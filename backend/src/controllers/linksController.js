@@ -1,13 +1,15 @@
 const Link = require('../models/Link');
 const List = require('../models/List');
-const axios = require('axios');
+const { safeGet } = require('../utils/safeFetch');
 const cheerio = require('cheerio');
 const { AppError } = require('../middleware/errorHandler');
 
 // Helper to fetch metadata
 async function fetchMetadata(url) {
     try {
-        const response = await axios.get(url, {
+        // safeGet refuses loopback/private/metadata addresses (incl. via
+        // redirects and DNS), so a link can't be used to probe our network.
+        const response = await safeGet(url, {
             timeout: 8000,
             maxRedirects: 5,
             maxContentLength: 2 * 1024 * 1024, // 2MB cap - we only need the <head>
@@ -208,7 +210,7 @@ exports.updateLink = async (req, res, next) => {
         if (title !== undefined) link.title = title;
         if (url !== undefined) link.url = url;
         if (tags !== undefined) link.tags = tags;
-        if (listId !== undefined) link.listId = listId;
+        if (listId !== undefined) link.listId = listId || null;
         if (isArchived !== undefined) link.isArchived = isArchived;
 
         await link.save();

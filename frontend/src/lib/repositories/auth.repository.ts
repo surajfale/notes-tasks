@@ -72,10 +72,11 @@ export const authRepository = {
   /**
    * Change user password
    * @param data - Current password and new password
-   * @returns Promise resolving when password is changed
+   * @returns Promise resolving to a fresh token (the server revokes all
+   *   tokens issued before the change, including this session's)
    */
-  async changePassword(data: ChangePasswordData): Promise<void> {
-    return apiClient.put<void>(API_ENDPOINTS.AUTH.PASSWORD, data);
+  async changePassword(data: ChangePasswordData): Promise<{ message: string; token?: string }> {
+    return apiClient.put<{ message: string; token?: string }>(API_ENDPOINTS.AUTH.PASSWORD, data);
   },
 
   /**

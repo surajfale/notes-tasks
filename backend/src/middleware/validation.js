@@ -60,6 +60,8 @@ const reminder = Joi.object({
   lastFiredAt: Joi.any().strip(),
 });
 
+const linkUrl = Joi.string().max(2048).uri({ scheme: ['http', 'https'] });
+
 const reminders = Joi.array().items(reminder).max(MAX_REMINDERS_PER_TASK);
 
 // Validation schemas
@@ -144,6 +146,23 @@ const schemas = {
     isCompleted: Joi.boolean().optional(),
     priority: Joi.number().integer().min(1).max(3).optional(),
     reminders: reminders.optional(),
+  }).min(1),
+
+  // Links: the URL is fetched server-side for a preview, so only http(s).
+  // (Address-level SSRF checks happen at fetch time in utils/safeFetch.js.)
+  createLink: Joi.object({
+    url: linkUrl.required(),
+    title: Joi.string().max(200).allow('').optional(),
+    tags: Joi.array().items(Joi.string().max(30)).max(20).optional(),
+    listId: objectId.allow(null, '').optional(),
+  }),
+
+  updateLink: Joi.object({
+    url: linkUrl.optional(),
+    title: Joi.string().max(200).allow('').optional(),
+    tags: Joi.array().items(Joi.string().max(30)).max(20).optional(),
+    listId: objectId.allow(null, '').optional(),
+    isArchived: Joi.boolean().optional(),
   }).min(1),
 
   enhanceContent: Joi.object({

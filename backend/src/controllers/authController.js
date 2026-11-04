@@ -4,6 +4,9 @@ const User = require('../models/User');
 const Note = require('../models/Note');
 const Task = require('../models/Task');
 const List = require('../models/List');
+const Link = require('../models/Link');
+const NotificationPreference = require('../models/NotificationPreference');
+const NotificationLog = require('../models/NotificationLog');
 const { registrationMode, checkRegistration } = require('../config/registration');
 
 // Public shape of a user in API responses — never includes passwordHash or
@@ -209,12 +212,15 @@ const changePassword = async (req, res, next) => {
       });
     }
 
-    // Hash and update new password
+    // Hash and update new password. Bumping passwordChangedAt revokes every
+    // token issued before now; this session gets a fresh one so it stays in.
     user.passwordHash = await User.hashPassword(newPassword);
+    user.passwordChangedAt = new Date();
     await user.save();
 
     res.json({
       message: 'Password updated successfully',
+      token: generateToken(user._id),
     });
   } catch (error) {
     next(error);
@@ -228,14 +234,16 @@ const deleteAccount = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
-    // Delete all user's notes
-    await Note.deleteMany({ userId });
-
-    // Delete all user's tasks
-    await Task.deleteMany({ userId });
-
-    // Delete all user's lists
-    await List.deleteMany({ userId });
+    // Delete everything keyed by this user (content, push subscription and
+    // email prefs, delivery logs) before the account itself.
+    await Promise.all([
+      Note.deleteMany({ userId }),
+      Task.deleteMany({ userId }),
+      List.deleteMany({ userId }),
+      Link.deleteMany({ userId }),
+      NotificationPreference.deleteMany({ userId }),
+      NotificationLog.deleteMany({ userId }),
+    ]);
 
     // Delete the user account
     await User.findByIdAndDelete(userId);
@@ -318,6 +326,7 @@ const resetPassword = async (req, res, next) => {
 
     // Set new password
     user.passwordHash = await User.hashPassword(newPassword);
+    user.passwordChangedAt = new Date(); // log out every existing session
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
 

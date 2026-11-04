@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const { listBelongsToUser, listNotFound } = require('../utils/listOwnership');
 const { mergeReminders } = require('../services/reminders');
 
 // @desc    Get all user's tasks
@@ -67,6 +68,8 @@ const createTask = async (req, res, next) => {
       reminders
     } = req.body;
 
+    if (!(await listBelongsToUser(listId, req.user._id))) return listNotFound(res);
+
     const task = await Task.create({
       userId: req.user._id,
       listId,
@@ -118,6 +121,8 @@ const updateTask = async (req, res, next) => {
       checklistItems,
       reminders
     } = req.body;
+
+    if (listId !== undefined && !(await listBelongsToUser(listId, req.user._id))) return listNotFound(res);
 
     if (listId !== undefined) task.listId = listId;
     if (title !== undefined) task.title = title;
