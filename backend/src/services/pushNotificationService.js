@@ -2,6 +2,7 @@ const webPush = require('web-push');
 const logger = require('../utils/logger');
 const NotificationLog = require('../models/NotificationLog');
 const CircuitBreaker = require('../utils/circuitBreaker');
+const { assertAllowedUrl, httpsAgent } = require('../utils/safeFetch');
 
 class PushNotificationService {
   constructor() {
@@ -92,6 +93,17 @@ class PushNotificationService {
       return { success: false, error };
     }
 
+    // The endpoint is user-supplied: never POST to a non-https or internal
+    // address (IP literals checked here; hostnames by the agent's lookup).
+    try {
+      if (!pushSubscription.endpoint.startsWith('https://')) throw new Error('Push endpoint must be https');
+      assertAllowedUrl(pushSubscription.endpoint);
+    } catch (err) {
+      const error = `Refusing push endpoint: ${err.message}`;
+      logger.warn(error, { endpoint: this.truncateEndpoint(pushSubscription.endpoint) });
+      return { success: false, error };
+    }
+
     if (!payload || !payload.title || !payload.body) {
       const error = 'Missing required payload fields: title and body are required';
       logger.error(error);
@@ -147,7 +159,8 @@ class PushNotificationService {
         await this.circuitBreaker.execute(async () => {
           await webPush.sendNotification(
             pushSubscription,
-            JSON.stringify(notificationPayload)
+            JSON.stringify(notificationPayload),
+            { agent: httpsAgent }
           );
         });
 

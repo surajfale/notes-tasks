@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { escapeHtml, renderLinks } from '$lib/utils/markdownSafety';
   import { onMount } from 'svelte';
   import '$lib/components/tactile/neumorphic.css';
 
@@ -208,9 +209,7 @@
     let html = markdown;
 
     // Escape HTML
-    html = html.replace(/&/g, '&amp;')
-               .replace(/</g, '&lt;')
-               .replace(/>/g, '&gt;');
+    html = escapeHtml(html);
 
     // Process tables first (before other formatting)
     const lines = html.split('\n');
@@ -262,7 +261,7 @@
     html = html.replace(/`(.+?)`/g, '<code class="bg-stone-100 dark:bg-stone-700 px-1 py-0.5 rounded text-sm font-mono">$1</code>');
 
     // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
+    html = renderLinks(html, 'text-primary-600 dark:text-primary-400 hover:underline');
 
     // Process lists line by line to maintain proper structure
     const finalLines = html.split('\n');

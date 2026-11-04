@@ -31,7 +31,7 @@ router
 
 router
   .route('/push-subscription')
-  .put(updatePushSubscription)
+  .put(validate(schemas.pushSubscription), updatePushSubscription)
   .delete(removePushSubscription);
 
 module.exports = router;

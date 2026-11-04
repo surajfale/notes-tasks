@@ -21,7 +21,7 @@ const protect = async (req, res, next) => {
 
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
 
       // Get user from token (exclude password)
       req.user = await User.findById(decoded.id).select('-passwordHash');
@@ -31,6 +31,15 @@ const protect = async (req, res, next) => {
           error: {
             code: 'UNAUTHORIZED',
             message: 'User not found',
+          },
+        });
+      }
+
+      if (req.user.tokenIssuedBeforePasswordChange(decoded.iat)) {
+        return res.status(401).json({
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Session expired after a password change, please log in again',
           },
         });
       }

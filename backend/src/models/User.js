@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema(
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    // Set whenever the password changes; JWTs issued before it are rejected
+    // (middleware/auth.js), so a password change/reset logs out every other
+    // session, including a stolen token.
+    passwordChangedAt: Date,
   },
   {
     timestamps: true,
@@ -58,6 +62,17 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 // Statics
 userSchema.statics.hashPassword = async function (password) {
   return await bcrypt.hash(password, 10);
+};
+
+/**
+ * Whether a JWT issued at `iatSeconds` predates the last password change.
+ * JWT iat has 1-second resolution, so a token minted in the same second as
+ * the change is still accepted (that's the fresh token handed back by the
+ * change-password response).
+ */
+userSchema.methods.tokenIssuedBeforePasswordChange = function (iatSeconds) {
+  if (!this.passwordChangedAt) return false;
+  return iatSeconds < Math.floor(this.passwordChangedAt.getTime() / 1000);
 };
 
 // Transform output (remove sensitive fields)

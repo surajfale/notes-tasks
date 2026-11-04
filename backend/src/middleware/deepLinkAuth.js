@@ -136,10 +136,10 @@ const handleDeepLinkAuth = async (req, res, next) => {
     if (token) {
       try {
         // Verify regular JWT token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
         const user = await User.findById(decoded.id).select('-passwordHash');
         
-        if (user) {
+        if (user && !user.tokenIssuedBeforePasswordChange(decoded.iat)) {
           req.user = user;
           req.isAuthenticated = true;
           return next();

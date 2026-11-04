@@ -8,16 +8,17 @@ const {
     deleteLink,
 } = require('../controllers/linksController');
 const { protect } = require('../middleware/auth');
+const { validate, schemas } = require('../middleware/validation');
 
 router.use(protect);
 
 router.route('/')
     .get(getLinks)
-    .post(createLink);
+    .post(validate(schemas.createLink), createLink);
 
 router.route('/:id')
     .get(getLink)
-    .put(updateLink)
+    .put(validate(schemas.updateLink), updateLink)
     .delete(deleteLink);
 
 module.exports = router;

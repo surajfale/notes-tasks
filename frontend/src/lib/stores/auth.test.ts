@@ -3,12 +3,20 @@ import { get } from 'svelte/store';
 import type { ApiError as ApiErrorType } from '$lib/types/error';
 
 const getCurrentUser = vi.fn();
+const login = vi.fn();
 vi.mock('$lib/repositories/auth.repository', () => ({
   authRepository: {
     getCurrentUser: (...args: unknown[]) => getCurrentUser(...args),
-    login: vi.fn(),
+    login: (...args: unknown[]) => login(...args),
     register: vi.fn()
   }
+}));
+
+const claimOfflineData = vi.fn();
+const clearOfflineData = vi.fn();
+vi.mock('$lib/storage/offlineOwner', () => ({
+  claimOfflineData: (...args: unknown[]) => claimOfflineData(...args),
+  clearOfflineData: (...args: unknown[]) => clearOfflineData(...args)
 }));
 
 const getToken = vi.fn();
@@ -136,5 +144,46 @@ describe('authStore.initialize — session-restore resilience', () => {
 
     expect(get(authStore).user).toBeNull();
     expect(clearToken).not.toHaveBeenCalled();
+  });
+});
+
+describe('authStore — offline data never crosses accounts', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.resetModules();
+  });
+
+  it('logout clears the token, then the offline cache', async () => {
+    const order: string[] = [];
+    clearToken.mockImplementation(() => order.push('token'));
+    clearOfflineData.mockImplementation(async () => { order.push('offline'); });
+    const { authStore } = await import('./auth');
+
+    await authStore.logout();
+
+    expect(order).toEqual(['token', 'offline']);
+  });
+
+  it('login claims the offline cache for the new user BEFORE the token is stored', async () => {
+    const order: string[] = [];
+    login.mockResolvedValue({ token: 't', user: FAKE_USER });
+    claimOfflineData.mockImplementation(async () => { order.push('claim'); });
+    setToken.mockImplementation(() => order.push('setToken'));
+    const { authStore } = await import('./auth');
+
+    expect(await authStore.login('ada', 'pw')).toBe(true);
+
+    expect(claimOfflineData).toHaveBeenCalledWith(FAKE_USER._id);
+    expect(order).toEqual(['claim', 'setToken']);
+  });
+
+  it('session restore adopts untagged data from older builds instead of wiping it', async () => {
+    getToken.mockReturnValue('valid-token');
+    getCurrentUser.mockResolvedValue({ user: FAKE_USER });
+    const { authStore } = await import('./auth');
+
+    await authStore.initialize();
+
+    expect(claimOfflineData).toHaveBeenCalledWith(FAKE_USER._id, { adoptUnowned: true });
   });
 });

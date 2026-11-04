@@ -4,6 +4,7 @@
   import { authStore, currentUser } from '$lib/stores/auth';
   import { themeStore, type ThemeState } from '$lib/stores/theme';
   import { authRepository } from '$lib/repositories/auth.repository';
+  import { tokenStorage } from '$lib/storage/token';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Card from '$lib/components/ui/Card.svelte';
@@ -68,10 +69,13 @@
     isChangingPassword = true;
 
     try {
-      await authRepository.changePassword({
+      const { token } = await authRepository.changePassword({
         currentPassword,
         newPassword
       });
+      // Older tokens (other devices, this one) are now revoked; keep this
+      // session signed in with the replacement.
+      if (token) tokenStorage.setToken(token);
 
       passwordSuccess = 'Password changed successfully';
       currentPassword = '';
@@ -109,7 +113,7 @@
       await authRepository.deleteAccount();
       
       // Clear all local data
-      authStore.logout();
+      await authStore.logout();
       
       // Redirect to login
       goto('/login');

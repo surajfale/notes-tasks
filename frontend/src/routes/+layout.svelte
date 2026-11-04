@@ -64,7 +64,7 @@
   
   // Handle logout
   async function handleLogout() {
-    authStore.logout();
+    await authStore.logout();
     listsStore.reset();
     goto('/login');
   }
