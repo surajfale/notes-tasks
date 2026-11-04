@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
-# package-lock.json IS committed: reproducible installs + Dependabot/npm audit
+# pnpm is the package manager (pnpm-lock.yaml); keep npm/yarn lockfiles out
+package-lock.json
 yarn.lock
 
 # Environment variables
