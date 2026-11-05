@@ -5,6 +5,31 @@
 @layer base {
 	html {
 		@apply font-sans antialiased;
+		/* No grey/blue flash on every tap — buttons have their own pressed states. */
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* Set on both: Chrome reads it from the root scroller, which is <html> or
+	   <body> depending on layout. */
+	html,
+	body {
+		/* Installed (standalone) app: an overscroll at the top of a list shouldn't
+		   reload the whole app mid-edit. The explicit sync button in PageHeader
+		   replaces pull-to-refresh. `contain` (not `none`) keeps the glow/stretch
+		   feedback so scrolling doesn't feel dead. */
+		overscroll-behavior-y: contain;
+	}
+
+	/* Disable double-tap-to-zoom on controls so taps fire immediately and a quick
+	   double tap on a checkbox doesn't zoom the page. Pinch-zoom still works. */
+	a,
+	button,
+	input,
+	select,
+	textarea,
+	label,
+	[role='button'] {
+		touch-action: manipulation;
 	}
 }
 

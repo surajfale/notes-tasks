@@ -33,7 +33,7 @@
   <title>Reminder emails · Notes & Tasks</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4">
+<div class="min-h-dvh flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4">
   <div class="neu-raised w-full max-w-sm p-6 text-center">
     {#if status === 'confirm' || status === 'working'}
       <h1 class="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">Stop reminder emails?</h1>

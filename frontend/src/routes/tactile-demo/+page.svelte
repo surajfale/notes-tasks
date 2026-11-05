@@ -42,7 +42,7 @@
   <title>Tactile Task List</title>
 </svelte:head>
 
-<div class="neu-surface min-h-screen px-4 py-10 sm:px-6">
+<div class="neu-surface min-h-dvh px-4 py-10 sm:px-6">
   <div class="mx-auto max-w-6xl">
     <div class="mb-8 flex items-start justify-between gap-4">
       <div>

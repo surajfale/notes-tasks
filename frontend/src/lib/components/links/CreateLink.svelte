@@ -3,6 +3,7 @@
   import { linksStore } from '$lib/stores/links';
   import { listsStore } from '$lib/stores/lists';
   import type { Link } from '$lib/types/link';
+  import type { SharedLink } from '$lib/utils/shareTarget';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import '$lib/components/tactile/neumorphic.css';
@@ -10,9 +11,12 @@
   const dispatch = createEventDispatcher();
   
   export let link: Link | null = null;
+  // Initial values for a new link, e.g. from the Android share sheet
+  // (see lib/utils/shareTarget.ts). Ignored when editing an existing link.
+  export let prefill: SharedLink | null = null;
   
-  let title = link?.title || '';
-  let url = link?.url || '';
+  let title = link?.title || prefill?.title || '';
+  let url = link?.url || prefill?.url || '';
   let tagsInput = link?.tags?.join(', ') || '';
   let listId = link?.listId || '';
   let isSubmitting = false;

@@ -1,8 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { parseSharedLink } from '$lib/utils/shareTarget';
   import CreateLink from '$lib/components/links/CreateLink.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import '$lib/components/tactile/neumorphic.css';
+
+  // Arriving from the Android share sheet (manifest share_target) prefills the
+  // form; a normal visit has no params and gets an empty form.
+  const shared = parseSharedLink($page.url.searchParams);
 
   function handleSuccess() {
     goto('/links');
@@ -25,10 +31,12 @@
       </svg>
       Back to Links
     </Button>
-    <h1 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">Create New Link</h1>
+    <h1 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100">
+      {shared ? 'Save Shared Link' : 'Create New Link'}
+    </h1>
   </div>
 
   <div class="neu-raised p-6 sm:p-8">
-    <CreateLink on:success={handleSuccess} on:cancel={handleCancel} />
+    <CreateLink prefill={shared} on:success={handleSuccess} on:cancel={handleCancel} />
   </div>
 </div>

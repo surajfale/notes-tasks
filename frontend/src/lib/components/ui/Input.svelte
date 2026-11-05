@@ -13,6 +13,10 @@
   export let id = '';
   export let name = '';
   export let autocomplete: HTMLInputAttributes['autocomplete'] = undefined;
+  // Label for the on-screen keyboard's Enter key. Search fields default to
+  // "search"; pass e.g. "next"/"done" on multi-field forms.
+  export let enterkeyhint: HTMLInputAttributes['enterkeyhint'] = undefined;
+  $: resolvedEnterKeyHint = enterkeyhint ?? (type === 'search' ? 'search' : undefined);
 
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -50,6 +54,7 @@
       {required}
       {disabled}
       {autocomplete}
+      enterkeyhint={resolvedEnterKeyHint}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -66,6 +71,7 @@
       {required}
       {disabled}
       {autocomplete}
+      enterkeyhint={resolvedEnterKeyHint}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -82,6 +88,7 @@
       {required}
       {disabled}
       {autocomplete}
+      enterkeyhint={resolvedEnterKeyHint}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -98,6 +105,7 @@
       {required}
       {disabled}
       {autocomplete}
+      enterkeyhint={resolvedEnterKeyHint}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -114,6 +122,7 @@
       {required}
       {disabled}
       {autocomplete}
+      enterkeyhint={resolvedEnterKeyHint}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -130,6 +139,7 @@
       {required}
       {disabled}
       {autocomplete}
+      enterkeyhint={resolvedEnterKeyHint}
       id={inputId}
       bind:value
       class={inputClasses}
@@ -141,11 +151,14 @@
   {:else if type === 'url'}
     <input
       type="url"
+      autocapitalize="off"
+      spellcheck={false}
       {name}
       {placeholder}
       {required}
       {disabled}
       {autocomplete}
+      enterkeyhint={resolvedEnterKeyHint}
       id={inputId}
       bind:value
       class={inputClasses}

@@ -8,6 +8,13 @@ export default {
 	mode: 'jit',
 	theme: {
 		extend: {
+			screens: {
+				// Gate hover-revealed UI on what the input device can do, not on screen
+				// width: a landscape phone or a tablet is wider than `sm` but has no hover,
+				// so `sm:opacity-0 sm:group-hover:…` would hide actions there for good.
+				// Usage: `opacity-100 can-hover:opacity-0 can-hover:group-hover:opacity-100`.
+				'can-hover': { raw: '(hover: hover) and (pointer: fine)' }
+			},
 			fontFamily: {
 				// app.css defines --font-sans/--font-mono. Fallback stack covers
 				// pre-hydration paint.

@@ -82,7 +82,7 @@
   }
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4 sm:px-6 py-8">
+<div class="min-h-dvh flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4 sm:px-6 py-8">
   <div class="max-w-md w-full space-y-6 sm:space-y-8">
     <!-- Header -->
     <div>
