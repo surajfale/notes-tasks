@@ -153,7 +153,7 @@
 
     <!-- Actions: full-opacity on touch devices, hover/focus-revealed on pointer devices -->
     <div class="flex items-center gap-1 mt-auto pt-2 -mx-2 border-t border-stone-100 dark:border-stone-800
-                opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
+                opacity-100 can-hover:opacity-0 can-hover:group-hover:opacity-100 can-hover:group-focus-within:opacity-100 transition-opacity">
       <button
         on:click={handleEdit}
         class="text-sm py-1.5 px-2 min-h-[36px] rounded-md text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"

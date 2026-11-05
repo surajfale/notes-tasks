@@ -95,8 +95,44 @@ async function generateIcons() {
   }
 }
 
+// Maskable icons (Android adaptive icons). The launcher crops these to its
+// own shape (circle, squircle, …), keeping only the central 80% "safe zone".
+// The regular icon has transparent rounded corners and artwork that reaches
+// past that zone, so using it as maskable gives a clipped glyph on a black/white
+// fill. Instead: fill the corners with the icon's own diagonal gradient, then
+// shrink that full-bleed square into the safe zone on the same gradient. Both
+// layers sample the same gradient, so the seam is within a few color levels.
+const MASKABLE_SIZES = [192, 512];
+const MASKABLE_SCALE = 0.82; // glyph corner lands ~182/256 from center, inside the 205 safe radius
+const GRADIENT = { from: '#6366f1', to: '#8b5cf6' }; // sampled from favicon.png's background
+
+function gradientSvg(size) {
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">` +
+      `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">` +
+      `<stop offset="0" stop-color="${GRADIENT.from}"/><stop offset="1" stop-color="${GRADIENT.to}"/>` +
+      `</linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>`
+  );
+}
+
+async function generateMaskableIcons() {
+  for (const size of MASKABLE_SIZES) {
+    const icon = await sharp(SOURCE_ICON).resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
+    const fullBleed = await sharp(gradientSvg(size)).composite([{ input: icon }]).png().toBuffer();
+    const inner = Math.round(size * MASKABLE_SCALE);
+    const shrunk = await sharp(fullBleed).resize(inner, inner).png().toBuffer();
+    const outputFile = join(OUTPUT_DIR, `icon-maskable-${size}x${size}.png`);
+    await sharp(gradientSvg(size))
+      .composite([{ input: shrunk, gravity: 'center' }])
+      .png({ compressionLevel: 9 })
+      .toFile(outputFile);
+    console.log(`✅ Generated maskable ${size}x${size} icon`);
+  }
+}
+
 // Run the generator
-generateIcons().catch(error => {
+generateIcons()
+  .then(generateMaskableIcons).catch(error => {
   console.error('\n❌ Fatal error:', error);
   process.exit(1);
 });

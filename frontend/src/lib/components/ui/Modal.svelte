@@ -67,7 +67,7 @@
     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
     <div
       bind:this={dialogEl}
-      class="neu-raised rounded-t-2xl sm:rounded-2xl {maxWidthClass} w-full max-h-[85vh] sm:max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in slide-in duration-200"
+      class="neu-raised rounded-t-2xl sm:rounded-2xl {maxWidthClass} w-full max-h-[85dvh] sm:max-h-[90dvh] overflow-hidden flex flex-col animate-in fade-in slide-in duration-200"
       on:click|stopPropagation
       role="document"
       tabindex="-1"

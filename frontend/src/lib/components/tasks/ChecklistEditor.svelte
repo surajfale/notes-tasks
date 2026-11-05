@@ -221,7 +221,7 @@
           </span>
 
           <!-- Actions -->
-          <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div class="flex gap-1 opacity-100 can-hover:opacity-0 can-hover:group-hover:opacity-100 can-hover:group-focus-within:opacity-100 transition-opacity">
             <button
               type="button"
               on:click={() => moveUp(index)}

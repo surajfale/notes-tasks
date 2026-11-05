@@ -69,8 +69,8 @@
     type="button"
     aria-label={`Drag to reorder "${list.title}"`}
     class="mt-0.5 flex h-6 w-4 shrink-0 cursor-grab items-center justify-center rounded text-zinc-300
-           opacity-0 transition-opacity duration-150 hover:text-zinc-500 focus-visible:opacity-100
-           group-hover:opacity-100 active:cursor-grabbing dark:text-zinc-700 dark:hover:text-zinc-400"
+           opacity-100 can-hover:opacity-0 transition-opacity duration-150 hover:text-zinc-500 focus-visible:opacity-100
+           can-hover:group-hover:opacity-100 can-hover:focus-visible:opacity-100 active:cursor-grabbing dark:text-zinc-700 dark:hover:text-zinc-400"
     style="touch-action: none;"
     onpointerdown={onDragHandlePointerDown}
   >

@@ -41,6 +41,9 @@
   // the function whenever $page changes gives both a new reference to
   // re-render on.
   $: currentPath = $page.url.pathname;
+  // Create/edit forms (/notes/new, /tasks/abc123, …): the floating "create"
+  // button is redundant there and sits on top of the form's own submit button.
+  $: isEditorRoute = /^\/(notes|tasks|links|lists)\/[^/]+$/.test(currentPath);
   $: isActive = (path: string): boolean => {
     // Special case for home - only match exact path
     if (path === '/') {
@@ -175,7 +178,7 @@
 </script>
 
 <!-- Main app container with theme classes -->
-<div class="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
+<div class="min-h-dvh bg-stone-100 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
   
   <!-- Theme Color Manager (updates meta theme-color dynamically) -->
   <ThemeColorManager />
@@ -197,7 +200,7 @@
 
   {#if authenticated && !isCurrentPagePublic}
     <!-- Authenticated layout with sidebar -->
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-dvh overflow-hidden">
       
       <!-- Mobile overlay -->
       {#if isMobile && sidebarOpen}
@@ -329,7 +332,7 @@
                     </button>
                     
                     <!-- Quick filter dropdown on hover -->
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 opacity-100 can-hover:opacity-0 can-hover:group-hover:opacity-100 can-hover:group-focus-within:opacity-100 transition-opacity">
                       <div class="flex gap-1">
                         <button
                           on:click|stopPropagation={() => {
@@ -433,13 +436,15 @@
 
       </div>
 
-      <!-- Mobile: floating create button, above the bottom nav -->
+      <!-- Mobile: floating create button, above the bottom nav (not on editor pages) -->
+      {#if !isEditorRoute}
       <div
         class="md:hidden fixed right-4 z-30"
         style="bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px))"
       >
         <QuickCreateMenu variant="fab" />
       </div>
+      {/if}
 
       <!-- Mobile: bottom tab bar (Home/Notes/Tasks/Links + More, which opens the sidebar as a drawer) -->
       <MobileBottomNav {isActive} onMore={toggleSidebar} moreOpen={isMobile && sidebarOpen} />

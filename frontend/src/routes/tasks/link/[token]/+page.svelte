@@ -46,7 +46,7 @@
   <title>Opening task… · Notes & Tasks</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4">
+<div class="min-h-dvh flex items-center justify-center bg-stone-50 dark:bg-stone-950 px-4">
   <div class="neu-raised w-full max-w-sm p-6 text-center">
     {#if outcome === 'forwarding'}
       <div
